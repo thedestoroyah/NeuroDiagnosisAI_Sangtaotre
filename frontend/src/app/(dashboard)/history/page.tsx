@@ -261,7 +261,7 @@ export default function HistoryPage() {
                       </td>
                       <td className="px-5 py-4 text-slate-400">{formatDate(item.last_diagnosis_time)}</td>
                       <td className="px-5 py-4">
-                        {item.latest_no_tumor_detected ? "Không phát hiện khối u" : item.latest_final_tumor_label || item.latest_tumor_label || "--"}
+                        {item.latest_no_tumor_detected ? "Không phát hiện u – chờ bác sĩ xác nhận" : item.latest_final_tumor_label || item.latest_tumor_label || "--"}
                       </td>
                       <td className="px-5 py-4">{formatPercent(item.latest_classification_confidence)}</td>
                       <td className="px-5 py-4">

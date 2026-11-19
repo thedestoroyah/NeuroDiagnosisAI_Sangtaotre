@@ -15,11 +15,23 @@ import {
 import RnaXaiChart from "./RnaXaiChart";
 import { ImagePreviewModal, ImagePreviewState } from "@/components/ui/ImagePreviewModal";
 
+const MRI_REVIEW_REASON_LABELS: Record<string, string> = {
+  mri_unreadable: "Không lát nào đọc được",
+  slices_failed: "Một số lát MRI không đọc được",
+  negative_needs_confirmation: "Kết quả âm tính phải được bác sĩ xác nhận, hệ thống không tự kết luận",
+  low_classification_confidence: "Độ tin cậy phân loại thấp",
+};
+
 type MriResult = {
   image_id?: number | string;
   status?: string;
   no_tumor_detected?: boolean | null;
   error_message?: string | null;
+  mri_status?: "tumor_detected" | "no_tumor_detected" | "mri_unreadable" | string | null;
+  mri_review_required?: boolean;
+  mri_review_reasons?: string[];
+  slices_total?: number | null;
+  slices_failed?: number | null;
   bbox?: number[] | null;
   bbox_confidence?: number | null;
   tumor_label?: string | null;
@@ -243,6 +255,11 @@ export default function MriResultCard({
   const isFailed = result?.status === "failed";
   const isDone = result?.status === "done" || result?.status === "completed";
   const noTumorDetected = Boolean(result?.no_tumor_detected);
+  const mriUnreadable =
+    result?.mri_status === "mri_unreadable" || Boolean(result?.error_message?.startsWith("Không đọc được ảnh MRI"));
+  const mriReviewReasons = (result?.mri_review_reasons ?? []).map((reason) => MRI_REVIEW_REASON_LABELS[reason] ?? reason);
+  const sliceFailureText =
+    result?.slices_failed && result?.slices_total ? `${result.slices_failed}/${result.slices_total} lát không đọc được.` : null;
   const classificationConfidence = result?.ai_confidence ?? result?.classification_confidence ?? null;
   const hasCompletedClassificationReview =
     reviewState.review_status === "confirmed" || reviewState.review_status === "corrected";
@@ -322,20 +339,33 @@ export default function MriResultCard({
             <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-5">
               <div className="flex items-center gap-3 text-red-300 mb-3">
                 <AlertTriangle className="h-5 w-5" />
-                <span className="font-semibold">Pipeline MRI thất bại</span>
+                <span className="font-semibold">
+                  {mriUnreadable ? "Không đọc được MRI – chưa có kết luận" : "Pipeline MRI thất bại"}
+                </span>
               </div>
               <p className="text-sm text-red-200 whitespace-pre-wrap">
                 {result?.error_message || "Không có thông điệp lỗi chi tiết."}
               </p>
+              {mriUnreadable && sliceFailureText && <p className="mt-2 text-xs text-red-300">{sliceFailureText}</p>}
             </div>
           ) : (
             <>
-              {noTumorDetected && (
-                <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-4 flex items-center gap-3 text-amber-200">
-                  <Search className="h-5 w-5" />
-                  <span className="text-sm font-medium">
-                    Không phát hiện khối u. Cần tham khảo ý kiến chuyên gia.
-                  </span>
+              {(noTumorDetected || (result?.mri_review_required && mriReviewReasons.length > 0)) && (
+                <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-4 text-amber-200">
+                  <div className="flex items-center gap-3">
+                    <Search className="h-5 w-5" />
+                    <span className="text-sm font-semibold">
+                      {noTumorDetected ? "Không phát hiện u – cần bác sĩ xác nhận" : "Kết quả MRI cần bác sĩ rà soát"}
+                    </span>
+                  </div>
+                  {mriReviewReasons.length > 0 && (
+                    <ul className="mt-2 ml-8 list-disc text-xs text-amber-100/90 space-y-0.5">
+                      {mriReviewReasons.map((reason) => (
+                        <li key={reason}>{reason}</li>
+                      ))}
+                    </ul>
+                  )}
+                  {sliceFailureText && <p className="mt-2 ml-8 text-xs text-amber-100/90">{sliceFailureText}</p>}
                 </div>
               )}
 

@@ -149,6 +149,13 @@ class AnalysisResult(Base):
     xai_3_panel_path = Column(String, nullable=True)
     survival_curve_data = Column(JSON, nullable=True)
 
+    # Trạng thái MRI tường minh (tumor_detected | no_tumor_detected | mri_unreadable) và yêu cầu bác sĩ rà soát
+    mri_status = Column(String, nullable=True)
+    review_required = Column(Boolean, default=False)
+    review_reasons = Column(JSON, nullable=True)
+    # Thông tin trình bày tiên lượng: đã hiệu chuẩn chưa, percentile, giới hạn (Task 11)
+    prognosis_meta = Column(JSON, nullable=True)
+
     image = relationship("Image", back_populates="analysis_result")
 
 

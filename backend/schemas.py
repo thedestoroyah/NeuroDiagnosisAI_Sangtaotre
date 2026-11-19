@@ -164,6 +164,12 @@ class ImageAIResultResponse(BaseModel):
     risk_score: Optional[float] = None
     risk_group: Optional[str] = None
     survival_curve_data: Optional[List[dict]] = None
+    mri_status: Optional[str] = None
+    mri_review_required: bool = False
+    mri_review_reasons: List[str] = []
+    slices_total: Optional[int] = None
+    slices_failed: Optional[int] = None
+    prognosis_meta: Optional[dict] = None
     multimodal_risk_xai_data_url: Optional[str] = None
     multimodal_gradcam_heatmap_data_url: Optional[str] = None
     multimodal_gradcam_plus_heatmap_data_url: Optional[str] = None

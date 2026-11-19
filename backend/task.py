@@ -195,6 +195,9 @@ def run_mri_pipeline(self, task_id: int, image_id: int):
                 rna_gene_names=rna_gene_names
             )
 
+        if result.get("error_code") == MRI_UNREADABLE:
+            persist_mri_failure(db, task_record, result)
+            return {"task_id": task_id, "status": "failed", "error": result["error_msg"]}
         if result["status"] != "success":
             raise Exception(result["error_msg"])
 
@@ -232,6 +235,7 @@ def run_mri_pipeline(self, task_id: int, image_id: int):
         analysis.seg_eigen_cam_path = None if no_tumor_detected else (result.get("segmentation_xai_path") or result.get("seg_eigen_cam_path"))
         analysis.odam_path = result.get("detection_xai_path") or result.get("odam_path")
         analysis.xai_3_panel_path = None if no_tumor_detected else result.get("xai_3_panel_path")
+        _store_mri_safety(analysis, result)
 
         db.commit()
 
@@ -413,6 +417,9 @@ def run_prognosis_pipeline(self, task_id: int, patient_id: int, image_id: int | 
                 rna_gene_names=rna_gene_names
             )
 
+        if result.get("error_code") == MRI_UNREADABLE:
+            persist_mri_failure(db, task_record, result)
+            return {"status": "failed", "patient_id": patient_id, "error": result["error_msg"]}
         if result["status"] != "success":
             raise Exception(result.get("error_msg", "Pipeline failed"))
 
@@ -470,6 +477,7 @@ def run_prognosis_pipeline(self, task_id: int, patient_id: int, image_id: int | 
         analysis.seg_eigen_cam_path = None if no_tumor_detected else (clean_result.get("segmentation_xai_path") or clean_result.get("seg_eigen_cam_path"))
         analysis.odam_path = clean_result.get("detection_xai_path") or clean_result.get("odam_path")
         analysis.xai_3_panel_path = None if no_tumor_detected else clean_result.get("xai_3_panel_path")
+        _store_mri_safety(analysis, clean_result)
 
         db.commit()
         return {"status": "done", "patient_id": patient_id}
@@ -491,6 +499,29 @@ def run_prognosis_pipeline(self, task_id: int, patient_id: int, image_id: int | 
         if "output_dir" in locals() and output_dir and os.path.isdir(output_dir):
             shutil.rmtree(output_dir, ignore_errors=True)
         db.close()
+
+
+# Trùng với ai_core.pipeline.MRI_UNREADABLE; không import để worker/API không phải nạp pipeline nặng khi import task.
+MRI_UNREADABLE = "mri_unreadable"
+_SAFETY_KEYS = ("mri_status", "mri_partial", "slices_total", "slices_examined", "slices_failed",
+                "failed_slice_reasons", "review_required", "review_reasons", "error_code")
+
+
+def persist_mri_failure(db, task_record, result: dict) -> None:
+    """Ghi task thất bại vì MRI không đọc được: lưu thông điệp và các trường trạng thái để giao diện hiện đúng.
+
+    Không tạo AnalysisResult nên không có kết luận "không phát hiện u" nào được lưu.
+    """
+    task_record.status = "failed"
+    task_record.error_message = result["error_msg"]
+    task_record.result = {key: result[key] for key in _SAFETY_KEYS if key in result}
+    db.commit()
+
+
+def _store_mri_safety(analysis, result: dict) -> None:
+    analysis.mri_status = result.get("mri_status")
+    analysis.review_required = bool(result.get("review_required"))
+    analysis.review_reasons = result.get("review_reasons")
 
 
 def _clinical_dict(patient, clinical_record) -> dict:

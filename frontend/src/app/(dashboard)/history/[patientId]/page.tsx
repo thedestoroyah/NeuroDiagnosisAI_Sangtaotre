@@ -304,7 +304,7 @@ export default function PatientHistoryReportPage({ params }: { params: Promise<{
                     {item.is_series ? <div className="text-xs text-slate-500">Slice {item.key_slice_index}</div> : null}
                   </td>
                   <td className="px-3 py-4">
-                    {item.no_tumor_detected ? "Không phát hiện khối u" : item.tumor_label || "--"}
+                    {item.no_tumor_detected ? "Không phát hiện u – chờ bác sĩ xác nhận" : item.tumor_label || "--"}
                   </td>
                   <td className="px-3 py-4">{formatPercent(item.classification_confidence)}</td>
                   <td className="px-3 py-4">

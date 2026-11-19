@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import io
 import json
+import logging
 import os
 import gc
 from pathlib import Path
@@ -23,6 +24,68 @@ from .architectures.xai_gradcam import GradCAMExplainer
 from .feature_schema import encode_clinical, encode_rna, load_rna_reference
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
+
+logger = logging.getLogger(__name__)
+
+MRI_UNREADABLE = "mri_unreadable"
+_MAX_FAILED_REASONS = 5
+
+
+def mri_safety_fields(
+    slices_total: int,
+    failed_reasons: list[str],
+    tumor_found: bool,
+    classification_confidence: float | None = None,
+) -> dict[str, Any]:
+    """Tính trạng thái MRI tường minh và lý do cần bác sĩ rà soát.
+
+    Args:
+        slices_total: số lát được đưa vào (0 nếu chuỗi rỗng).
+        failed_reasons: mỗi phần tử là lý do một lát không đọc/xử lý được.
+        tumor_found: có ít nhất một lát phát hiện u.
+        classification_confidence: độ tin cậy phân loại của lát đại diện (nếu có u).
+
+    Returns:
+        dict gồm mri_status, mri_partial, slices_total/examined/failed, failed_slice_reasons,
+        review_required, review_reasons. Khi không lát nào đọc được thì thêm status="error",
+        error_code="mri_unreadable" và error_msg; tuyệt đối không có key no_tumor_detected.
+    """
+    from review_utils import CLASSIFICATION_REVIEW_THRESHOLD
+
+    slices_failed = len(failed_reasons)
+    slices_examined = slices_total - slices_failed
+    if slices_examined <= 0:
+        mri_status = MRI_UNREADABLE
+    else:
+        mri_status = "tumor_detected" if tumor_found else "no_tumor_detected"
+
+    reasons: list[str] = []
+    if mri_status == MRI_UNREADABLE:
+        reasons.append(MRI_UNREADABLE)
+    elif slices_failed:
+        reasons.append("slices_failed")
+    if mri_status == "no_tumor_detected":
+        reasons.append("negative_needs_confirmation")
+    if tumor_found and classification_confidence is not None and classification_confidence < CLASSIFICATION_REVIEW_THRESHOLD:
+        reasons.append("low_classification_confidence")
+
+    fields: dict[str, Any] = {
+        "mri_status": mri_status,
+        "mri_partial": slices_failed > 0 and slices_examined > 0,
+        "slices_total": slices_total,
+        "slices_examined": max(slices_examined, 0),
+        "slices_failed": slices_failed,
+        "failed_slice_reasons": failed_reasons[:_MAX_FAILED_REASONS],
+        "review_required": bool(reasons),
+        "review_reasons": reasons,
+    }
+    if mri_status == MRI_UNREADABLE:
+        fields.update(
+            status="error",
+            error_code=MRI_UNREADABLE,
+            error_msg=f"Không đọc được ảnh MRI (0/{slices_total} lát) – chưa có kết luận, cần kiểm tra lại dữ liệu.",
+        )
+    return fields
 
 
 class TumorAnalysisPipeline:
@@ -163,6 +226,8 @@ class TumorAnalysisPipeline:
         if mri_source:
             if progress_callback: progress_callback(50, "Đang xử lý MRI Core (YOLO + U-Net)...")
             mri_res = self._run_mri_core(image_source=mri_source, output_dir=output_dir)
+            if mri_res.get("mri_status") == MRI_UNREADABLE:
+                return mri_res
             if mri_res["status"] == "success" and not mri_res.get("no_tumor_detected"):
                 cropped_img = mri_res.get("_cropped_img")
                 if cropped_img is not None:
@@ -380,15 +445,15 @@ class TumorAnalysisPipeline:
         from collections import Counter
 
         all_slice_results = []
+        failed_reasons: list[str] = []
         total_slices = len(image_bytes_list)
-        # Tối ưu: Nếu chuỗi ảnh quá dài, quét cách quãng (step=2) để tăng tốc gấp đôi
-        step = 1 if total_slices < 20 else 2
-        
-        for i in range(0, total_slices, step):
+
+        # Quét đủ mọi lát: bỏ qua lát (step=2) có thể bỏ sót u mà người dùng không biết.
+        for i in range(total_slices):
             if progress_callback:
                 p = int((i / total_slices) * 40) # Chiếm 40% tiến trình tổng
                 progress_callback(p, f"Đang quét MRI: Lát cắt {i+1}/{total_slices}...")
-                
+
             img_bytes = image_bytes_list[i]
             try:
                 img_bgr = self.load_image(img_bytes)
@@ -401,10 +466,15 @@ class TumorAnalysisPipeline:
                         "bbox_conf": bbox_conf or 0.5,
                         "area": (bbox[2]-bbox[0])*(bbox[3]-bbox[1])
                     })
-            except: continue
+            except Exception as exc:
+                logger.warning("MRI slice %d/%d failed: %s", i + 1, total_slices, exc)
+                failed_reasons.append(f"lát {i + 1}: {exc}")
 
         if not all_slice_results:
-            return {"status": "success", "no_tumor_detected": True, "num_slices": len(image_bytes_list)}
+            safety = mri_safety_fields(total_slices, failed_reasons, tumor_found=False)
+            if safety["mri_status"] == MRI_UNREADABLE:
+                return {"num_slices": total_slices, "is_series": True, **safety}
+            return {"status": "success", "no_tumor_detected": True, "num_slices": total_slices, "is_series": True, **safety}
 
         labels = [r["label"] for r in all_slice_results]
         majority_label = Counter(labels).most_common(1)[0][0]
@@ -425,6 +495,12 @@ class TumorAnalysisPipeline:
             rna_gene_names=rna_gene_names
         )
         
+        final_result.update(mri_safety_fields(
+            total_slices,
+            failed_reasons,
+            tumor_found=True,
+            classification_confidence=final_result.get("classification_confidence"),
+        ))
         final_result.update({
             "is_series": True,
             "num_slices": len(image_bytes_list),
@@ -466,6 +542,13 @@ class TumorAnalysisPipeline:
 
         try:
             image_bgr = self.load_image(image_source)
+        except Exception as exc:
+            logger.warning("MRI image unreadable: %s", exc)
+            result_dict.pop("no_tumor_detected")
+            result_dict.update(mri_safety_fields(1, [f"lát 1: {exc}"], tumor_found=False))
+            return result_dict
+
+        try:
             original_save_path = os.path.join(output_dir, "step0_original.png")
             cv2.imwrite(original_save_path, image_bgr)
             result_dict["original_image_path"] = original_save_path
@@ -480,6 +563,7 @@ class TumorAnalysisPipeline:
 
             if bbox is None:
                 result_dict["no_tumor_detected"] = True
+                result_dict.update(mri_safety_fields(1, [], tumor_found=False))
                 return result_dict
 
             self._save_detection_xai(
@@ -535,6 +619,7 @@ class TumorAnalysisPipeline:
                 result_dict=result_dict,
             )
 
+            result_dict.update(mri_safety_fields(1, [], tumor_found=True, classification_confidence=confidence))
             result_dict["_cropped_img"] = cropped_img
             result_dict["_seg_mask"] = seg_mask
             result_dict["_masked_roi"] = masked_roi
