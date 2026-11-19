@@ -21,7 +21,16 @@ from .architectures.unet import UNetSegmenter
 from .architectures.yolo_net import YOLODetector
 from .architectures.xai_factory import XAIFactory
 from .architectures.xai_gradcam import GradCAMExplainer
-from .feature_schema import encode_clinical, encode_rna, load_rna_reference
+from .feature_schema import (
+    IMAGE_SIZE,
+    MRI_SLICES,
+    WSI_PATCHES,
+    encode_clinical,
+    encode_rna,
+    image_transform,
+    load_rna_reference,
+    uniform_indices,
+)
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
@@ -168,7 +177,8 @@ class TumorAnalysisPipeline:
         clinical_data: dict[str, Any] | None = None,
         output_dir: str = "results",
         progress_callback=None,
-        rna_gene_names: list[str] | None = None
+        rna_gene_names: list[str] | None = None,
+        mri_model_slices: list[np.ndarray] | None = None,
     ) -> dict[str, Any]:
         """Legacy method for MRI-only multimodal inference, redirected to full prognosis."""
         return self.run_full_prognosis(
@@ -178,7 +188,8 @@ class TumorAnalysisPipeline:
             clinical_data=clinical_data,
             output_dir=output_dir,
             progress_callback=progress_callback,
-            rna_gene_names=rna_gene_names
+            rna_gene_names=rna_gene_names,
+            mri_model_slices=mri_model_slices,
         )
 
     def run_full_prognosis(
@@ -189,7 +200,8 @@ class TumorAnalysisPipeline:
         clinical_data: dict[str, Any] | None = None,
         output_dir: str = "results",
         progress_callback=None,
-        rna_gene_names: list[str] | None = None
+        rna_gene_names: list[str] | None = None,
+        mri_model_slices: list[np.ndarray] | None = None,
     ) -> dict[str, Any]:
         """
         Quy trình tiên lượng đầy đủ (Full Multimodal Prognosis).
@@ -205,6 +217,7 @@ class TumorAnalysisPipeline:
             output_dir: Thư mục lưu kết quả phân tích.
             progress_callback: Hàm callback cập nhật tiến độ (%).
             rna_gene_names: Không còn dùng để căn gene; tên gene cho XAI lấy theo thứ tự rna_reference.
+            mri_model_slices: các lát MRI nguyên (BGR) đưa vào mô hình tiên lượng; None thì dùng lát mri_source.
 
         Output:
             Từ điển chứa kết quả phân tích đa mô thức: risk_score, risk_group, rna_xai,
@@ -218,7 +231,7 @@ class TumorAnalysisPipeline:
         if progress_callback: progress_callback(10, "Bắt đầu phân tích tổng hợp Multimodal...")
         
         # 1. Xử lý MRI (nếu có)
-        mri_tensor = torch.zeros(1, 1, 3, 224, 224, device=self.device)
+        mri_tensor = torch.zeros(1, 1, 3, IMAGE_SIZE, IMAGE_SIZE, device=self.device)
         has_mri = 0.0
         mri_res = {"status": "ready"}
         masked_roi_for_xai: np.ndarray | None = None
@@ -229,13 +242,13 @@ class TumorAnalysisPipeline:
             if mri_res.get("mri_status") == MRI_UNREADABLE:
                 return mri_res
             if mri_res["status"] == "success" and not mri_res.get("no_tumor_detected"):
-                cropped_img = mri_res.get("_cropped_img")
-                if cropped_img is not None:
-                    if progress_callback: progress_callback(60, "Đang trích xuất đặc trưng MRI...")
-                    # Dùng cropped_img (ảnh khối u đã cắt) làm tham chiếu overlay heatmap
-                    masked_roi_for_xai = cropped_img
-                    mri_tensor = self.preprocess_for_multimodal(cropped_img)
-                    has_mri = 1.0
+                # Lúc train mô hình nhận lát cắt nguyên (không crop theo YOLO).
+                model_slices = mri_model_slices or [mri_res["_image_bgr"]]
+                if progress_callback: progress_callback(60, "Đang trích xuất đặc trưng MRI...")
+                # Grad-CAM lấy gradient của ảnh đầu tiên trong batch nên overlay lên chính lát đó.
+                masked_roi_for_xai = model_slices[uniform_indices(len(model_slices), MRI_SLICES)[0]]
+                mri_tensor = self.preprocess_slices_for_multimodal(model_slices)
+                has_mri = 1.0
             result_dict.update(mri_res)
             if mri_res["status"] == "success" and mri_res.get("no_tumor_detected"):
                 if progress_callback:
@@ -243,7 +256,7 @@ class TumorAnalysisPipeline:
                 return result_dict
 
         # 2. Xử lý WSI Tiles (nếu có)
-        wsi_tensor = torch.zeros(1, 1, 3, 224, 224, device=self.device)
+        wsi_tensor = torch.zeros(1, 1, 3, IMAGE_SIZE, IMAGE_SIZE, device=self.device)
         has_wsi = 0.0
         if wsi_tiles:
             if progress_callback: progress_callback(75, "Đang trích xuất đặc trưng WSI Tiles...")
@@ -271,8 +284,8 @@ class TumorAnalysisPipeline:
                 "has_wsi": torch.tensor([has_wsi], device=self.device),
                 "has_rna": torch.tensor([has_rna], device=self.device),
                 "has_clinical": torch.tensor([has_clinical], device=self.device),
-                "mri_mask": torch.tensor([[has_mri]], device=self.device),
-                "wsi_mask": torch.tensor([[has_wsi]], device=self.device),
+                "mri_mask": torch.full((1, mri_tensor.shape[1]), has_mri, device=self.device),
+                "wsi_mask": torch.full((1, wsi_tensor.shape[1]), has_wsi, device=self.device),
             }
 
             # Đăng ký hooks và kích hoạt requires_grad cho XAI nếu có ảnh MRI
@@ -409,6 +422,7 @@ class TumorAnalysisPipeline:
             result_dict.pop("_cropped_img", None)
             result_dict.pop("_seg_mask", None)
             result_dict.pop("_masked_roi", None)
+            result_dict.pop("_image_bgr", None)
             # Dọn dẹp cache bộ nhớ GPU sau khi hoàn thành tiến trình dự báo
             gc.collect()
             if torch.cuda.is_available():
@@ -462,7 +476,7 @@ class TumorAnalysisPipeline:
                     cropped = self.crop_image(img_bgr, bbox)
                     label, conf, _ = self.classifier.predict(cropped)
                     all_slice_results.append({
-                        "index": i, "label": label, "class_conf": conf,
+                        "index": i, "image": img_bgr, "label": label, "class_conf": conf,
                         "bbox_conf": bbox_conf or 0.5,
                         "area": (bbox[2]-bbox[0])*(bbox[3]-bbox[1])
                     })
@@ -485,8 +499,11 @@ class TumorAnalysisPipeline:
         if progress_callback:
             progress_callback(45, "Đang chạy phân tích đa mô thức nâng cao...")
             
+        # Đầu vào tiên lượng: lát nguyên có u, lấy đều tối đa MRI_SLICES lát như lúc train.
+        tumor_slices = [r["image"] for r in all_slice_results]
         final_result = self.run_multimodal_inference(
             image_source=image_bytes_list[key_index],
+            mri_model_slices=tumor_slices,
             wsi_tiles=wsi_tiles,
             rna_data=rna_data,
             clinical_data=clinical_data,
@@ -620,6 +637,7 @@ class TumorAnalysisPipeline:
             )
 
             result_dict.update(mri_safety_fields(1, [], tumor_found=True, classification_confidence=confidence))
+            result_dict["_image_bgr"] = image_bgr
             result_dict["_cropped_img"] = cropped_img
             result_dict["_seg_mask"] = seg_mask
             result_dict["_masked_roi"] = masked_roi
@@ -984,21 +1002,12 @@ class TumorAnalysisPipeline:
         image_u8 = (pixel_array * 255).astype(np.uint8)
         return cv2.cvtColor(image_u8, cv2.COLOR_GRAY2BGR)
 
-    def preprocess_for_multimodal(self, image: np.ndarray) -> torch.Tensor:
-        image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        transform = transforms.Compose(
-            [
-                transforms.ToPILImage(),
-                transforms.Resize((224, 224)),
-                transforms.ToTensor(),
-                transforms.Normalize(
-                    mean=[0.485, 0.456, 0.406],
-                    std=[0.229, 0.224, 0.225],
-                ),
-            ]
-        )
-        tensor = transform(image_rgb).unsqueeze(0).unsqueeze(0).to(self.device)
-        return tensor
+    def preprocess_slices_for_multimodal(self, images_bgr: list[np.ndarray]) -> torch.Tensor:
+        """Chuyển các lát MRI nguyên (BGR) thành tensor [1, S, 3, 256, 256], S ≤ MRI_SLICES lấy đều như lúc val/test."""
+        transform = image_transform()
+        picked = [images_bgr[i] for i in uniform_indices(len(images_bgr), MRI_SLICES)]
+        tensors = [transform(Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))) for img in picked]
+        return torch.stack(tensors).unsqueeze(0).to(self.device)
 
     def prepare_rna_tensor(self, rna_data) -> tuple[torch.Tensor, float]:
         """Mã hóa RNA đúng như lúc train (căn theo tên cột, log1p, z-score của tập train).
@@ -1199,25 +1208,8 @@ class TumorAnalysisPipeline:
         return curve
 
     def preprocess_tiles_for_multimodal(self, tile_bytes_list: list[bytes]) -> torch.Tensor:
-        """
-        Chuyển đổi danh sách bytes các mảnh (tiles) của WSI thành tensor chuẩn hóa [1, S, 3, 224, 224].
-
-        Input:
-            tile_bytes_list: Danh sách chứa dữ liệu bytes của các ảnh tile.
-
-        Output:
-            Tensor PyTorch đã được chuẩn hóa và xếp chiều sẵn sàng truyền qua mô hình.
-        """
-        transform = transforms.Compose([
-            transforms.Resize((224, 224)),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ])
-        
-        tensors = []
-        for b in tile_bytes_list:
-            img = Image.open(io.BytesIO(b)).convert("RGB")
-            tensors.append(transform(img))
-            
-        # Stack thÃ nh [S, 3, 224, 224] sau Ä‘Ã³ thÃªm batch dim -> [1, S, 3, 224, 224]
+        """Chuyển tile WSI (bytes) thành tensor [1, T, 3, 256, 256], T ≤ WSI_PATCHES lấy đều như lúc val/test."""
+        transform = image_transform()
+        picked = [tile_bytes_list[i] for i in uniform_indices(len(tile_bytes_list), WSI_PATCHES)]
+        tensors = [transform(Image.open(io.BytesIO(b)).convert("RGB")) for b in picked]
         return torch.stack(tensors).unsqueeze(0).to(self.device)
