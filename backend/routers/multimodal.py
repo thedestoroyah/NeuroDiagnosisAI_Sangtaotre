@@ -160,6 +160,10 @@ def update_clinical_data(
         clinical.idh_mutation = payload.idh_mutation
     if payload.mgmt_methylation is not None:
         clinical.mgmt_methylation = payload.mgmt_methylation
+    for field in ("race", "radiation_therapy", "pharmaceutical_therapy"):
+        value = getattr(payload, field)
+        if value is not None:
+            setattr(clinical, field, value)
 
     db.commit()
     db.refresh(clinical)

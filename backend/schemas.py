@@ -32,6 +32,9 @@ class ClinicalDataUpdate(BaseModel):
     prior_treatment: Optional[str] = None
     idh_mutation: Optional[str] = None
     mgmt_methylation: Optional[str] = None
+    race: Optional[str] = None
+    radiation_therapy: Optional[str] = None
+    pharmaceutical_therapy: Optional[str] = None
 
 
 class ClinicalDataResponse(BaseModel):
@@ -43,6 +46,9 @@ class ClinicalDataResponse(BaseModel):
     prior_treatment: Optional[str]
     idh_mutation: Optional[str]
     mgmt_methylation: Optional[str]
+    race: Optional[str] = None
+    radiation_therapy: Optional[str] = None
+    pharmaceutical_therapy: Optional[str] = None
     updated_at: Optional[datetime]
 
     class Config:

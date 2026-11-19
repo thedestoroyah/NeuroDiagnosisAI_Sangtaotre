@@ -17,6 +17,8 @@ import torch
 import models
 from database import SessionLocal
 from inference_inputs import prognosis_input_signature
+from clinical_inputs import build_clinical_record
+from rna_import import read_rna_series
 from utils import create_minio_client
 from storage_io import (
     build_storage_http_client, list_object_files, read_object_bytes,
@@ -135,34 +137,14 @@ def run_mri_pipeline(self, task_id: int, image_id: int):
                 rna_bucket, rna_object = _parse_minio_path(rna_record.file_path)
                 rna_bytes = read_object_bytes(minio_client, rna_bucket, rna_object)
 
-                separator = "\t" if rna_record.file_format == "tsv" else ","
-                lines = rna_bytes.decode("utf-8").strip().splitlines()
-                if not lines:
-                    raise Exception("RNA file is empty.")
-                headers = [h.strip() for h in lines[0].split(separator)]
-                gene_start_idx = -1
-                for i, h in enumerate(headers):
-                    if h.startswith("ENSG"):
-                        gene_start_idx = i
-                        break
-                if gene_start_idx == -1:
-                    gene_start_idx = 1
-                data_line = lines[1] if len(lines) > 1 else lines[0]
-                parts = data_line.split(separator)
-                rna_vector = np.array([float(x) if x.strip() else 0.0 for x in parts[gene_start_idx:]], dtype=np.float32)
-                rna_gene_names = headers[gene_start_idx:]
+                rna_vector = read_rna_series(rna_bytes, rna_record.file_format)
+                rna_gene_names = list(rna_vector.index)
             except Exception as e:
                 print(f"[CELERY WORKER] Loi khi doc RNA: {e}")
 
         # Fetch Clinical data if available
         clinical_record = db.query(models.ClinicalData).filter(models.ClinicalData.patient_id == image_record.patient_id).first()
-        clinical_dict = {}
-        if clinical_record:
-            clinical_dict = {
-                "ki67_index": clinical_record.ki67_index,
-                "biochemistry_markers": clinical_record.biochemistry_markers,
-                "initial_status": clinical_record.initial_status,
-            }
+        clinical_dict = _clinical_dict(image_record.owner, clinical_record)
 
         # ── Fetch All Slices if it's a Series ──
         if image_record.is_series:
@@ -385,33 +367,13 @@ def run_prognosis_pipeline(self, task_id: int, patient_id: int, image_id: int | 
             rna_bucket, rna_object = _parse_minio_path(rna_record.file_path)
             rna_bytes = read_object_bytes(minio_client, rna_bucket, rna_object)
 
-            separator = "\t" if rna_record.file_format == "tsv" else ","
-            df = pd.read_csv(io.BytesIO(rna_bytes), sep=separator)
-            numeric_df = df.select_dtypes(include=["number"])
-            
-            # Loai bo metadata va statistical columns de tranh lech vector gene
-            cols_to_drop = ["patient_id", "N_unmapped", "N_multimapping", "N_noFeature", "N_ambiguous"]
-            for col in cols_to_drop:
-                if col in numeric_df.columns:
-                    numeric_df = numeric_df.drop(columns=[col])
-                    
-            rna_vector = numeric_df.to_numpy(dtype=np.float32).flatten()
-            # Lay danh sach ten gene tu cac cot so de truyen vao pipeline phuc vu tinh toan XAI
-            rna_gene_names = list(numeric_df.columns)
+            # Giữ nguyên cả cột N_* để pipeline căn đúng thứ tự cột lúc train.
+            rna_vector = read_rna_series(rna_bytes, rna_record.file_format)
+            rna_gene_names = list(rna_vector.index)
 
         # 4. Tìm Clinical Data (nếu có)
         clinical_record = db.query(models.ClinicalData).filter(models.ClinicalData.patient_id == patient_id).first()
-        clinical_dict = {}
-        if clinical_record:
-            clinical_dict = {
-                "ki67_index": clinical_record.ki67_index,
-                "biochemistry_markers": clinical_record.biochemistry_markers,
-                "initial_status": clinical_record.initial_status,
-                "age": clinical_record.patient.age,
-                "gender": clinical_record.patient.gender,
-                "grade": clinical_record.grade,
-                "prior_treatment": clinical_record.prior_treatment,
-            }
+        clinical_dict = _clinical_dict(patient, clinical_record)
 
         output_dir = tempfile.mkdtemp(prefix=f"neuro_prognosis_{patient_id}_{task_id}_")
 
@@ -529,6 +491,16 @@ def run_prognosis_pipeline(self, task_id: int, patient_id: int, image_id: int | 
         if "output_dir" in locals() and output_dir and os.path.isdir(output_dir):
             shutil.rmtree(output_dir, ignore_errors=True)
         db.close()
+
+
+def _clinical_dict(patient, clinical_record) -> dict:
+    """9 trường mô hình dùng (build_clinical_record) cộng các trường chỉ để hiển thị/diễn giải (ki67, biochem, grade)."""
+    record = build_clinical_record(patient, clinical_record)
+    if clinical_record is not None:
+        record["ki67_index"] = clinical_record.ki67_index
+        record["biochemistry_markers"] = clinical_record.biochemistry_markers
+        record["initial_status"] = clinical_record.initial_status
+    return record
 
 
 def _parse_minio_path(file_path: str) -> tuple[str, str]:

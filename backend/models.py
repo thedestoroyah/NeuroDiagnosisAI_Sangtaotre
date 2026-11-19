@@ -89,6 +89,10 @@ class ClinicalData(Base):
     prior_treatment = Column(String, nullable=True)    # 0 | 1
     idh_mutation = Column(String, nullable=True)       # 0 | 1
     mgmt_methylation = Column(String, nullable=True)   # 0 | 1
+    # Ba trường lúc train có dùng nhưng DB cũ thiếu (xem docs/cai_tien/bang_mapping_truong.md)
+    race = Column(String, nullable=True)                    # 0 | 1 | 2
+    radiation_therapy = Column(String, nullable=True)       # 0 | 1
+    pharmaceutical_therapy = Column(String, nullable=True)  # 0 | 1
 
     patient = relationship("Patient", back_populates="clinical_data")
 

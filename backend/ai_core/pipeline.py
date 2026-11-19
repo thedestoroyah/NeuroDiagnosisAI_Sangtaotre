@@ -20,6 +20,7 @@ from .architectures.unet import UNetSegmenter
 from .architectures.yolo_net import YOLODetector
 from .architectures.xai_factory import XAIFactory
 from .architectures.xai_gradcam import GradCAMExplainer
+from .feature_schema import encode_clinical, encode_rna, load_rna_reference
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
@@ -31,6 +32,10 @@ class TumorAnalysisPipeline:
         self.device = device
         self.weights_dir = weights_dir
         self.num_genes = 60664
+        rna_reference_path = os.path.join(weights_dir, "rna_reference.npz")
+        self.rna_reference = load_rna_reference(rna_reference_path) if os.path.exists(rna_reference_path) else None
+        if self.rna_reference is None:
+            print(f"[AI PIPELINE] Warning: thiếu {rna_reference_path}, nhánh RNA sẽ bị tắt (has_rna=0).")
 
         self.detector = YOLODetector(device=device)
         self.detector.load_weights(os.path.join(weights_dir, "yolo_weights.pt"))
@@ -96,7 +101,7 @@ class TumorAnalysisPipeline:
         self,
         image_source: str | bytes,
         wsi_tiles: list[bytes] | None = None,
-        rna_data: np.ndarray | None = None,
+        rna_data: "pd.Series | dict | None" = None,
         clinical_data: dict[str, Any] | None = None,
         output_dir: str = "results",
         progress_callback=None,
@@ -117,7 +122,7 @@ class TumorAnalysisPipeline:
         self,
         mri_source: str | bytes | None = None,
         wsi_tiles: list[bytes] | None = None,
-        rna_data: np.ndarray | None = None,
+        rna_data: "pd.Series | dict | None" = None,
         clinical_data: dict[str, Any] | None = None,
         output_dir: str = "results",
         progress_callback=None,
@@ -132,11 +137,11 @@ class TumorAnalysisPipeline:
         Input:
             mri_source: Đường dẫn hoặc dữ liệu bytes của ảnh MRI.
             wsi_tiles: Danh sách các ảnh tile dạng bytes từ WSI.
-            rna_data: Mảng numpy chứa mức độ biểu hiện gene rna-seq.
+            rna_data: Series {tên cột: giá trị} đọc bằng rna_import.read_rna_series (giữ cột N_*).
             clinical_data: Từ điển chứa các chỉ số lâm sàng (ki67_index, age, gender, grade...).
             output_dir: Thư mục lưu kết quả phân tích.
             progress_callback: Hàm callback cập nhật tiến độ (%).
-            rna_gene_names: Danh sách tên Ensembl gene ID tương ứng với rna_data.
+            rna_gene_names: Không còn dùng để căn gene; tên gene cho XAI lấy theo thứ tự rna_reference.
 
         Output:
             Từ điển chứa kết quả phân tích đa mô thức: risk_score, risk_group, rna_xai,
@@ -183,12 +188,10 @@ class TumorAnalysisPipeline:
 
         # 3. Chuẩn bị RNA và Lâm sàng
         rna_tensor, has_rna = self.prepare_rna_tensor(rna_data)
-        seg_mask_raw = mri_res.get("_seg_mask") if mri_res.get("status") == "success" else None
-        clinical_tensor, has_clinical = self.prepare_clinical_tensor(
-            clinical_data=clinical_data or {},
-            mri_result=mri_res if mri_res.get("status") == "success" else {},
-            seg_mask=seg_mask_raw if seg_mask_raw is not None else np.zeros((224, 224)),
-        )
+        if has_rna:
+            # Chỉ số trong tensor RNA theo đúng thứ tự cột lúc train, nên tên gene cho XAI cũng lấy từ đó.
+            rna_gene_names = list(self.rna_reference.columns)
+        clinical_tensor, has_clinical = self.prepare_clinical_tensor(clinical_data or {})
 
         # Dọn dẹp cache bộ nhớ GPU trước khi chạy mô hình Fusion
         gc.collect()
@@ -352,7 +355,7 @@ class TumorAnalysisPipeline:
         self,
         image_bytes_list: list[bytes],
         wsi_tiles: list[bytes] | None = None,
-        rna_data: np.ndarray | None = None,
+        rna_data: "pd.Series | dict | None" = None,
         clinical_data: dict[str, Any] | None = None,
         output_dir: str = "results",
         progress_callback=None,
@@ -912,84 +915,28 @@ class TumorAnalysisPipeline:
         tensor = transform(image_rgb).unsqueeze(0).unsqueeze(0).to(self.device)
         return tensor
 
-    def prepare_rna_tensor(self, rna_data: np.ndarray | None) -> tuple[torch.Tensor, float]:
-        if rna_data is None:
-            return torch.zeros(1, self.num_genes, device=self.device), 0.0
+    def prepare_rna_tensor(self, rna_data) -> tuple[torch.Tensor, float]:
+        """Mã hóa RNA đúng như lúc train (căn theo tên cột, log1p, z-score của tập train).
 
-        # Chuyá»ƒn vá» numpy array vÃ  sanitize
-        rna_vector = np.asarray(rna_data, dtype=np.float32).flatten()
-        if np.isnan(rna_vector).any() or np.isinf(rna_vector).any():
-            rna_vector = np.nan_to_num(rna_vector, nan=0.0, posinf=1.0, neginf=-1.0)
+        Args:
+            rna_data: pd.Series/dict {tên cột: giá trị} hoặc None.
 
-        # Log-transformation: TiÃªu chuáº©n cho dá»¯ liá»‡u RNA-seq (TPM/Counts)
-        # GiÃºp co háº¹p dáº£i giÃ¡ trá»‹ tá»« [0, 100000+] vá» [0, ~17]
-        rna_vector = np.log2(np.maximum(rna_vector, 0) + 1.0)
-            
-        if rna_vector.size > self.num_genes:
-            rna_vector = rna_vector[: self.num_genes]
-        elif rna_vector.size < self.num_genes:
-            rna_vector = np.pad(rna_vector, (0, self.num_genes - rna_vector.size))
+        Returns:
+            (tensor [1, num_genes], has_rna). has_rna=0 khi không có dữ liệu hoặc thiếu rna_reference.
+        """
+        zeros = torch.zeros(1, self.num_genes, device=self.device)
+        if rna_data is None or self.rna_reference is None:
+            return zeros, 0.0
+        rna_vector = encode_rna(rna_data, self.rna_reference)
+        if rna_vector.size != self.num_genes:
+            print(f"[AI PIPELINE] Warning: rna_reference có {rna_vector.size} cột, mô hình cần {self.num_genes}; tắt nhánh RNA.")
+            return zeros, 0.0
+        return torch.from_numpy(rna_vector).unsqueeze(0).to(self.device), 1.0
 
-        tensor = torch.from_numpy(rna_vector).unsqueeze(0).to(self.device)
-        return tensor, 1.0
-
-    def prepare_clinical_tensor(
-        self,
-        clinical_data: dict[str, Any],
-        mri_result: dict[str, Any],
-        seg_mask: np.ndarray,
-    ) -> tuple[torch.Tensor, float]:
-        clinical_vec = torch.zeros(1, 18, device=self.device)
-        has_clinical = 0.0
-
-        ki67_index = clinical_data.get("ki67_index")
-        if ki67_index is not None:
-            clinical_vec[0, 0] = float(ki67_index) / 100.0
-            has_clinical = 1.0
-
-        clinical_vec[0, 1] = float(mri_result.get("classification_confidence") or 0.0)
-        clinical_vec[0, 2] = float(mri_result.get("bbox_confidence") or 0.0)
-        clinical_vec[0, 3] = float(np.count_nonzero(seg_mask)) / float(seg_mask.size or 1)
-
-        class_probs = mri_result.get("class_probabilities") or []
-        for idx, value in enumerate(class_probs[: min(8, len(class_probs))], start=4):
-            clinical_vec[0, idx] = float(value)
-
-        if class_probs:
-            has_clinical = 1.0
-
-        # --- Mapping real clinical fields from user data ---
-        # Age
-        age = clinical_data.get("age")
-        if age is not None:
-            clinical_vec[0, 12] = float(age) / 100.0 # Normalize 0-1
-            has_clinical = 1.0
-            
-        # Gender (1 for male, 0 for female/other)
-        gender = clinical_data.get("gender")
-        if gender is not None:
-            clinical_vec[0, 13] = 1.0 if str(gender).lower() in ["1", "1.0", "male"] else 0.0
-            has_clinical = 1.0
-            
-        # Grade (e.g., 2, 3, 4)
-        grade = clinical_data.get("grade")
-        if grade and str(grade).isdigit():
-            clinical_vec[0, 14] = float(grade) / 4.0
-            has_clinical = 1.0
-
-        # Prior Treatment (0/1)
-        prior = clinical_data.get("prior_treatment")
-        if prior is not None:
-            clinical_vec[0, 15] = 1.0 if str(prior) in ["1", "1.0", "yes"] else 0.0
-            has_clinical = 1.0
-            
-        # Pharmaceutical Therapy (0/1)
-        pharma = clinical_data.get("pharmaceutical_therapy")
-        if pharma is not None:
-            clinical_vec[0, 16] = 1.0 if str(pharma) in ["1", "1.0", "yes"] else 0.0
-            has_clinical = 1.0
-
-        return clinical_vec, has_clinical
+    def prepare_clinical_tensor(self, clinical_data: dict[str, Any]) -> tuple[torch.Tensor, float]:
+        """Mã hóa 9 trường lâm sàng + 9 cờ thiếu thành tensor [1, 18] bằng feature_schema.encode_clinical."""
+        values, has_clinical = encode_clinical(clinical_data)
+        return torch.tensor([values], dtype=torch.float32, device=self.device), has_clinical
 
     def _generate_xai_narrative(
         self,
