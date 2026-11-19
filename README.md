@@ -342,7 +342,7 @@ The merged cohort contains 899 patients from five neuro-oncology sources:
 | CPTAC-GBM | 28 |
 | **Total** | **899** |
 
-The report uses 719 patients for training and 180 for independent validation, with event-stratified splitting for survival evaluation.
+Round-1 improvement (final round): the prognosis model was retrained on a **patient-level 629 / 135 / 135 train / validation / test split** (stratified by event and data source, `research/prognosis/split_manifest.csv`, frozen before training). The validation set is used only for model selection; the test set was evaluated once. The earlier 719 / 180 split had no separate test set.
 
 ## Experimental Results
 
@@ -355,7 +355,7 @@ All values in this section are transcribed from the supplied 2026 research repor
 | YOLOv11 detection | Precision 95.25%, Recall 86.20%, F1 90.50% | mAP@50 85.39%, mean IoU on matched tumor boxes 73.34% |
 | DynUNet segmentation | Mean Dice 87.42% | Dice 92.77%, IoU 87.03% on tumor-positive ROIs |
 | DenseNet169 classification | Accuracy 93.86%, AUC > 0.92 | Accuracy 97.55%, Macro-F1 97.54% on detected tumor ROIs |
-| Multimodal CoxPH prognosis | Best validation C-index 0.6936 | C-index 0.654-0.668 under random WSI/RNA missingness |
+| Multimodal CoxPH prognosis | Independent test C-index 0.599 (95% CI 0.534–0.657) | Clinical-only CoxPH baseline 0.652; calibration criterion met; earlier 0.6936 was a best-of-validation value with no test set |
 
 The distinction between broad pipeline performance and ROI-only performance is essential: ROI metrics evaluate downstream models after a tumor region is available and therefore should not be presented as end-to-end diagnostic performance.
 
@@ -422,7 +422,9 @@ These metrics test localization and faithfulness of model explanations. They do 
 
 ### Multimodal survival prognosis
 
-The best validation C-index is **0.6936 at epoch 11**. Under random WSI or RNA-seq omission, masked gated-attention fusion retains a C-index in the **0.654-0.668** range without pipeline failure, supporting the intended missing-modality tolerance.
+**Current model (retrained for the final round):** independent test C-index **0.599** (95% bootstrap CI 0.534–0.657, 135 patients), 0.626 ± 0.016 across 5 seeds. A clinical-only CoxPH baseline (age, gender, IDH, MGMT) reaches 0.652 on the same test set, so the multimodal model does not yet outperform simple clinical variables. Survival probabilities use a Breslow baseline estimated on the training set and met the pre-registered calibration criterion at 12 and 24 months (max |predicted − Kaplan–Meier| 0.099; IBS 0.196 vs 0.203 for Kaplan–Meier). Full tables and figures: [docs/cai_tien/ket_qua_test.md](docs/cai_tien/ket_qua_test.md).
+
+*Earlier result (kept for transparency):* the previous checkpoint reported a best **validation** C-index of 0.6936 at epoch 11, selected on the same validation set and without an independent test set; it is not comparable with the numbers above. The figures below belong to that earlier run.
 
 ![CoxPH training and validation loss](assets/readme/eureka/survival_training_loss.png)
 
