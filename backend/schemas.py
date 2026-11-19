@@ -128,6 +128,8 @@ class AnalysisResultResponse(BaseModel):
     risk_score: Optional[float]
     risk_group: Optional[str]
     survival_curve_data: Optional[List[dict]] = None
+    mri_status: Optional[str] = None
+    prognosis_meta: Optional[dict] = None
 
     created_at: datetime
 

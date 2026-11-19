@@ -522,6 +522,7 @@ def _store_mri_safety(analysis, result: dict) -> None:
     analysis.mri_status = result.get("mri_status")
     analysis.review_required = bool(result.get("review_required"))
     analysis.review_reasons = result.get("review_reasons")
+    analysis.prognosis_meta = None if result.get("no_tumor_detected") else result.get("prognosis_meta")
 
 
 def _clinical_dict(patient, clinical_record) -> dict:

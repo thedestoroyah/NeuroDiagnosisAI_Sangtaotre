@@ -21,6 +21,7 @@ from .architectures.unet import UNetSegmenter
 from .architectures.yolo_net import YOLODetector
 from .architectures.xai_factory import XAIFactory
 from .architectures.xai_gradcam import GradCAMExplainer
+from .risk_reference import RiskReference, missing_reference_meta
 from .feature_schema import (
     IMAGE_SIZE,
     MRI_SLICES,
@@ -108,6 +109,8 @@ class TumorAnalysisPipeline:
         self.rna_reference = load_rna_reference(rna_reference_path) if os.path.exists(rna_reference_path) else None
         if self.rna_reference is None:
             print(f"[AI PIPELINE] Warning: thiếu {rna_reference_path}, nhánh RNA sẽ bị tắt (has_rna=0).")
+        risk_reference_path = os.path.join(weights_dir, "risk_reference.json")
+        self.risk_reference = RiskReference.load(risk_reference_path) if os.path.exists(risk_reference_path) else None
 
         self.detector = YOLODetector(device=device)
         self.detector.load_weights(os.path.join(weights_dir, "yolo_weights.pt"))
@@ -376,12 +379,11 @@ class TumorAnalysisPipeline:
                 score_val = 0.0
                 
             result_dict["risk_score"] = round(score_val, 6)
-            result_dict["risk_group"] = self.get_risk_level(score_val)
+            result_dict.update(self.present_risk(score_val))
             
             attn_list = attn_weights.squeeze(0).detach().cpu().tolist()
             attn_list = [v if (v is not None and not np.isnan(v)) else 0.25 for v in attn_list]
             result_dict["fusion_attention"] = attn_list
-            result_dict["survival_curve_data"] = self.build_survival_curve(score_val)
 
             # Khôi phục trạng thái grad ban đầu của model
             if has_mri and masked_roi_for_xai is not None:
@@ -1073,15 +1075,18 @@ class TumorAnalysisPipeline:
         tumor_name = label_vn.get(tumor_label, tumor_label or "chưa xác định")
 
         # --- 1. Tổng quan nhóm nguy cơ ---
+        # Chỉ nói vị trí tương đối so với tập train; không suy ra thời gian sống hay mức xâm lấn.
         risk_desc = {
-            "Very High": "rất cao - mô hình đánh giá khối u có đặc tính xâm lấn cực cao, tiên lượng sinh tồn rất ngắn",
-            "High": "cao - có nhiều yếu tố bất lợi, cần theo dõi sát và trị tích cực",
-            "Medium": "trung bình - cân bằng giữa các yếu tố thuận lợi và bất lợi",
-            "Low": "thấp - tiên lượng tương đối tích cực, khối u ít xâm lấn",
+            "High": "thuộc 1/3 bệnh nhân có điểm nguy cơ cao nhất của tập huấn luyện",
+            "Medium": "thuộc 1/3 bệnh nhân có điểm nguy cơ ở giữa của tập huấn luyện",
+            "Low": "thuộc 1/3 bệnh nhân có điểm nguy cơ thấp nhất của tập huấn luyện",
         }
+        meta = result_dict.get("prognosis_meta") or missing_reference_meta()
+        position = f"cao hơn {meta['percentile']:.0f}% bệnh nhân huấn luyện, " if meta.get("percentile") is not None else ""
         sections.append(
-            f"1. Nhóm nguy cơ: {risk_group} (Risk score = {risk_score:.4f})\n"
-            f"Mô hình AI đánh giá mức nguy cơ {risk_desc.get(risk_group, risk_group)}."
+            f"1. Nhóm nguy cơ tương đối: {risk_group or 'chưa xác định'} (risk score = {risk_score:.4f})\n"
+            f"Điểm của bệnh nhân {position}{risk_desc.get(risk_group, 'chưa có dữ liệu tham chiếu để so sánh')}.\n"
+            f"{meta['limitation_text']}"
         )
 
         # --- 2. Phân loại khối u (MRI) ---
@@ -1138,12 +1143,11 @@ class TumorAnalysisPipeline:
                 sections.append(f"6. Chỉ số lâm sàng: {', '.join(clin_parts)}.")
 
         # --- 7. Khuyến nghị lâm sàng ---
-        if risk_group in ("Very High", "High"):
-            rec = "Khuyến nghị: Hội chẩn đa chuyên khoa sớm. Xem xét phẫu thuật, xạ trị hoặc hóa trị bổ trợ. Theo dõi MRI định kỳ mỗi 3 tháng."
-        elif risk_group == "Medium":
-            rec = "Khuyến nghị: Theo dõi lâm sàng sát sao, MRI kiểm tra mỗi 6 tháng. Xem xét sinh thiết lại nếu có diễn biến bất thường."
+        # Hệ thống chỉ hỗ trợ: không đưa chỉ định điều trị từ một điểm nguy cơ chưa hiệu chuẩn.
+        if risk_group == "High":
+            rec = "Gợi ý tham khảo: điểm nguy cơ tương đối cao, có thể cân nhắc đưa ca bệnh ra hội chẩn. Quyết định điều trị thuộc về bác sĩ."
         else:
-            rec = "Khuyến nghị: Tiếp tục theo dõi định kỳ. Tiên lượng tương đối tốt, tuy nhiên vẫn cần kiểm tra MRI định kỳ mỗi 6 đến 12 tháng."
+            rec = "Gợi ý tham khảo: kết hợp điểm nguy cơ tương đối với đánh giá lâm sàng đầy đủ. Quyết định điều trị thuộc về bác sĩ."
 
         missing = []
         if not has_mri: missing.append("MRI")
@@ -1157,55 +1161,20 @@ class TumorAnalysisPipeline:
 
         return "\n\n".join(sections)
 
-    def get_risk_level(self, score: float) -> str:
+    def present_risk(self, score: float) -> dict[str, Any]:
+        """Trình bày risk theo bằng chứng: nhóm theo tam phân vị train, đường sống còn chỉ khi đã hiệu chuẩn.
+
+        Returns:
+            dict gồm risk_group (None nếu chưa có tham chiếu), survival_curve_data (None nếu chưa hiệu chuẩn)
+            và prognosis_meta (percentile, kết quả test, câu giới hạn).
         """
-        Xác định phân loại nhóm nguy cơ (Low, Medium, High, Very High) từ risk score.
-
-        Input:
-             score: Giá trị risk score dự đoán từ mô hình.
-
-        Output:
-             Nhãn nhóm nguy cơ dạng chuỗi.
-        """
-        if score > 1.5:
-            return "Very High"
-        if score > 0.5:
-            return "High"
-        if score > -0.5:
-            return "Medium"
-        return "Low"
-
-    def build_survival_curve(self, risk_score: float) -> list[dict[str, float]]:
-        """
-        Xây dựng đường cong sinh tồn (Survival Curve) dựa trên risk score và baseline.
-
-        Input:
-             risk_score: Điểm số rủi ro dự đoán.
-
-        Output:
-             Danh sách các điểm tọa độ chứa mốc thời gian và tỷ lệ sinh tồn tương ứng.
-        """
-        baseline = [
-            (0, 1.0),
-            (6, 0.95),
-            (12, 0.85),
-            (18, 0.70),
-            (24, 0.55),
-            (30, 0.40),
-            (36, 0.30),
-        ]
-        
-        # Hazard ratio = exp(risk_score)
-        # Clip risk_score to avoid overflow/underflow
-        clamped_score = max(-3.0, min(3.0, risk_score))
-        hazard_ratio = np.exp(clamped_score)
-        
-        curve = []
-        for t, s0 in baseline:
-            st = pow(s0, hazard_ratio)
-            curve.append({"time": t, "survival_probability": round(st, 3)})
-            
-        return curve
+        if self.risk_reference is None:
+            return {"risk_group": None, "survival_curve_data": None, "prognosis_meta": missing_reference_meta()}
+        return {
+            "risk_group": self.risk_reference.group(score),
+            "survival_curve_data": self.risk_reference.survival_curve(score),
+            "prognosis_meta": self.risk_reference.meta(score),
+        }
 
     def preprocess_tiles_for_multimodal(self, tile_bytes_list: list[bytes]) -> torch.Tensor:
         """Chuyển tile WSI (bytes) thành tensor [1, T, 3, 256, 256], T ≤ WSI_PATCHES lấy đều như lúc val/test."""

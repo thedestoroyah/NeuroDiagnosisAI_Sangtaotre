@@ -34,22 +34,15 @@ export default function ReportPage() {
     );
   }
 
-  // Dữ liệu mẫu nếu chưa có kết quả thực
-  const result = data || {
-    patient_id: "ND-8829-X",
-    tumor_label: "Glioblastoma (GBM)",
-    classification_confidence: 0.942,
-    risk_score: 84,
-    risk_group: "High",
-    survival_curve_data: [
-      { time: 0, survival_probability: 1.0 },
-      { time: 6, survival_probability: 0.92 },
-      { time: 12, survival_probability: 0.85 },
-      { time: 18, survival_probability: 0.65 },
-      { time: 24, survival_probability: 0.42 },
-      { time: 36, survival_probability: 0.28 }
-    ]
-  };
+  // Không dựng dữ liệu mẫu: hiển thị số liệu giả như kết quả thật là trình bày quá mức bằng chứng.
+  if (!data) {
+    return (
+      <div className="flex min-h-[calc(100vh-6rem)] items-center justify-center p-6 text-center text-slate-400">
+        Chưa có kết quả phân tích cho bệnh nhân này. Hãy chạy phân tích từ trang hồ sơ bệnh nhân.
+      </div>
+    );
+  }
+  const result = data;
 
   return (
     <div className="relative flex min-h-[calc(100vh-6rem)] min-w-0 flex-col overflow-hidden lg:h-[calc(100vh-6rem)]">
@@ -171,24 +164,34 @@ export default function ReportPage() {
                    
                    <div className="flex items-center gap-6 mb-8">
                       <div className="w-40 shrink-0 opacity-90 drop-shadow-md">
-                         <GaugeChart value={result.risk_score} />
+                         <GaugeChart value={result.prognosis_meta?.percentile ?? 0} />
                       </div>
                       
                       <div className="flex flex-col gap-3">
                          <div className={`p-3 rounded border ${result.risk_group === 'High' ? 'bg-red-500/10 border-red-500/25 text-red-400' : 'bg-teal-500/10 border-teal-500/25 text-teal-400'}`}>
-                           <span className="block text-xs font-bold uppercase mb-1">Chỉ số rủi ro sinh tồn</span>
-                           <span className="text-2xl font-bold">{result.risk_score} <span className="text-sm font-normal">/ 100</span></span>
+                           <span className="block text-xs font-bold uppercase mb-1">Nguy cơ tương đối</span>
+                           <span className="text-2xl font-bold">
+                             {result.prognosis_meta?.percentile != null ? `Cao hơn ${Math.round(result.prognosis_meta.percentile)}%` : "--"}
+                           </span>
+                           <span className="block text-xs font-normal">bệnh nhân huấn luyện</span>
                          </div>
                       </div>
                    </div>
 
-                   {/* Kaplan-Meier Chart */}
-                   <div className="mt-4 border-t border-slate-800 pt-6">
-                      <SurvivalCurve 
-                        data={result.survival_curve_data} 
-                        color={result.risk_group === 'High' ? "#ef4444" : "#14b8a6"} 
-                      />
-                   </div>
+                   <p className="text-xs text-slate-400">
+                     {result.prognosis_meta?.limitation_text ??
+                       "Điểm nguy cơ tương đối – không phải xác suất sống còn đã hiệu chuẩn. Chỉ dùng tham khảo, bác sĩ quyết định."}
+                   </p>
+                   {/* Đường sống còn chỉ có khi mô hình đạt tiêu chí hiệu chuẩn trên tập test */}
+                   {result.survival_curve_data?.length > 1 && (
+                     <div className="mt-4 border-t border-slate-800 pt-6">
+                        <SurvivalCurve
+                          data={result.survival_curve_data}
+                          title="Xác suất sống còn ước tính (đã kiểm chứng hiệu chuẩn)"
+                          color={result.risk_group === 'High' ? "#ef4444" : "#14b8a6"}
+                        />
+                     </div>
+                   )}
                  </div>
 
                </div>

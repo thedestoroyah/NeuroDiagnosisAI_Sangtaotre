@@ -503,9 +503,11 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
                 </div>
 
                 <div className="rounded-2xl border border-slate-800 bg-slate-950/40 p-4">
-                  <div className="text-[11px] uppercase tracking-widest text-slate-500 mb-2">Risk score</div>
+                  <div className="text-[11px] uppercase tracking-widest text-slate-500 mb-2">Nguy cơ tương đối</div>
                   <div className="text-lg font-bold text-slate-100">
-                    {latestHasTumor && latestAnalysis.risk_score != null ? latestAnalysis.risk_score.toFixed(4) : "—"}
+                    {latestHasTumor && latestAnalysis.prognosis_meta?.percentile != null
+                      ? `Cao hơn ${Math.round(latestAnalysis.prognosis_meta.percentile)}% BN huấn luyện`
+                      : latestHasTumor && latestAnalysis.risk_score != null ? latestAnalysis.risk_score.toFixed(4) : "—"}
                   </div>
                 </div>
 

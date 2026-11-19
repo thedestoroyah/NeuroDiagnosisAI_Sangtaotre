@@ -15,6 +15,8 @@ import {
 import RnaXaiChart from "./RnaXaiChart";
 import { ImagePreviewModal, ImagePreviewState } from "@/components/ui/ImagePreviewModal";
 
+const RISK_GROUP_LABELS: Record<string, string> = { Low: "Thấp", Medium: "Trung bình", High: "Cao" };
+
 const MRI_REVIEW_REASON_LABELS: Record<string, string> = {
   mri_unreadable: "Không lát nào đọc được",
   slices_failed: "Một số lát MRI không đọc được",
@@ -54,6 +56,12 @@ type MriResult = {
   risk_score?: number | null;
   risk_group?: string | null;
   survival_curve_data?: { time: number; survival_probability: number }[] | null;
+  prognosis_meta?: {
+    calibrated: boolean;
+    percentile: number | null;
+    group: string | null;
+    limitation_text: string;
+  } | null;
   multimodal_risk_xai_data_url?: string | null;
   multimodal_gradcam_heatmap_data_url?: string | null;
   multimodal_gradcam_plus_heatmap_data_url?: string | null;
@@ -659,21 +667,32 @@ export default function MriResultCard({
                   {/* Risk Score + Risk Group */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <div className="text-[10px] uppercase tracking-widest text-slate-500 mb-1">Risk Score</div>
-                      <div className="text-2xl font-bold text-slate-100">{result.risk_score!.toFixed(4)}</div>
+                      <div className="text-[10px] uppercase tracking-widest text-slate-500 mb-1">Nguy cơ tương đối</div>
+                      <div className="text-2xl font-bold text-slate-100">
+                        {result.prognosis_meta?.percentile != null
+                          ? `Cao hơn ${Math.round(result.prognosis_meta.percentile)}%`
+                          : "--"}
+                      </div>
+                      <div className="text-xs text-slate-500">
+                        bệnh nhân huấn luyện · risk score {result.risk_score!.toFixed(4)}
+                      </div>
                     </div>
                     <div>
-                      <div className="text-[10px] uppercase tracking-widest text-slate-500 mb-1">Risk Group</div>
+                      <div className="text-[10px] uppercase tracking-widest text-slate-500 mb-1">Nhóm (tam phân vị tập huấn luyện)</div>
                       <span className={`inline-block px-3 py-1.5 rounded-lg text-sm font-bold border ${
-                        result.risk_group === "High" || result.risk_group === "Very High"
+                        result.risk_group === "High"
                           ? "bg-red-500/15 text-red-400 border-red-500/25"
                           : result.risk_group === "Medium"
                             ? "bg-amber-500/15 text-amber-400 border-amber-500/25"
-                            : "bg-emerald-500/15 text-emerald-400 border-emerald-500/25"
+                            : "bg-slate-500/15 text-slate-300 border-slate-500/25"
                       }`}>
-                        {result.risk_group || "--"}
+                        {result.risk_group ? RISK_GROUP_LABELS[result.risk_group] ?? result.risk_group : "Chưa xác định"}
                       </span>
                     </div>
+                  </div>
+                  <div className="rounded-lg border border-slate-700 bg-slate-800/60 p-3 text-xs text-slate-300">
+                    {result.prognosis_meta?.limitation_text ??
+                      "Điểm nguy cơ tương đối – không phải xác suất sống còn đã hiệu chuẩn. Chỉ dùng tham khảo, bác sĩ quyết định."}
                   </div>
 
                   {/* Multimodal prognosis risk heatmap */}
@@ -794,7 +813,7 @@ export default function MriResultCard({
                   {/* Survival Curve (inline SVG) */}
                   {result.survival_curve_data && result.survival_curve_data.length > 1 && (
                     <div>
-                      <div className="text-[10px] uppercase tracking-widest text-slate-500 mb-2">Đường cong sống sót (Kaplan-Meier)</div>
+                      <div className="text-[10px] uppercase tracking-widest text-slate-500 mb-2">Xác suất sống còn ước tính (đã kiểm chứng hiệu chuẩn trên tập test)</div>
                       <div className="bg-slate-900/60 rounded-lg p-3 border border-slate-800">
                         <svg viewBox="0 0 320 180" className="w-full h-auto">
                           {/* Grid */}
