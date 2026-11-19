@@ -496,7 +496,7 @@ The complete, executable API specification is available from FastAPI Swagger at 
 - Presigned object URLs avoid exposing storage credentials to the browser.
 - Access logs and Agent audit logs support traceability.
 - Patient, inference, review and Agent records are stored separately in PostgreSQL.
-- Backend credentials are loaded from environment variables. JWT, database and storage credentials remain private. The owner has explicitly authorized sharing the Gemini/Hugging Face demo keys in the setup instructions below; shared demo access is subject to the owner's quota.
+- Backend credentials are loaded from environment variables. JWT, database and storage credentials remain private. No API keys are stored in this repository; supply your own Gemini/Hugging Face keys as described in the setup instructions below.
 
 Before any real-world use, replace all development credentials, enable managed TLS and secret rotation, define retention and backup policies, review DICOM de-identification against local regulation, and complete institutional security and clinical validation.
 
@@ -604,18 +604,18 @@ Các giá trị database/MinIO mẫu dùng được cho local. Compose tự đ�
 | Biến | Khi nào cần |
 |---|---|
 | `SECRET_KEY` | Khóa JWT riêng cho backend và worker |
-| `GEMINI_API_KEY` | Copy key demo bên dưới vào cấu hình: Chatbox Agent và diễn giải XAI/báo cáo bằng LLM |
-| `HF_API_TOKEN` | Copy token demo bên dưới vào cấu hình: query embedding/reranking cho RAG |
+| `GEMINI_API_KEY` | Điền key Gemini của bạn (xem bên dưới): Chatbox Agent và diễn giải XAI/báo cáo bằng LLM |
+| `HF_API_TOKEN` | Điền token Hugging Face của bạn (xem bên dưới): query embedding/reranking cho RAG |
 | `GEMINI_MODEL`, `HF_EMBEDDING_API_URL`, `HF_RERANKER_API_URL` | Chọn model/endpoint mà tài khoản của bạn có quyền dùng |
 | `NEUROBOARD_SEED_DEMO` | Mặc định `true`: tạo tài khoản và bài đăng minh họa NeuroBoard; đặt `false` để không seed bài mẫu |
 
-Sau khi copy template, điền hai key demo trong phần dưới vào file cấu hình. Người clone có thể dùng key của chủ dự án được chia sẻ để chạy demo nếu key còn hoạt động và còn hạn mức. Local dùng MinIO nên không cần tài khoản AWS hoặc Cloudflare R2.
+Sau khi copy template, điền Gemini key và Hugging Face token của bạn theo phần dưới vào file cấu hình. Local dùng MinIO nên không cần tài khoản AWS hoặc Cloudflare R2.
 
 <a id="llm-setup"></a>
 
 #### Chatbox, RAG và mô hình LLM
 
-**Copy cả hai dòng sau vào `.env` ở thư mục gốc khi chạy local, hoặc vào `.env.tunnel` khi dùng `docker-compose.tunnel.yml`.** Đây là key demo do chủ dự án cung cấp. Thay hai dòng đang để trống trong file cấu hình, không tạo biến trùng lặp:
+**Điền hai dòng sau vào `.env` ở thư mục gốc khi chạy local, hoặc vào `.env.tunnel` khi dùng `docker-compose.tunnel.yml`.** Repo không chứa key nào: thay placeholder bằng key của bạn ([tạo Gemini key](https://ai.google.dev/gemini-api/docs/api-key), [tạo HF token](https://huggingface.co/settings/tokens)). Thay hai dòng đang để trống trong file cấu hình, không tạo biến trùng lặp:
 
 ```env
 GEMINI_API_KEY=<your-gemini-api-key>
@@ -626,7 +626,7 @@ Giữ nguyên `GEMINI_MODEL`, `HF_EMBEDDING_API_URL` và `HF_RERANKER_API_URL` t
 
 - **Gemini** chạy qua API Internet, dùng `GEMINI_API_KEY` và `GEMINI_MODEL` trong `.env`. Mô hình MRI/tiên lượng PyTorch chạy trên máy local; Gemini phụ trách Chatbox, diễn giải và sinh nội dung báo cáo.
 - **Hugging Face** cung cấp query embedding/reranking cho RAG qua `HF_API_TOKEN`, `HF_EMBEDDING_API_URL` và `HF_RERANKER_API_URL`. Kho tri thức XAI đã được đóng gói trong `backend/rag/xai/`.
-- Key demo dùng chung hạn mức của chủ dự án. Nếu báo key không hợp lệ, hết quota hoặc model không được cấp quyền, thay bằng key riêng: [tạo Gemini key](https://ai.google.dev/gemini-api/docs/api-key), [tạo HF token](https://huggingface.co/settings/tokens) có quyền **Make calls to Inference Providers** theo [tài liệu HF](https://huggingface.co/docs/inference-providers/index). Kiểm tra model/endpoint tương ứng với tài khoản đang dùng.
+- Nếu báo key không hợp lệ, hết quota hoặc model không được cấp quyền, kiểm tra lại key: [tạo Gemini key](https://ai.google.dev/gemini-api/docs/api-key), [tạo HF token](https://huggingface.co/settings/tokens) có quyền **Make calls to Inference Providers** theo [tài liệu HF](https://huggingface.co/docs/inference-providers/index). Kiểm tra model/endpoint tương ứng với tài khoản đang dùng.
 - Các biến LLM được nạp vào **backend và worker**. Trên Vercel chỉ cấu hình `NEXT_PUBLIC_API_URL` để frontend gọi backend; không đặt key LLM trong biến `NEXT_PUBLIC_*`.
 
 Sau khi đổi key/model trong `.env`:
@@ -670,7 +670,7 @@ Backend trả `{"status":"ok"}` ở `/health`. Đăng nhập `admin` để thấ
 Kiểm tra thủ công sau khi đăng nhập:
 
 1. Mở **NeuroBoard** trong menu hoặc [localhost:3000/neuroboard](http://localhost:3000/neuroboard). Với seed mặc định, phải thấy bài minh họa; thử đăng một bài, bình luận và tải lại trang.
-2. Bấm biểu tượng robot để mở **NeuroDiagnosis Agent**. Kiểm tra mở/đóng và lịch sử chat, gửi câu hỏi đơn giản và chờ trả lời sau khi copy key demo vào cấu hình.
+2. Bấm biểu tượng robot để mở **NeuroDiagnosis Agent**. Kiểm tra mở/đóng và lịch sử chat, gửi câu hỏi đơn giản và chờ trả lời sau khi đã điền key vào cấu hình.
 3. Tạo bệnh nhân thử, upload MRI, kiểm tra ảnh preview, chạy phân tích và mở kết quả. Với ảnh phát hiện u, kiểm tra thêm XAI/phân đoạn; ảnh dự đoán không có u có thể bỏ qua các bước này.
 4. Nếu có file phù hợp, upload WSI/RNA và nhập dữ liệu lâm sàng cho cùng bệnh nhân rồi chạy phân tích đa mô thức.
 5. Dùng `stop`, sau đó `up -d` và đăng nhập lại: bệnh nhân, kết quả, bài đăng và hội thoại đã lưu phải còn. Hai ca demo được đọc từ gói trong repo; dữ liệu người dùng tạo thêm được giữ trong volume local.
@@ -792,7 +792,7 @@ FRONTEND_URL=https://neurodiagnosisai.vercel.app
 CORS_ORIGINS=http://localhost:3000,https://neurodiagnosisai.vercel.app
 ```
 
-Thay các placeholder bằng giá trị thật; copy hai dòng `GEMINI_API_KEY` và `HF_API_TOKEN` ở [phần cấu hình Chatbox](#llm-setup) vào `.env.tunnel`. `MINIO_URL` chỉ chứa hostname, không có `https://` hoặc tên bucket. Bộ `neuroproject-tunnel` dùng R2, không chạy MinIO local; ảnh được phục vụ qua API `/media/...` để frontend truy cập bằng cùng URL backend.
+Thay các placeholder bằng giá trị thật; điền `GEMINI_API_KEY` và `HF_API_TOKEN` theo [phần cấu hình Chatbox](#llm-setup) vào `.env.tunnel`. `MINIO_URL` chỉ chứa hostname, không có `https://` hoặc tên bucket. Bộ `neuroproject-tunnel` dùng R2, không chạy MinIO local; ảnh được phục vụ qua API `/media/...` để frontend truy cập bằng cùng URL backend.
 
 #### 2. Khởi động backend và worker
 
@@ -1056,7 +1056,7 @@ Các chức năng hiện có trong code:
 
 Agent truy vấn dữ liệu theo quyền tài khoản, nhớ ngữ cảnh hội thoại và phân biệt **AI label / Expert label / Final label / Review status**. Nếu chưa biết bệnh nhân hay image ID, cần chọn hồ sơ để tiếp tục. Agent giải thích và hỗ trợ điều hướng; việc sửa nhãn cuối phải qua thao tác review/xác nhận của bác sĩ, không tự sửa nhãn từ một câu trò chuyện.
 
-Các luồng tạo diễn giải XAI/báo cáo còn dùng kho RAG của dự án và LLM. Gemini key cho phép gọi Agent/LLM; Hugging Face token phục vụ embedding/reranking của RAG. Copy hai key demo ở [phần cấu hình Chatbox/LLM](#llm-setup) vào file cấu hình; dịch vụ vẫn cần Internet và hạn mức còn hiệu lực.
+Các luồng tạo diễn giải XAI/báo cáo còn dùng kho RAG của dự án và LLM. Gemini key cho phép gọi Agent/LLM; Hugging Face token phục vụ embedding/reranking của RAG. Điền hai key theo [phần cấu hình Chatbox/LLM](#llm-setup) vào file cấu hình; dịch vụ vẫn cần Internet và hạn mức còn hiệu lực.
 
 <p align="center">
   <a href="assets/readme/user-guide/12-agent-chat.png"><img src="assets/readme/user-guide/12-agent-chat.png" width="640" alt="Chatbox Agent phân tích lịch sử bệnh nhân, timeline và kết quả MRI" /></a>
