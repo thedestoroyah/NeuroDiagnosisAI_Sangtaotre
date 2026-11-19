@@ -51,7 +51,7 @@
   - Torch bản CUDA: dùng `--index-url https://download.pytorch.org/whl/cu121` cho torch/torchvision.
 - [ ] **Step 4:** Kiểm tra: `.venv/bin/python -c "import torch,openslide,sksurv;print(torch.cuda.is_available())"`. Kết quả mong đợi là `True`.
 - [ ] **Step 5:** `cd backend && ../.venv/bin/python -m unittest discover -s tests -v`. Ghi lại kết quả ban đầu: test nào đã fail từ trước thì ghi vào commit message, không sửa ở plan này.
-- [ ] **Step 6:** Commit spec, plan, `research/requirements.txt`, `research/data_prep/*` (manifest và script tải WSI đã có sẵn) với message `chore: research env, spec and plan`.
+- [ ] **Step 6:** Commit `research/requirements.txt` và `.gitignore` với message `chore: research env`. *(Spec, plan và `research/data_prep/*` đã được commit trên `main` ở commit f1f06a5, ngày 19/11. Nhánh `chang1-cai-tien` tạo từ commit đó.)*
 
 ### Task 1: Mã hóa lâm sàng dùng chung (yêu cầu 1)
 
