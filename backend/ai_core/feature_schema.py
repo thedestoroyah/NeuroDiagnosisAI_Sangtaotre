@@ -6,9 +6,20 @@ Khớp với notebook huấn luyện `Bản sao của 07_training_loop.ipynb` (c
 from __future__ import annotations
 
 import math
+from dataclasses import dataclass
 from typing import Any, Mapping
 
+import numpy as np
+
 SCHEMA_VERSION = "clinical18-v1"
+
+# Tiền xử lý ảnh như lúc train: 256px, chuẩn hóa ImageNet, 6 lát MRI và 8 patch WSI lấy đều.
+IMAGE_SIZE = 256
+IMAGENET_MEAN = (0.485, 0.456, 0.406)
+IMAGENET_STD = (0.229, 0.224, 0.225)
+MRI_SLICES = 6
+WSI_PATCHES = 8
+_STD_EPS = 1e-8
 
 # Thứ tự cố định như lúc train: ô 0–8 là giá trị, ô 9–17 là cờ có dữ liệu.
 CLINICAL_FIELDS: tuple[str, ...] = (
@@ -78,3 +89,88 @@ def encode_clinical(record: Mapping[str, Any]) -> tuple[list[float], float]:
         values.append(0.0 if value is None else value / _SCALE.get(field, 1.0))
         flags.append(0.0 if value is None else 1.0)
     return values + flags, (1.0 if any(flags) else 0.0)
+
+
+@dataclass(frozen=True)
+class RnaReference:
+    """Danh sách cột RNA (đúng thứ tự lúc train, gồm 4 cột N_*) và mean/std sau log1p tính trên tập train."""
+
+    columns: list[str]
+    mean: np.ndarray
+    std: np.ndarray
+
+
+def _gene_key(name: str) -> str:
+    name = str(name).strip()
+    return name.split(".")[0] if name.startswith("ENSG") else name
+
+
+def fit_rna_reference(train_matrix) -> RnaReference:
+    """Tính mean/std theo cột trên các dòng `rna_matrix.csv` của tập train.
+
+    Args:
+        train_matrix: pd.DataFrame, index là patient_id, cột theo đúng thứ tự file (gồm N_*).
+
+    Returns:
+        RnaReference; std dùng ddof=1 như pandas trong notebook.
+    """
+    logged = np.log1p(train_matrix.fillna(0.0).to_numpy(np.float64))
+    return RnaReference(
+        columns=[_gene_key(c) for c in train_matrix.columns],
+        mean=logged.mean(axis=0),
+        std=logged.std(axis=0, ddof=1),
+    )
+
+
+def save_rna_reference(ref: RnaReference, path: str) -> None:
+    """Lưu RnaReference ra file .npz."""
+    np.savez(path, columns=np.array(ref.columns), mean=ref.mean, std=ref.std)
+
+
+def load_rna_reference(path: str) -> RnaReference:
+    """Đọc RnaReference từ file .npz do save_rna_reference ghi."""
+    with np.load(path, allow_pickle=False) as data:
+        return RnaReference(columns=[str(c) for c in data["columns"]], mean=data["mean"], std=data["std"])
+
+
+def encode_rna(values: Mapping[str, float], ref: RnaReference) -> np.ndarray:
+    """Căn RNA theo tên cột lúc train rồi áp log1p và z-score bằng thống kê tập train.
+
+    Args:
+        values: dict hoặc pd.Series {tên cột: giá trị đã ở dạng log2(TPM+1) như rna_matrix.csv}.
+            Tên Ensembl có hậu tố version (".15") được bỏ hậu tố; cột lạ bị bỏ qua.
+
+    Returns:
+        np.ndarray float32 dài len(ref.columns). Giá trị NaN được coi là 0 (như fillna(0) lúc train);
+        cột không có trong `values` nhận 0 sau z-score (tức bằng trung bình tập train).
+    """
+    index = {name: i for i, name in enumerate(ref.columns)}
+    raw = np.zeros(len(ref.columns), dtype=np.float64)
+    present = np.zeros(len(ref.columns), dtype=bool)
+    for name, value in values.items():
+        i = index.get(_gene_key(name))
+        if i is None:
+            continue
+        number = _to_float(value)
+        raw[i] = 0.0 if number is None else number
+        present[i] = True
+    z = (np.log1p(raw) - ref.mean) / (ref.std + _STD_EPS)
+    return np.where(present, z, 0.0).astype(np.float32)
+
+
+def uniform_indices(n: int, k: int) -> list[int]:
+    """Chọn k chỉ số rải đều trong [0, n) như lúc val/test; trả hết nếu n ≤ k."""
+    if n <= k:
+        return list(range(n))
+    return [int(i) for i in np.linspace(0, n - 1, k, dtype=int)]
+
+
+def image_transform():
+    """Transform ảnh của val/test/serving: Resize 256 → ToTensor → Normalize ImageNet (ảnh PIL RGB)."""
+    from torchvision import transforms
+
+    return transforms.Compose([
+        transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD),
+    ])
