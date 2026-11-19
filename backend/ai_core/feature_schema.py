@@ -33,7 +33,8 @@ _NUMERIC_FIELDS = {"age", "race", "grade"}
 # grade thiếu 100% trong dữ liệu train nên mô hình chưa từng thấy giá trị này: luôn coi là thiếu.
 MODEL_IGNORED_FIELDS = frozenset({"grade"})
 
-_GENDER_WORDS = {"male": 0.0, "m": 0.0, "female": 1.0, "f": 1.0}
+# Giao diện hiển thị "Nam"/"Nữ" nên chấp nhận cả chữ tiếng Việt (có và không dấu).
+_GENDER_WORDS = {"male": 0.0, "m": 0.0, "nam": 0.0, "female": 1.0, "f": 1.0, "nữ": 1.0, "nu": 1.0}
 _BINARY_WORDS = {"yes": 1.0, "true": 1.0, "no": 0.0, "false": 0.0}
 
 

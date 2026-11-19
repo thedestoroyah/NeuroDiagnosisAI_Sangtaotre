@@ -62,10 +62,10 @@ class EncodeClinicalTest(unittest.TestCase):
             self.assertEqual(has, expected_has)
 
     def test_gender_encoding(self):
-        for raw in ("male", "Male", "M", 0):
+        for raw in ("male", "Male", "M", 0, "Nam", "nam"):
             vec, _ = encode_clinical({"gender": raw})
             self.assertEqual((vec[1], vec[10]), (0.0, 1.0), raw)
-        for raw in ("female", "F", 1):
+        for raw in ("female", "F", 1, "Nữ", "nu"):
             vec, _ = encode_clinical({"gender": raw})
             self.assertEqual((vec[1], vec[10]), (1.0, 1.0), raw)
 
