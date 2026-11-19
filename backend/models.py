@@ -89,6 +89,10 @@ class ClinicalData(Base):
     prior_treatment = Column(String, nullable=True)    # 0 | 1
     idh_mutation = Column(String, nullable=True)       # 0 | 1
     mgmt_methylation = Column(String, nullable=True)   # 0 | 1
+    # Ba trường lúc train có dùng nhưng DB cũ thiếu (xem docs/cai_tien/bang_mapping_truong.md)
+    race = Column(String, nullable=True)                    # 0 | 1 | 2
+    radiation_therapy = Column(String, nullable=True)       # 0 | 1
+    pharmaceutical_therapy = Column(String, nullable=True)  # 0 | 1
 
     patient = relationship("Patient", back_populates="clinical_data")
 
@@ -144,6 +148,13 @@ class AnalysisResult(Base):
     odam_path = Column(String, nullable=True)
     xai_3_panel_path = Column(String, nullable=True)
     survival_curve_data = Column(JSON, nullable=True)
+
+    # Trạng thái MRI tường minh (tumor_detected | no_tumor_detected | mri_unreadable) và yêu cầu bác sĩ rà soát
+    mri_status = Column(String, nullable=True)
+    review_required = Column(Boolean, default=False)
+    review_reasons = Column(JSON, nullable=True)
+    # Thông tin trình bày tiên lượng: đã hiệu chuẩn chưa, percentile, giới hạn (Task 11)
+    prognosis_meta = Column(JSON, nullable=True)
 
     image = relationship("Image", back_populates="analysis_result")
 

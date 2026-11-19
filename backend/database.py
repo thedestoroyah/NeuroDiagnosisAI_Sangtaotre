@@ -37,6 +37,13 @@ def run_migrations():
         "ALTER TABLE analysis_results ADD COLUMN IF NOT EXISTS xai_3_panel_path VARCHAR;",
         "ALTER TABLE analysis_results ADD COLUMN IF NOT EXISTS survival_curve_data JSON;",
         "ALTER TABLE analysis_results ADD COLUMN IF NOT EXISTS no_tumor_detected BOOLEAN DEFAULT FALSE;",
+        "ALTER TABLE clinical_data ADD COLUMN IF NOT EXISTS race VARCHAR;",
+        "ALTER TABLE analysis_results ADD COLUMN IF NOT EXISTS mri_status VARCHAR;",
+        "ALTER TABLE analysis_results ADD COLUMN IF NOT EXISTS review_required BOOLEAN DEFAULT FALSE;",
+        "ALTER TABLE analysis_results ADD COLUMN IF NOT EXISTS review_reasons JSON;",
+        "ALTER TABLE analysis_results ADD COLUMN IF NOT EXISTS prognosis_meta JSON;",
+        "ALTER TABLE clinical_data ADD COLUMN IF NOT EXISTS radiation_therapy VARCHAR;",
+        "ALTER TABLE clinical_data ADD COLUMN IF NOT EXISTS pharmaceutical_therapy VARCHAR;",
         """
         CREATE TABLE IF NOT EXISTS patient_history_reports (
             id SERIAL PRIMARY KEY,

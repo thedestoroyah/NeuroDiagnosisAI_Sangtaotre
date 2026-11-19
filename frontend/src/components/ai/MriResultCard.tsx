@@ -15,11 +15,25 @@ import {
 import RnaXaiChart from "./RnaXaiChart";
 import { ImagePreviewModal, ImagePreviewState } from "@/components/ui/ImagePreviewModal";
 
+const RISK_GROUP_LABELS: Record<string, string> = { Low: "Thấp", Medium: "Trung bình", High: "Cao" };
+
+const MRI_REVIEW_REASON_LABELS: Record<string, string> = {
+  mri_unreadable: "Không lát nào đọc được",
+  slices_failed: "Một số lát MRI không đọc được",
+  negative_needs_confirmation: "Kết quả âm tính phải được bác sĩ xác nhận, hệ thống không tự kết luận",
+  low_classification_confidence: "Độ tin cậy phân loại thấp",
+};
+
 type MriResult = {
   image_id?: number | string;
   status?: string;
   no_tumor_detected?: boolean | null;
   error_message?: string | null;
+  mri_status?: "tumor_detected" | "no_tumor_detected" | "mri_unreadable" | string | null;
+  mri_review_required?: boolean;
+  mri_review_reasons?: string[];
+  slices_total?: number | null;
+  slices_failed?: number | null;
   bbox?: number[] | null;
   bbox_confidence?: number | null;
   tumor_label?: string | null;
@@ -42,6 +56,12 @@ type MriResult = {
   risk_score?: number | null;
   risk_group?: string | null;
   survival_curve_data?: { time: number; survival_probability: number }[] | null;
+  prognosis_meta?: {
+    calibrated: boolean;
+    percentile: number | null;
+    group: string | null;
+    limitation_text: string;
+  } | null;
   multimodal_risk_xai_data_url?: string | null;
   multimodal_gradcam_heatmap_data_url?: string | null;
   multimodal_gradcam_plus_heatmap_data_url?: string | null;
@@ -243,6 +263,11 @@ export default function MriResultCard({
   const isFailed = result?.status === "failed";
   const isDone = result?.status === "done" || result?.status === "completed";
   const noTumorDetected = Boolean(result?.no_tumor_detected);
+  const mriUnreadable =
+    result?.mri_status === "mri_unreadable" || Boolean(result?.error_message?.startsWith("Không đọc được ảnh MRI"));
+  const mriReviewReasons = (result?.mri_review_reasons ?? []).map((reason) => MRI_REVIEW_REASON_LABELS[reason] ?? reason);
+  const sliceFailureText =
+    result?.slices_failed && result?.slices_total ? `${result.slices_failed}/${result.slices_total} lát không đọc được.` : null;
   const classificationConfidence = result?.ai_confidence ?? result?.classification_confidence ?? null;
   const hasCompletedClassificationReview =
     reviewState.review_status === "confirmed" || reviewState.review_status === "corrected";
@@ -322,20 +347,33 @@ export default function MriResultCard({
             <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-5">
               <div className="flex items-center gap-3 text-red-300 mb-3">
                 <AlertTriangle className="h-5 w-5" />
-                <span className="font-semibold">Pipeline MRI thất bại</span>
+                <span className="font-semibold">
+                  {mriUnreadable ? "Không đọc được MRI – chưa có kết luận" : "Pipeline MRI thất bại"}
+                </span>
               </div>
               <p className="text-sm text-red-200 whitespace-pre-wrap">
                 {result?.error_message || "Không có thông điệp lỗi chi tiết."}
               </p>
+              {mriUnreadable && sliceFailureText && <p className="mt-2 text-xs text-red-300">{sliceFailureText}</p>}
             </div>
           ) : (
             <>
-              {noTumorDetected && (
-                <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-4 flex items-center gap-3 text-amber-200">
-                  <Search className="h-5 w-5" />
-                  <span className="text-sm font-medium">
-                    Không phát hiện khối u. Cần tham khảo ý kiến chuyên gia.
-                  </span>
+              {(noTumorDetected || (result?.mri_review_required && mriReviewReasons.length > 0)) && (
+                <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-4 text-amber-200">
+                  <div className="flex items-center gap-3">
+                    <Search className="h-5 w-5" />
+                    <span className="text-sm font-semibold">
+                      {noTumorDetected ? "Không phát hiện u – cần bác sĩ xác nhận" : "Kết quả MRI cần bác sĩ rà soát"}
+                    </span>
+                  </div>
+                  {mriReviewReasons.length > 0 && (
+                    <ul className="mt-2 ml-8 list-disc text-xs text-amber-100/90 space-y-0.5">
+                      {mriReviewReasons.map((reason) => (
+                        <li key={reason}>{reason}</li>
+                      ))}
+                    </ul>
+                  )}
+                  {sliceFailureText && <p className="mt-2 ml-8 text-xs text-amber-100/90">{sliceFailureText}</p>}
                 </div>
               )}
 
@@ -629,21 +667,32 @@ export default function MriResultCard({
                   {/* Risk Score + Risk Group */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <div className="text-[10px] uppercase tracking-widest text-slate-500 mb-1">Risk Score</div>
-                      <div className="text-2xl font-bold text-slate-100">{result.risk_score!.toFixed(4)}</div>
+                      <div className="text-[10px] uppercase tracking-widest text-slate-500 mb-1">Nguy cơ tương đối</div>
+                      <div className="text-2xl font-bold text-slate-100">
+                        {result.prognosis_meta?.percentile != null
+                          ? `Cao hơn ${Math.round(result.prognosis_meta.percentile)}%`
+                          : "--"}
+                      </div>
+                      <div className="text-xs text-slate-500">
+                        bệnh nhân huấn luyện · risk score {result.risk_score!.toFixed(4)}
+                      </div>
                     </div>
                     <div>
-                      <div className="text-[10px] uppercase tracking-widest text-slate-500 mb-1">Risk Group</div>
+                      <div className="text-[10px] uppercase tracking-widest text-slate-500 mb-1">Nhóm (tam phân vị tập huấn luyện)</div>
                       <span className={`inline-block px-3 py-1.5 rounded-lg text-sm font-bold border ${
-                        result.risk_group === "High" || result.risk_group === "Very High"
+                        result.risk_group === "High"
                           ? "bg-red-500/15 text-red-400 border-red-500/25"
                           : result.risk_group === "Medium"
                             ? "bg-amber-500/15 text-amber-400 border-amber-500/25"
-                            : "bg-emerald-500/15 text-emerald-400 border-emerald-500/25"
+                            : "bg-slate-500/15 text-slate-300 border-slate-500/25"
                       }`}>
-                        {result.risk_group || "--"}
+                        {result.risk_group ? RISK_GROUP_LABELS[result.risk_group] ?? result.risk_group : "Chưa xác định"}
                       </span>
                     </div>
+                  </div>
+                  <div className="rounded-lg border border-slate-700 bg-slate-800/60 p-3 text-xs text-slate-300">
+                    {result.prognosis_meta?.limitation_text ??
+                      "Điểm nguy cơ tương đối – không phải xác suất sống còn đã hiệu chuẩn. Chỉ dùng tham khảo, bác sĩ quyết định."}
                   </div>
 
                   {/* Multimodal prognosis risk heatmap */}
@@ -764,7 +813,7 @@ export default function MriResultCard({
                   {/* Survival Curve (inline SVG) */}
                   {result.survival_curve_data && result.survival_curve_data.length > 1 && (
                     <div>
-                      <div className="text-[10px] uppercase tracking-widest text-slate-500 mb-2">Đường cong sống sót (Kaplan-Meier)</div>
+                      <div className="text-[10px] uppercase tracking-widest text-slate-500 mb-2">Xác suất sống còn ước tính (đã kiểm chứng hiệu chuẩn trên tập test)</div>
                       <div className="bg-slate-900/60 rounded-lg p-3 border border-slate-800">
                         <svg viewBox="0 0 320 180" className="w-full h-auto">
                           {/* Grid */}

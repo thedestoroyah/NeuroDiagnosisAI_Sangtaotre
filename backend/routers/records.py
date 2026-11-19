@@ -904,6 +904,9 @@ def get_patient_records(
             "prior_treatment": patient.clinical_data.prior_treatment,
             "idh_mutation": patient.clinical_data.idh_mutation,
             "mgmt_methylation": patient.clinical_data.mgmt_methylation,
+            "race": patient.clinical_data.race,
+            "radiation_therapy": patient.clinical_data.radiation_therapy,
+            "pharmaceutical_therapy": patient.clinical_data.pharmaceutical_therapy,
             "updated_at": patient.clinical_data.updated_at.isoformat() if patient.clinical_data and patient.clinical_data.updated_at else None,
         } if patient.clinical_data else None,
     }
@@ -943,6 +946,9 @@ def get_upload_status(
             "grade": patient.clinical_data.grade,
             "idh_mutation": patient.clinical_data.idh_mutation,
             "mgmt_methylation": patient.clinical_data.mgmt_methylation,
+            "race": patient.clinical_data.race,
+            "radiation_therapy": patient.clinical_data.radiation_therapy,
+            "pharmaceutical_therapy": patient.clinical_data.pharmaceutical_therapy,
         }
 
     return {

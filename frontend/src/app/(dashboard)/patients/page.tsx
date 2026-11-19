@@ -243,7 +243,8 @@ export default function PatientsPage() {
     const label = displayDiagnosis(diagnosis);
     let bgClasses = "bg-slate-800 text-slate-400 border border-slate-700";
     if (label.includes("Không phát hiện")) {
-      bgClasses = "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border border-emerald-500/20";
+      // Âm tính chưa được bác sĩ xác nhận: cảnh báo (vàng), không tô xanh như kết quả an toàn.
+      bgClasses = "bg-amber-500/10 text-amber-600 dark:text-amber-300 border border-amber-500/20";
     } else if (label.includes("Rủi ro cao") || label.includes("GBM") || label.includes("Glioma")) {
       bgClasses = "bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20";
     } else if (label.includes("Meningioma") || label.includes("Aneurysm")) {
@@ -356,7 +357,7 @@ export default function PatientsPage() {
                               : "text-slate-500"
                         }`}
                       >
-                        {p.no_tumor_detected ? "Không có khối u" : hasTumorDiagnosis ? reviewText(p.reviewStatus) : "Chưa chẩn đoán"}
+                        {p.no_tumor_detected ? "Không phát hiện u – chờ bác sĩ xác nhận" : hasTumorDiagnosis ? reviewText(p.reviewStatus) : "Chưa chẩn đoán"}
                       </span>
                     </div>
                   </td>

@@ -5,6 +5,8 @@ import io
 import math
 from dataclasses import dataclass
 
+import pandas as pd
+
 RNA_METADATA_COLUMNS = {"patient_id", "N_unmapped", "N_multimapping", "N_noFeature", "N_ambiguous"}
 
 
@@ -71,3 +73,23 @@ def prepare_rna_file(
     writer.writerow(header)
     writer.writerow(selected)
     return PreparedRna(output.getvalue().encode("utf-8"), len(gene_columns))
+
+
+def read_rna_series(content: bytes, file_format: str) -> pd.Series:
+    """Đọc file RNA một mẫu đã lưu thành Series {tên cột: giá trị}, giữ nguyên cả 4 cột N_*.
+
+    Args:
+        content: bytes của file CSV/TSV (dòng tiêu đề + ít nhất một dòng mẫu; chỉ dùng dòng đầu).
+        file_format: "tsv" thì tách bằng tab, còn lại tách bằng dấu phẩy.
+
+    Returns:
+        pd.Series số thực (ô trống là NaN), đã bỏ cột patient_id; thứ tự cột như trong file.
+
+    Raises:
+        ValueError: file rỗng hoặc không có dòng dữ liệu.
+    """
+    frame = pd.read_csv(io.BytesIO(content), sep="\t" if file_format == "tsv" else ",", nrows=1)
+    if frame.empty:
+        raise ValueError("File RNA không có dòng dữ liệu.")
+    row = frame.iloc[0].drop(labels=["patient_id"], errors="ignore")
+    return pd.to_numeric(row, errors="coerce").astype(float)

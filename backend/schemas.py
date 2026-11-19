@@ -32,6 +32,9 @@ class ClinicalDataUpdate(BaseModel):
     prior_treatment: Optional[str] = None
     idh_mutation: Optional[str] = None
     mgmt_methylation: Optional[str] = None
+    race: Optional[str] = None
+    radiation_therapy: Optional[str] = None
+    pharmaceutical_therapy: Optional[str] = None
 
 
 class ClinicalDataResponse(BaseModel):
@@ -43,6 +46,9 @@ class ClinicalDataResponse(BaseModel):
     prior_treatment: Optional[str]
     idh_mutation: Optional[str]
     mgmt_methylation: Optional[str]
+    race: Optional[str] = None
+    radiation_therapy: Optional[str] = None
+    pharmaceutical_therapy: Optional[str] = None
     updated_at: Optional[datetime]
 
     class Config:
@@ -122,6 +128,8 @@ class AnalysisResultResponse(BaseModel):
     risk_score: Optional[float]
     risk_group: Optional[str]
     survival_curve_data: Optional[List[dict]] = None
+    mri_status: Optional[str] = None
+    prognosis_meta: Optional[dict] = None
 
     created_at: datetime
 
@@ -158,6 +166,12 @@ class ImageAIResultResponse(BaseModel):
     risk_score: Optional[float] = None
     risk_group: Optional[str] = None
     survival_curve_data: Optional[List[dict]] = None
+    mri_status: Optional[str] = None
+    mri_review_required: bool = False
+    mri_review_reasons: List[str] = []
+    slices_total: Optional[int] = None
+    slices_failed: Optional[int] = None
+    prognosis_meta: Optional[dict] = None
     multimodal_risk_xai_data_url: Optional[str] = None
     multimodal_gradcam_heatmap_data_url: Optional[str] = None
     multimodal_gradcam_plus_heatmap_data_url: Optional[str] = None

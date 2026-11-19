@@ -49,6 +49,10 @@ export default function UploadPage() {
   const [grade, setGrade] = useState("");
   const [idhMutation, setIdhMutation] = useState("");
   const [mgmtMethylation, setMgmtMethylation] = useState("");
+  const [race, setRace] = useState("");
+  const [priorTreatment, setPriorTreatment] = useState("");
+  const [radiationTherapy, setRadiationTherapy] = useState("");
+  const [pharmaceuticalTherapy, setPharmaceuticalTherapy] = useState("");
   const [statusMsg, setStatusMsg] = useState({ text: "", type: "" });
   const [progress, setProgress] = useState<{ percent: number; status: string } | null>(null);
   const [uploadResult, setUploadResult] = useState<UploadResultState>({ kind: "idle" });
@@ -154,6 +158,10 @@ export default function UploadPage() {
           if (data.clinical.grade) setGrade(String(data.clinical.grade));
           if (data.clinical.idh_mutation) setIdhMutation(String(data.clinical.idh_mutation));
           if (data.clinical.mgmt_methylation) setMgmtMethylation(String(data.clinical.mgmt_methylation));
+          if (data.clinical.race) setRace(String(data.clinical.race));
+          if (data.clinical.prior_treatment) setPriorTreatment(String(data.clinical.prior_treatment));
+          if (data.clinical.radiation_therapy) setRadiationTherapy(String(data.clinical.radiation_therapy));
+          if (data.clinical.pharmaceutical_therapy) setPharmaceuticalTherapy(String(data.clinical.pharmaceutical_therapy));
         }
       } catch {
         // Patient not found or no data yet — ignore
@@ -341,10 +349,14 @@ export default function UploadPage() {
     }
   };
 
+  const hasClinicalInput = Boolean(
+    ki67 || grade || idhMutation || mgmtMethylation || race || priorTreatment || radiationTherapy || pharmaceuticalTherapy
+  );
+
   const handleUpdateClinical = async () => {
-    if (!patientId.trim() || !ki67) {
+    if (!patientId.trim() || !hasClinicalInput) {
       setStatusMsg({
-        text: "Vui lòng nhập mã bệnh nhân và chỉ số KI-67.",
+        text: "Vui lòng nhập mã bệnh nhân và ít nhất một chỉ số lâm sàng.",
         type: "error",
       });
       return;
@@ -358,7 +370,11 @@ export default function UploadPage() {
         ki67_index: ki67 ? parseFloat(ki67) : null,
         grade: grade || null,
         idh_mutation: idhMutation || null,
-        mgmt_methylation: mgmtMethylation || null
+        mgmt_methylation: mgmtMethylation || null,
+        race: race || null,
+        prior_treatment: priorTreatment || null,
+        radiation_therapy: radiationTherapy || null,
+        pharmaceutical_therapy: pharmaceuticalTherapy || null
       });
       setUploadedStatus(prev => ({ ...prev, clinical: true }));
       setStatusMsg({ text: "Cập nhật dữ liệu lâm sàng thành công.", type: "success" });
@@ -824,13 +840,72 @@ export default function UploadPage() {
                       </select>
                     </div>
                   </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-400 mb-1.5">Chủng tộc (Race)</label>
+                      <select
+                        value={race}
+                        disabled={uploadedStatus.clinical || uploading}
+                        onChange={(e) => setRace(e.target.value)}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <option value="">Chưa xác định</option>
+                        <option value="0">White</option>
+                        <option value="1">Black</option>
+                        <option value="2">Asian</option>
+                        <option value="3">Khác</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-400 mb-1.5">Đã điều trị trước đó</label>
+                      <select
+                        value={priorTreatment}
+                        disabled={uploadedStatus.clinical || uploading}
+                        onChange={(e) => setPriorTreatment(e.target.value)}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <option value="">Chưa xác định</option>
+                        <option value="1">Có</option>
+                        <option value="0">Không</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-400 mb-1.5">Xạ trị (Radiation)</label>
+                      <select
+                        value={radiationTherapy}
+                        disabled={uploadedStatus.clinical || uploading}
+                        onChange={(e) => setRadiationTherapy(e.target.value)}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <option value="">Chưa xác định</option>
+                        <option value="1">Có</option>
+                        <option value="0">Không</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-400 mb-1.5">Hóa trị / thuốc (Pharmaceutical)</label>
+                      <select
+                        value={pharmaceuticalTherapy}
+                        disabled={uploadedStatus.clinical || uploading}
+                        onChange={(e) => setPharmaceuticalTherapy(e.target.value)}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <option value="">Chưa xác định</option>
+                        <option value="1">Có</option>
+                        <option value="0">Không</option>
+                      </select>
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-500">
+                    Grade và KI-67 chỉ để hiển thị, không tham gia tiên lượng vì dữ liệu huấn luyện không có hai trường này.
+                  </p>
                 </div>
 
               <div className="pt-4">
                 {!uploadedStatus.clinical ? (
                   <button
                     onClick={handleUpdateClinical}
-                    disabled={uploading || !patientId.trim() || (!ki67 && !grade && !idhMutation && !mgmtMethylation)}
+                    disabled={uploading || !patientId.trim() || !hasClinicalInput}
                     className="w-full px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl disabled:opacity-50 transition-all flex justify-center items-center shadow-md"
                   >
                     {uploading && activeTab === "clinical" ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : null}
