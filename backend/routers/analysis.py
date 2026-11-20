@@ -498,6 +498,7 @@ def _build_professional_report_pdf(
     risk_score: float | None = None,
     risk_group: str | None = None,
     survival_curve_data: list[dict] | None = None,
+    prognosis_meta: dict | None = None,
     heatmap_image: Image.Image | None = None,
     gradcam_plus_image: Image.Image | None = None,
     layercam_image: Image.Image | None = None,
@@ -678,17 +679,19 @@ def _build_professional_report_pdf(
         rs_display = f"{risk_score:.4f}"
         draw3.text((90 * scale, 225 * scale), rs_display, font=font_big_number, fill=SLATE_800)
 
-        # Risk level bar
+        # Thanh mức rủi ro = percentile so với tập huấn luyện (risk_reference), màu theo nhóm tam phân vị.
         bar_x, bar_y, bar_w, bar_h = 90 * scale, 305 * scale, 480 * scale, 22 * scale
         draw3.rounded_rectangle((bar_x, bar_y, bar_x + bar_w, bar_y + bar_h), radius=8 * scale, fill=SLATE_100)
-        normalized_risk = max(0.0, min(1.0, (risk_score + 2) / 4))  # map [-2, 2] -> [0, 1]
-        fill_w = int(bar_w * normalized_risk)
-        if fill_w > 0:
-            bar_color = RED_500 if normalized_risk > 0.6 else (245, 158, 11) if normalized_risk > 0.3 else TEAL
-            draw3.rounded_rectangle((bar_x, bar_y, bar_x + fill_w, bar_y + bar_h), radius=8 * scale, fill=bar_color)
-        draw3.text((90 * scale, 337 * scale), "Thấp", font=font_small, fill=TEAL)
-        draw3.text((bar_x + bar_w // 2 - 25 * scale, 337 * scale), "Trung bình", font=font_small, fill=(245, 158, 11))
-        draw3.text((bar_x + bar_w - 40 * scale, 337 * scale), "Cao", font=font_small, fill=RED_500)
+        percentile = (prognosis_meta or {}).get("percentile")
+        if percentile is not None:
+            fill_w = int(bar_w * max(0.0, min(100.0, float(percentile))) / 100)
+            bar_color = RED_500 if risk_group == "High" else (245, 158, 11) if risk_group == "Medium" else TEAL
+            if fill_w > 0:
+                draw3.rounded_rectangle((bar_x, bar_y, bar_x + fill_w, bar_y + bar_h), radius=8 * scale, fill=bar_color)
+            bar_caption = f"Cao hơn {float(percentile):.0f}% bệnh nhân huấn luyện"
+        else:
+            bar_caption = "Chưa có dữ liệu tham chiếu của tập huấn luyện"
+        draw3.text((90 * scale, 337 * scale), bar_caption, font=font_small, fill=SLATE_500)
 
         # Risk Group card
         rg_box = (640 * scale, 170 * scale, 1180 * scale, 395 * scale)
@@ -703,8 +706,14 @@ def _build_professional_report_pdf(
         draw3.text((670 * scale, 330 * scale), "Hình ảnh MRI", font=font_label, fill=TEAL)
         draw3.text((670 * scale, 355 * scale), "Dữ liệu RNA-seq / Lâm sàng", font=font_small, fill=SLATE_500)
 
-        # ── Grad-CAM Heatmaps Grid ──
+        # Câu giới hạn (độ tin cậy của tiên lượng) đặt ngay dưới hai thẻ.
         current_y3 = 430 * scale
+        limitation_text = (prognosis_meta or {}).get("limitation_text")
+        if limitation_text:
+            current_y3 = _draw_wrapped_text(draw3, limitation_text, (60 * scale, 410 * scale), font_small, SLATE_500,
+                                            max_width=1120 * scale, line_spacing=6 * scale) + 25 * scale
+
+        # ── Grad-CAM Heatmaps Grid ──
         draw3.text((60 * scale, current_y3), "4. Giải thích Hình ảnh XAI (Heatmaps)", font=font_h2, fill=TEAL)
         current_y3 += 50 * scale
         
@@ -764,7 +773,7 @@ def _build_professional_report_pdf(
             current_y3 = 130 * scale
 
         sc_y = current_y3 + 10 * scale
-        draw3.text((60 * scale, sc_y), "Biểu đồ sinh tồn dự đoán (Kaplan-Meier)", font=font_h2, fill=TEAL)
+        draw3.text((60 * scale, sc_y), "Đường sống còn dự đoán (CoxPH, baseline Breslow từ tập huấn luyện)", font=font_h2, fill=TEAL)
         sc_y += 40 * scale
         chart_height = 500 * scale
         chart_box = (60 * scale, sc_y, 1180 * scale, sc_y + chart_height)
@@ -834,7 +843,10 @@ def _build_professional_report_pdf(
                 y = (sc_y + chart_height - 40 * scale) - int((chart_height - 90 * scale) * p)
                 draw3.ellipse((x - 4 * scale, y - 4 * scale, x + 4 * scale, y + 4 * scale), fill=TEAL, outline="white", width=2 * scale)
         else:
-            draw3.text((400 * scale, sc_y + chart_height // 2), "Chưa có dữ liệu sinh tồn", font=font_small, fill=SLATE_500)
+            # Không có đường khi mô hình chưa đạt tiêu chí hiệu chuẩn trên tập test (risk_reference.calibrated = false).
+            _draw_wrapped_text(draw3, "Không hiển thị xác suất sống còn: mô hình chưa đạt tiêu chí hiệu chuẩn trên tập kiểm chứng độc lập. "
+                               "Chỉ dùng điểm nguy cơ tương đối (percentile) ở trên để tham khảo.",
+                               (130 * scale, sc_y + chart_height // 2 - 20 * scale), font_small, SLATE_500, max_width=1000 * scale, line_spacing=6 * scale)
 
         # ── RNA XAI Section ──
         chart_bottom = sc_y + chart_height
@@ -1595,6 +1607,7 @@ def download_image_report(
             risk_score=None if no_tumor_detected else (result_payload.get("risk_score") if result_payload.get("risk_score") is not None else (analysis.risk_score if analysis else None)),
             risk_group=None if no_tumor_detected else (result_payload.get("risk_group") or (analysis.risk_group if analysis else None)),
             survival_curve_data=None if no_tumor_detected else (result_payload.get("survival_curve_data") or (analysis.survival_curve_data if analysis else None)),
+            prognosis_meta=None if no_tumor_detected else (result_payload.get("prognosis_meta") or (analysis.prognosis_meta if analysis else None)),
             heatmap_image=_bgr_path_to_pil(result_payload.get("multimodal_risk_xai_path") or result_payload.get("gradcam_heatmap_path")),
             gradcam_plus_image=_bgr_path_to_pil(result_payload.get("multimodal_gradcam_plus_heatmap_path") or result_payload.get("gradcam_plus_heatmap_path")),
             layercam_image=_bgr_path_to_pil(result_payload.get("multimodal_layercam_heatmap_path") or result_payload.get("layercam_heatmap_path")),
