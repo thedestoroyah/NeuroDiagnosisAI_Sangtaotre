@@ -91,6 +91,7 @@ services:
       dockerfile: Dockerfile
       args:
         PYTORCH_INDEX_URL: https://download.pytorch.org/whl/cpu
+        DEBIAN_MIRROR: ${DEBIAN_MIRROR:-}
     restart: unless-stopped
     env_file:
       - .env

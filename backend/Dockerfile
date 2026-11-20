@@ -4,6 +4,10 @@ FROM python:3.10-slim
 # Thiết lập thư mục làm việc
 WORKDIR /app
 
+# Mirror Debian tùy chọn (vd. http://mirror.bizflycloud.vn/debian) khi deb.debian.org chậm; để trống thì giữ mặc định.
+ARG DEBIAN_MIRROR=
+RUN if [ -n "$DEBIAN_MIRROR" ]; then sed -i "s|http://deb.debian.org/debian$|$DEBIAN_MIRROR|" /etc/apt/sources.list.d/debian.sources; fi
+
 # Cài đặt các thư viện hệ thống cần thiết cho xử lý ảnh y tế
 RUN apt-get update && apt-get install -y \
     build-essential \
