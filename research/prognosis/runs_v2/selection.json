@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "gene_config": "1000",
+  "num_genes": 1000,
+  "epochs": 23,
+  "ensemble_seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "checkpoint": "final.pth",
+  "train_splits": [
+    "train",
+    "val"
+  ],
+  "n_train": 764,
+  "cv_c_index": 0.6657259774843313,
+  "cv_r0": 0.6401521794655963
+}
