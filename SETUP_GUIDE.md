@@ -45,7 +45,7 @@ Get-ChildItem backend/ai_core/weights | Select-Object Name, Length
 | `yolo_weights.pt` | 40,523,884 bytes |
 | `unet_weights.pt` | 46,466,993 bytes |
 | `densenet169_weights.pth` | 50,990,052 bytes |
-| `best_multimodal_model.pth` | 313,041,350 bytes |
+| `prognosis_ensemble.pth` | 115,524,751 bytes |
 
 Hai file `.pth` dùng Git LFS. Nếu file chỉ khoảng 100–200 bytes hoặc nội dung bắt đầu `version https://git-lfs.github.com/spec/v1`, chạy lại `git lfs pull origin`. Nếu GitHub báo quota LFS, quyền truy cập hoặc object không tồn tại, cần chủ repo xử lý; không thay model bằng file rỗng/model khác.
 

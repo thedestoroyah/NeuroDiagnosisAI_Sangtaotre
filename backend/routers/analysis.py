@@ -44,6 +44,7 @@ PROGNOSIS_ONLY_KEYS = {
     "multimodal_gradcam_heatmap_path",
     "multimodal_gradcam_plus_heatmap_path",
     "multimodal_layercam_heatmap_path",
+    "prognosis_meta",
 }
 
 NAVY = (18, 42, 66)
@@ -65,14 +66,41 @@ RED_500 = (239, 68, 68)
 
 
 def _merge_prognosis_only(base_payload: dict, prognosis_payload: dict | None) -> dict:
-    """Add prognosis outputs without overwriting MRI core detection/seg/class fields."""
+    """Add prognosis outputs without overwriting MRI core detection/seg/class fields.
+
+    Khóa có trong prognosis_payload luôn ghi đè, kể cả None: mô hình chưa hiệu chuẩn trả survival_curve_data=None
+    và đường cũ không được giữ lại.
+    """
     merged = dict(base_payload or {})
     if not prognosis_payload:
         return merged
     for key in PROGNOSIS_ONLY_KEYS:
-        if key in prognosis_payload and prognosis_payload.get(key) is not None:
+        if key in prognosis_payload:
             merged[key] = prognosis_payload.get(key)
     return merged
+
+
+def _task_time(task) -> datetime.datetime:
+    return task.updated_at or task.created_at or datetime.datetime.min
+
+
+def _payload_with_prognosis(mri_task, prognosis_task) -> dict:
+    """Payload task MRI, gộp kết quả tiên lượng nếu task tiên lượng mới hơn (chạy lại tiên lượng phải thay số cũ).
+
+    Args:
+        mri_task, prognosis_task: InferenceTask hoặc None.
+
+    Returns:
+        dict mới (không sửa result của task).
+    """
+    payload = dict(mri_task.result or {}) if mri_task and mri_task.result else {}
+    if not (prognosis_task and prognosis_task.result):
+        return payload
+    if not payload:
+        return dict(prognosis_task.result)
+    if mri_task is None or _task_time(prognosis_task) >= _task_time(mri_task):
+        return _merge_prognosis_only(payload, prognosis_task.result)
+    return payload
 
 
 def _get_presigned_url(file_path: str | None) -> str | None:
@@ -498,6 +526,7 @@ def _build_professional_report_pdf(
     risk_score: float | None = None,
     risk_group: str | None = None,
     survival_curve_data: list[dict] | None = None,
+    prognosis_meta: dict | None = None,
     heatmap_image: Image.Image | None = None,
     gradcam_plus_image: Image.Image | None = None,
     layercam_image: Image.Image | None = None,
@@ -678,17 +707,19 @@ def _build_professional_report_pdf(
         rs_display = f"{risk_score:.4f}"
         draw3.text((90 * scale, 225 * scale), rs_display, font=font_big_number, fill=SLATE_800)
 
-        # Risk level bar
+        # Thanh mức rủi ro = percentile so với tập huấn luyện (risk_reference), màu theo nhóm tam phân vị.
         bar_x, bar_y, bar_w, bar_h = 90 * scale, 305 * scale, 480 * scale, 22 * scale
         draw3.rounded_rectangle((bar_x, bar_y, bar_x + bar_w, bar_y + bar_h), radius=8 * scale, fill=SLATE_100)
-        normalized_risk = max(0.0, min(1.0, (risk_score + 2) / 4))  # map [-2, 2] -> [0, 1]
-        fill_w = int(bar_w * normalized_risk)
-        if fill_w > 0:
-            bar_color = RED_500 if normalized_risk > 0.6 else (245, 158, 11) if normalized_risk > 0.3 else TEAL
-            draw3.rounded_rectangle((bar_x, bar_y, bar_x + fill_w, bar_y + bar_h), radius=8 * scale, fill=bar_color)
-        draw3.text((90 * scale, 337 * scale), "Thấp", font=font_small, fill=TEAL)
-        draw3.text((bar_x + bar_w // 2 - 25 * scale, 337 * scale), "Trung bình", font=font_small, fill=(245, 158, 11))
-        draw3.text((bar_x + bar_w - 40 * scale, 337 * scale), "Cao", font=font_small, fill=RED_500)
+        percentile = (prognosis_meta or {}).get("percentile")
+        if percentile is not None:
+            fill_w = int(bar_w * max(0.0, min(100.0, float(percentile))) / 100)
+            bar_color = RED_500 if risk_group == "High" else (245, 158, 11) if risk_group == "Medium" else TEAL
+            if fill_w > 0:
+                draw3.rounded_rectangle((bar_x, bar_y, bar_x + fill_w, bar_y + bar_h), radius=8 * scale, fill=bar_color)
+            bar_caption = f"Cao hơn {float(percentile):.0f}% bệnh nhân huấn luyện"
+        else:
+            bar_caption = "Chưa có dữ liệu tham chiếu của tập huấn luyện"
+        draw3.text((90 * scale, 337 * scale), bar_caption, font=font_small, fill=SLATE_500)
 
         # Risk Group card
         rg_box = (640 * scale, 170 * scale, 1180 * scale, 395 * scale)
@@ -703,8 +734,14 @@ def _build_professional_report_pdf(
         draw3.text((670 * scale, 330 * scale), "Hình ảnh MRI", font=font_label, fill=TEAL)
         draw3.text((670 * scale, 355 * scale), "Dữ liệu RNA-seq / Lâm sàng", font=font_small, fill=SLATE_500)
 
-        # ── Grad-CAM Heatmaps Grid ──
+        # Câu giới hạn (độ tin cậy của tiên lượng) đặt ngay dưới hai thẻ.
         current_y3 = 430 * scale
+        limitation_text = (prognosis_meta or {}).get("limitation_text")
+        if limitation_text:
+            current_y3 = _draw_wrapped_text(draw3, limitation_text, (60 * scale, 410 * scale), font_small, SLATE_500,
+                                            max_width=1120 * scale, line_spacing=6 * scale) + 25 * scale
+
+        # ── Grad-CAM Heatmaps Grid ──
         draw3.text((60 * scale, current_y3), "4. Giải thích Hình ảnh XAI (Heatmaps)", font=font_h2, fill=TEAL)
         current_y3 += 50 * scale
         
@@ -764,7 +801,7 @@ def _build_professional_report_pdf(
             current_y3 = 130 * scale
 
         sc_y = current_y3 + 10 * scale
-        draw3.text((60 * scale, sc_y), "Biểu đồ sinh tồn dự đoán (Kaplan-Meier)", font=font_h2, fill=TEAL)
+        draw3.text((60 * scale, sc_y), "Đường sống còn dự đoán (CoxPH, baseline Breslow từ tập huấn luyện)", font=font_h2, fill=TEAL)
         sc_y += 40 * scale
         chart_height = 500 * scale
         chart_box = (60 * scale, sc_y, 1180 * scale, sc_y + chart_height)
@@ -834,7 +871,10 @@ def _build_professional_report_pdf(
                 y = (sc_y + chart_height - 40 * scale) - int((chart_height - 90 * scale) * p)
                 draw3.ellipse((x - 4 * scale, y - 4 * scale, x + 4 * scale, y + 4 * scale), fill=TEAL, outline="white", width=2 * scale)
         else:
-            draw3.text((400 * scale, sc_y + chart_height // 2), "Chưa có dữ liệu sinh tồn", font=font_small, fill=SLATE_500)
+            # Không có đường khi mô hình chưa đạt tiêu chí hiệu chuẩn trên tập test (risk_reference.calibrated = false).
+            _draw_wrapped_text(draw3, "Không hiển thị xác suất sống còn: mô hình chưa đạt tiêu chí hiệu chuẩn trên tập kiểm chứng độc lập. "
+                               "Chỉ dùng điểm nguy cơ tương đối (percentile) ở trên để tham khảo.",
+                               (130 * scale, sc_y + chart_height // 2 - 20 * scale), font_small, SLATE_500, max_width=1000 * scale, line_spacing=6 * scale)
 
         # ── RNA XAI Section ──
         chart_bottom = sc_y + chart_height
@@ -1073,14 +1113,7 @@ def get_patient_full_analysis(
         raise HTTPException(status_code=404, detail="Chua co ket qua phan tich cho benh nhan nay.")
 
     # Merge dữ liệu từ cả 2 task (prognosis có multimodal, mri có overlay images)
-    result_payload = {}
-    if mri_task and mri_task.result:
-        result_payload.update(mri_task.result)
-    if prognosis_task and prognosis_task.result:
-        if result_payload:
-            result_payload = _merge_prognosis_only(result_payload, prognosis_task.result)
-        else:
-            result_payload.update(prognosis_task.result)
+    result_payload = _payload_with_prognosis(mri_task, prognosis_task)
 
     # Xác định image_id và metadata
     image_id = mri_image.id if mri_image else (analysis.image_id if analysis else 0)
@@ -1242,9 +1275,11 @@ def get_image_analysis_detail(
         task_id = latest_task.id
         status = latest_task.status
         error_message = latest_task.error_message
-        result_payload = latest_task.result or {}
         created_at = latest_task.created_at
         updated_at = latest_task.updated_at
+    # Gộp tiên lượng chạy lại sau task MRI (trước đây endpoint này chỉ đọc task MRI nên hiện số cũ).
+    prognosis_task = _get_latest_prognosis_task(db, image.patient_id, image_id)
+    result_payload = _payload_with_prognosis(latest_task, prognosis_task)
 
     bbox = result_payload.get("bbox")
     seg_mask_path = result_payload.get("seg_mask_path")
@@ -1507,14 +1542,7 @@ def download_image_report(
         raise HTTPException(status_code=404, detail="Chua co ket qua de xuat bao cao")
 
     # Merge results from both task types
-    result_payload = {}
-    if latest_task and latest_task.result:
-        result_payload.update(latest_task.result)
-    if prognosis_task and prognosis_task.result:
-        if result_payload:
-            result_payload = _merge_prognosis_only(result_payload, prognosis_task.result)
-        else:
-            result_payload.update(prognosis_task.result)
+    result_payload = _payload_with_prognosis(latest_task, prognosis_task)
     no_tumor_detected = bool(result_payload.get("no_tumor_detected") or (analysis and getattr(analysis, "no_tumor_detected", False)))
     tumor_label = _display_tumor_label(
         result_payload.get("tumor_label") or (analysis.tumor_label if analysis else None),
@@ -1595,6 +1623,7 @@ def download_image_report(
             risk_score=None if no_tumor_detected else (result_payload.get("risk_score") if result_payload.get("risk_score") is not None else (analysis.risk_score if analysis else None)),
             risk_group=None if no_tumor_detected else (result_payload.get("risk_group") or (analysis.risk_group if analysis else None)),
             survival_curve_data=None if no_tumor_detected else (result_payload.get("survival_curve_data") or (analysis.survival_curve_data if analysis else None)),
+            prognosis_meta=None if no_tumor_detected else (result_payload.get("prognosis_meta") or (analysis.prognosis_meta if analysis else None)),
             heatmap_image=_bgr_path_to_pil(result_payload.get("multimodal_risk_xai_path") or result_payload.get("gradcam_heatmap_path")),
             gradcam_plus_image=_bgr_path_to_pil(result_payload.get("multimodal_gradcam_plus_heatmap_path") or result_payload.get("gradcam_plus_heatmap_path")),
             layercam_image=_bgr_path_to_pil(result_payload.get("multimodal_layercam_heatmap_path") or result_payload.get("layercam_heatmap_path")),

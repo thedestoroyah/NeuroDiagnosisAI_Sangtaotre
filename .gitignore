@@ -41,3 +41,5 @@ implementation_plan_final.md
 # Checkpoint từng seed khi train lại (~313 MB mỗi file); chỉ checkpoint được chọn vào backend/ai_core/weights qua LFS
 research/prognosis/runs/**/*.pth
 research/prognosis/runs/rehearsal/
+research/prognosis/runs_v2/**/*.pth
+research/prognosis/runs_v2/rehearsal/

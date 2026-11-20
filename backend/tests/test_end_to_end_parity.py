@@ -8,6 +8,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import cv2
+import numpy as np
 import pandas as pd
 import torch
 
@@ -49,12 +50,14 @@ class EndToEndParityTest(unittest.TestCase):
         pipeline = TumorAnalysisPipeline(weights_dir=str(WEIGHTS), device="cpu")
         patient = load_patients(DATA_DIR, row, rna_matrix, ref)[0]
         batch = make_batch([patient], len(ref.columns), False, None, "cpu")
+        # v2 là ensemble: đường train lấy trung bình risk của từng seed như evaluate.py.
+        members = list(getattr(pipeline.multimodal_model, "members", [pipeline.multimodal_model]))
         with torch.no_grad():
-            train_risk, _ = forward_from_features(
-                pipeline.multimodal_model, batch["mri_feats"], batch["wsi_feats"], batch["rna"], batch["clinical"],
+            train_risk = torch.stack([forward_from_features(
+                member, batch["mri_feats"], batch["wsi_feats"], batch["rna"], batch["clinical"],
                 batch["has_mri"], batch["has_wsi"], batch["has_rna"], batch["has_clinical"],
                 mri_mask=batch["mri_mask"], wsi_mask=batch["wsi_mask"],
-            )
+            )[0] for member in members]).mean(dim=0)
 
         # --- Đường serving: file gốc → hàm tiền xử lý của pipeline → mô hình đã nạp từ weights
         slices = [cv2.imread(str(p)) for p in mri_files(DATA_DIR / "PROCESSED_MRI", pid)]
@@ -80,7 +83,12 @@ class EndToEndParityTest(unittest.TestCase):
                 mri_mask=torch.ones(1, mri.shape[1]), wsi_mask=torch.full((1, wsi.shape[1]), 1.0 if tiles else 0.0),
             )
         print(f"\n{pid}: train-path risk {train_risk.item():.6f} | serving-path risk {serve_risk.item():.6f}")
-        self.assertAlmostEqual(train_risk.item(), serve_risk.item(), delta=1e-3)
+        # Cache đặc trưng tính bằng autocast float16 trên GPU, serving chạy float32 trên CPU, nên risk lệch rất nhỏ.
+        # Ngưỡng tính theo độ phân tán risk của tập train: lệch ≤ 1% độ lệch chuẩn và không đổi nhóm nguy cơ.
+        reference = pipeline.risk_reference
+        spread = float(np.std(reference.train_risk_sorted))
+        self.assertLessEqual(abs(train_risk.item() - serve_risk.item()), 0.01 * spread)
+        self.assertEqual(reference.group(train_risk.item()), reference.group(serve_risk.item()))
 
 
 if __name__ == "__main__":

@@ -76,7 +76,9 @@ class RiskReference:
                     f"(C-index {c_index:.2f}, KTC95% {ci[0]:.2f}–{ci[1]:.2f}).")
         else:
             text = (f"Điểm nguy cơ tương đối so với {self.n_train} bệnh nhân huấn luyện – không phải xác suất sống còn đã hiệu chuẩn. "
-                    "Chỉ dùng tham khảo, bác sĩ quyết định.")
+                    + (f"Khả năng xếp hạng trên {self.n_test} bệnh nhân độc lập: C-index {c_index:.2f} "
+                       f"(KTC95% {ci[0]:.2f}–{ci[1]:.2f}). " if c_index is not None and None not in ci else "")
+                    + "Chỉ dùng tham khảo, bác sĩ quyết định.")
         return {
             "calibrated": self.calibrated, "percentile": self.percentile(score), "group": self.group(score),
             "c_index_test": c_index, "c_index_ci": ci, "n_train": self.n_train, "n_test": self.n_test,

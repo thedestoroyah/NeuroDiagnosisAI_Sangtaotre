@@ -3,7 +3,7 @@
   "patients": [
     {
       "patient": {
-        "id": 3,
+        "id": 1,
         "name": "Nguyễn Văn C",
         "patient_external_id": "UCSF-003",
         "age": 25,
@@ -11,8 +11,8 @@
       },
       "images": [
         {
-          "id": 91,
-          "patient_id": 3,
+          "id": 1,
+          "patient_id": 1,
           "scan_date": "2026-09-29T04:35:35.452413",
           "modality": "MRI",
           "file_path": "/analysis-results/4b498062-f375-4e06-9469-f3baf8d30e84_brisc2025_test_00707_pi_ax_t1.jpg",
@@ -21,8 +21,8 @@
           "key_slice_index": 0
         },
         {
-          "id": 92,
-          "patient_id": 3,
+          "id": 2,
+          "patient_id": 1,
           "scan_date": "2026-09-29T04:38:55.299758",
           "modality": "MRI",
           "file_path": "/analysis-results/de6f63c4-3749-427b-9b84-26af4ae66349_brisc2025_test_00708_pi_ax_t1.jpg",
@@ -31,8 +31,8 @@
           "key_slice_index": 0
         },
         {
-          "id": 97,
-          "patient_id": 3,
+          "id": 3,
+          "patient_id": 1,
           "scan_date": "2026-10-02T11:57:52.878655",
           "modality": "WSI_SERIES",
           "file_path": "/analysis-results/wsi_series_513abe25-4cea-4f33-b304-406b4814e761",
@@ -41,8 +41,8 @@
           "key_slice_index": 0
         },
         {
-          "id": 98,
-          "patient_id": 3,
+          "id": 4,
+          "patient_id": 1,
           "scan_date": "2026-10-02T12:09:40.499784",
           "modality": "WSI_SERIES",
           "file_path": "/analysis-results/wsi_series_4891fdff-c664-4b1e-85be-707283359329",
@@ -51,8 +51,8 @@
           "key_slice_index": 0
         },
         {
-          "id": 99,
-          "patient_id": 3,
+          "id": 5,
+          "patient_id": 1,
           "scan_date": "2026-10-02T12:10:52.212228",
           "modality": "WSI_SERIES",
           "file_path": "/analysis-results/wsi_series_15a4dd5c-6c53-4dc1-888d-adca0c849d07",
@@ -61,8 +61,8 @@
           "key_slice_index": 0
         },
         {
-          "id": 104,
-          "patient_id": 3,
+          "id": 6,
+          "patient_id": 1,
           "scan_date": "2026-10-02T14:25:16.788338",
           "modality": "MRI",
           "file_path": "/analysis-results/7f2c85ef-954e-423f-a5cf-0b7d05b9610a_brisc2025_test_00708_pi_ax_t1.jpg",
@@ -73,8 +73,8 @@
       ],
       "rna": [
         {
-          "id": 2,
-          "patient_id": 3,
+          "id": 1,
+          "patient_id": 1,
           "upload_date": "2026-10-02T11:57:12.601371",
           "file_path": "/analysis-results/rna-data/68729794-b62a-428f-b040-fd9db6b92871_TCGA-12-1093.csv",
           "file_format": "csv",
@@ -84,8 +84,8 @@
       ],
       "clinical": [
         {
-          "id": 2,
-          "patient_id": 3,
+          "id": 1,
+          "patient_id": 1,
           "updated_at": "2026-10-02T11:42:58.106223",
           "ki67_index": 15.0,
           "biochemistry_markers": null,
@@ -93,169 +93,133 @@
           "grade": "2",
           "prior_treatment": null,
           "idh_mutation": "0",
-          "mgmt_methylation": "1"
+          "mgmt_methylation": "1",
+          "race": null,
+          "radiation_therapy": null,
+          "pharmaceutical_therapy": null
         }
       ],
       "analysis": [
         {
-          "id": 53,
-          "image_id": 91,
-          "patient_id": 3,
+          "id": 1,
+          "image_id": 1,
+          "patient_id": 1,
           "created_at": "2026-09-29T04:35:52.017685",
           "no_tumor_detected": false,
           "tumor_label": "Pituitary tumor",
-          "classification_confidence": 0.99044,
+          "classification_confidence": 0.99043,
           "dice_score": null,
           "iou_score": null,
           "accuracy": null,
           "c_index": null,
-          "risk_score": 0.326818,
+          "risk_score": 0.102337,
           "risk_group": "Medium",
           "gradcam_path": null,
           "mask_path": null,
-          "finer_cam_path": "/analysis-results/prognosis/3/task-116/step9_classification_finer_cam.png",
-          "seg_eigen_cam_path": "/analysis-results/prognosis/3/task-116/step8_seg_eigen_cam.png",
-          "odam_path": "/analysis-results/prognosis/3/task-116/step7_detection_odam.png",
+          "finer_cam_path": "/medical-data/prognosis/1/task-29/step9_classification_finer_cam.png",
+          "seg_eigen_cam_path": "/medical-data/prognosis/1/task-29/step8_seg_eigen_cam.png",
+          "odam_path": "/medical-data/prognosis/1/task-29/step7_detection_odam.png",
           "xai_3_panel_path": null,
-          "survival_curve_data": [
-            {
-              "time": 0,
-              "survival_probability": 1.0
-            },
-            {
-              "time": 6,
-              "survival_probability": 0.931
-            },
-            {
-              "time": 12,
-              "survival_probability": 0.798
-            },
-            {
-              "time": 18,
-              "survival_probability": 0.61
-            },
-            {
-              "time": 24,
-              "survival_probability": 0.437
-            },
-            {
-              "time": 30,
-              "survival_probability": 0.281
-            },
-            {
-              "time": 36,
-              "survival_probability": 0.188
-            }
-          ]
+          "survival_curve_data": null,
+          "mri_status": "tumor_detected",
+          "review_required": false,
+          "review_reasons": [],
+          "prognosis_meta": {
+            "calibrated": false,
+            "percentile": 39.9,
+            "group": "Medium",
+            "c_index_test": 0.6481980877666095,
+            "c_index_ci": [
+              0.585350340323124,
+              0.7019366397544488
+            ],
+            "n_train": 764,
+            "n_test": 135,
+            "limitation_text": "Điểm nguy cơ tương đối so với 764 bệnh nhân huấn luyện – không phải xác suất sống còn đã hiệu chuẩn. Khả năng xếp hạng trên 135 bệnh nhân độc lập: C-index 0.65 (KTC95% 0.59–0.70). Chỉ dùng tham khảo, bác sĩ quyết định."
+          }
         },
         {
-          "id": 54,
-          "image_id": 92,
-          "patient_id": 3,
+          "id": 2,
+          "image_id": 2,
+          "patient_id": 1,
           "created_at": "2026-09-29T04:39:20.400357",
           "no_tumor_detected": false,
           "tumor_label": "Pituitary tumor",
-          "classification_confidence": 0.956941,
+          "classification_confidence": 0.956984,
           "dice_score": null,
           "iou_score": null,
           "accuracy": null,
           "c_index": null,
-          "risk_score": 2.566483,
-          "risk_group": "Very High",
+          "risk_score": 0.090217,
+          "risk_group": "Medium",
           "gradcam_path": null,
           "mask_path": "/analysis-results/mri/92/task-111/step3_mask.png",
-          "finer_cam_path": "/analysis-results/mri/92/task-111/step9_classification_finer_cam.png",
-          "seg_eigen_cam_path": "/analysis-results/mri/92/task-111/step8_seg_eigen_cam.png",
-          "odam_path": "/analysis-results/mri/92/task-111/step7_detection_odam.png",
+          "finer_cam_path": "/medical-data/prognosis/1/task-30/step9_classification_finer_cam.png",
+          "seg_eigen_cam_path": "/medical-data/prognosis/1/task-30/step8_seg_eigen_cam.png",
+          "odam_path": "/medical-data/prognosis/1/task-30/step7_detection_odam.png",
           "xai_3_panel_path": null,
-          "survival_curve_data": [
-            {
-              "time": 0,
-              "survival_probability": 1.0
-            },
-            {
-              "time": 6,
-              "survival_probability": 0.513
-            },
-            {
-              "time": 12,
-              "survival_probability": 0.121
-            },
-            {
-              "time": 18,
-              "survival_probability": 0.01
-            },
-            {
-              "time": 24,
-              "survival_probability": 0.0
-            },
-            {
-              "time": 30,
-              "survival_probability": 0.0
-            },
-            {
-              "time": 36,
-              "survival_probability": 0.0
-            }
-          ]
+          "survival_curve_data": null,
+          "mri_status": "tumor_detected",
+          "review_required": false,
+          "review_reasons": [],
+          "prognosis_meta": {
+            "calibrated": false,
+            "percentile": 39.8,
+            "group": "Medium",
+            "c_index_test": 0.6481980877666095,
+            "c_index_ci": [
+              0.585350340323124,
+              0.7019366397544488
+            ],
+            "n_train": 764,
+            "n_test": 135,
+            "limitation_text": "Điểm nguy cơ tương đối so với 764 bệnh nhân huấn luyện – không phải xác suất sống còn đã hiệu chuẩn. Khả năng xếp hạng trên 135 bệnh nhân độc lập: C-index 0.65 (KTC95% 0.59–0.70). Chỉ dùng tham khảo, bác sĩ quyết định."
+          }
         },
         {
-          "id": 59,
-          "image_id": 104,
-          "patient_id": 3,
+          "id": 3,
+          "image_id": 6,
+          "patient_id": 1,
           "created_at": "2026-10-02T14:26:26.616859",
           "no_tumor_detected": false,
           "tumor_label": "Pituitary tumor",
-          "classification_confidence": 0.956941,
+          "classification_confidence": 0.956984,
           "dice_score": null,
           "iou_score": null,
           "accuracy": null,
           "c_index": null,
-          "risk_score": 1.326961,
-          "risk_group": "High",
+          "risk_score": 0.090217,
+          "risk_group": "Medium",
           "gradcam_path": null,
           "mask_path": null,
-          "finer_cam_path": "/analysis-results/prognosis/3/task-121/step9_classification_finer_cam.png",
-          "seg_eigen_cam_path": "/analysis-results/prognosis/3/task-121/step8_seg_eigen_cam.png",
-          "odam_path": "/analysis-results/prognosis/3/task-121/step7_detection_odam.png",
+          "finer_cam_path": "/medical-data/prognosis/1/task-31/step9_classification_finer_cam.png",
+          "seg_eigen_cam_path": "/medical-data/prognosis/1/task-31/step8_seg_eigen_cam.png",
+          "odam_path": "/medical-data/prognosis/1/task-31/step7_detection_odam.png",
           "xai_3_panel_path": null,
-          "survival_curve_data": [
-            {
-              "time": 0,
-              "survival_probability": 1.0
-            },
-            {
-              "time": 6,
-              "survival_probability": 0.824
-            },
-            {
-              "time": 12,
-              "survival_probability": 0.542
-            },
-            {
-              "time": 18,
-              "survival_probability": 0.261
-            },
-            {
-              "time": 24,
-              "survival_probability": 0.105
-            },
-            {
-              "time": 30,
-              "survival_probability": 0.032
-            },
-            {
-              "time": 36,
-              "survival_probability": 0.011
-            }
-          ]
+          "survival_curve_data": null,
+          "mri_status": "tumor_detected",
+          "review_required": false,
+          "review_reasons": [],
+          "prognosis_meta": {
+            "calibrated": false,
+            "percentile": 39.8,
+            "group": "Medium",
+            "c_index_test": 0.6481980877666095,
+            "c_index_ci": [
+              0.585350340323124,
+              0.7019366397544488
+            ],
+            "n_train": 764,
+            "n_test": 135,
+            "limitation_text": "Điểm nguy cơ tương đối so với 764 bệnh nhân huấn luyện – không phải xác suất sống còn đã hiệu chuẩn. Khả năng xếp hạng trên 135 bệnh nhân độc lập: C-index 0.65 (KTC95% 0.59–0.70). Chỉ dùng tham khảo, bác sĩ quyết định."
+          }
         }
       ],
       "explanations": [],
       "history_reports": [
         {
-          "id": 3,
-          "patient_id": 3,
+          "id": 1,
+          "patient_id": 1,
           "report_type": "diagnosis_history",
           "status": "ready",
           "data_hash": "8cbb2efaae9fddcb4c92f63bfa94fa82df7c2d3b6cc10f9edf6f0fbeea938d90",
@@ -341,9 +305,9 @@
       ],
       "classification_reviews": [
         {
-          "id": 5,
-          "image_id": 91,
-          "patient_id": 3,
+          "id": 1,
+          "image_id": 1,
+          "patient_id": 1,
           "created_at": "2026-09-29T04:37:25.899275",
           "ai_tumor_label": "Pituitary tumor",
           "ai_confidence": 0.99044,
@@ -356,9 +320,9 @@
       "validations": [],
       "tasks": [
         {
-          "id": 9,
+          "id": 1,
           "task_type": "prognosis",
-          "target_id": 3,
+          "target_id": 1,
           "status": "done",
           "created_at": "2026-05-30T07:40:07.877877",
           "updated_at": "2026-05-30T07:40:37.698197",
@@ -430,9 +394,9 @@
           "error_message": null
         },
         {
-          "id": 10,
+          "id": 2,
           "task_type": "prognosis",
-          "target_id": 3,
+          "target_id": 1,
           "status": "done",
           "created_at": "2026-05-30T07:49:20.016841",
           "updated_at": "2026-05-30T07:49:22.972430",
@@ -504,9 +468,9 @@
           "error_message": null
         },
         {
-          "id": 11,
+          "id": 3,
           "task_type": "prognosis",
-          "target_id": 3,
+          "target_id": 1,
           "status": "done",
           "created_at": "2026-05-30T07:52:38.333527",
           "updated_at": "2026-05-30T07:52:40.349865",
@@ -578,9 +542,9 @@
           "error_message": null
         },
         {
-          "id": 12,
+          "id": 4,
           "task_type": "prognosis",
-          "target_id": 3,
+          "target_id": 1,
           "status": "done",
           "created_at": "2026-05-30T08:03:41.612532",
           "updated_at": "2026-05-30T08:03:44.115319",
@@ -652,9 +616,9 @@
           "error_message": null
         },
         {
-          "id": 13,
+          "id": 5,
           "task_type": "prognosis",
-          "target_id": 3,
+          "target_id": 1,
           "status": "done",
           "created_at": "2026-05-30T08:13:44.354191",
           "updated_at": "2026-05-30T08:23:16.354018",
@@ -887,9 +851,9 @@
           "error_message": null
         },
         {
-          "id": 46,
+          "id": 6,
           "task_type": "prognosis",
-          "target_id": 3,
+          "target_id": 1,
           "status": "done",
           "created_at": "2026-05-30T08:40:36.699349",
           "updated_at": "2026-05-30T09:40:50.284186",
@@ -921,9 +885,9 @@
           "error_message": null
         },
         {
-          "id": 79,
+          "id": 7,
           "task_type": "prognosis",
-          "target_id": 3,
+          "target_id": 1,
           "status": "done",
           "created_at": "2026-05-30T08:48:24.502373",
           "updated_at": "2026-05-30T08:49:03.111004",
@@ -1155,9 +1119,9 @@
           "error_message": null
         },
         {
-          "id": 81,
+          "id": 8,
           "task_type": "prognosis",
-          "target_id": 3,
+          "target_id": 1,
           "status": "done",
           "created_at": "2026-05-30T09:16:50.526378",
           "updated_at": "2026-05-30T09:16:58.981871",
@@ -1389,9 +1353,9 @@
           "error_message": null
         },
         {
-          "id": 83,
+          "id": 9,
           "task_type": "prognosis",
-          "target_id": 3,
+          "target_id": 1,
           "status": "done",
           "created_at": "2026-05-30T09:20:15.819959",
           "updated_at": "2026-05-30T09:20:16.799929",
@@ -1423,9 +1387,9 @@
           "error_message": null
         },
         {
-          "id": 95,
+          "id": 10,
           "task_type": "prognosis",
-          "target_id": 3,
+          "target_id": 1,
           "status": "done",
           "created_at": "2026-09-16T21:17:22.487174",
           "updated_at": "2026-09-16T21:17:50.478863",
@@ -1657,9 +1621,9 @@
           "error_message": null
         },
         {
-          "id": 96,
+          "id": 11,
           "task_type": "prognosis",
-          "target_id": 3,
+          "target_id": 1,
           "status": "done",
           "created_at": "2026-09-16T21:21:28.877387",
           "updated_at": "2026-09-16T21:21:42.856090",
@@ -1891,9 +1855,9 @@
           "error_message": null
         },
         {
-          "id": 98,
+          "id": 12,
           "task_type": "prognosis",
-          "target_id": 3,
+          "target_id": 1,
           "status": "done",
           "created_at": "2026-09-28T22:05:52.002494",
           "updated_at": "2026-09-28T22:07:03.196557",
@@ -2125,9 +2089,9 @@
           "error_message": null
         },
         {
-          "id": 99,
+          "id": 13,
           "task_type": "prognosis",
-          "target_id": 3,
+          "target_id": 1,
           "status": "done",
           "created_at": "2026-09-29T02:20:17.194891",
           "updated_at": "2026-09-29T02:21:12.900700",
@@ -2359,9 +2323,9 @@
           "error_message": null
         },
         {
-          "id": 100,
+          "id": 14,
           "task_type": "prognosis",
-          "target_id": 3,
+          "target_id": 1,
           "status": "done",
           "created_at": "2026-09-29T02:22:27.801339",
           "updated_at": "2026-09-29T02:22:37.992352",
@@ -2593,9 +2557,9 @@
           "error_message": null
         },
         {
-          "id": 101,
+          "id": 15,
           "task_type": "prognosis",
-          "target_id": 3,
+          "target_id": 1,
           "status": "done",
           "created_at": "2026-09-29T02:24:40.027151",
           "updated_at": "2026-09-29T02:24:55.032820",
@@ -2827,9 +2791,9 @@
           "error_message": null
         },
         {
-          "id": 110,
+          "id": 16,
           "task_type": "prognosis",
-          "target_id": 3,
+          "target_id": 1,
           "status": "done",
           "created_at": "2026-09-29T04:35:37.286341",
           "updated_at": "2026-09-29T04:36:07.802324",
@@ -3057,7 +3021,7 @@
             "multimodal_risk_xai_meta_path": "/analysis-results/prognosis/3/task-110/xai_multimodal_risk_gradcam_meta.json",
             "multimodal_xai_explanation": "1. Nhóm nguy cơ: Medium (Risk score = -0.2578)\nMô hình AI đánh giá mức nguy cơ trung bình - cân bằng giữa các yếu tố thuận lợi và bất lợi.\n\n2. Phân loại MRI: Pituitary tumor (độ tin cậy 99.0% - rất cao).\nGrad-CAM, Grad-CAM++ và Layer-CAM hiển thị vùng mô hình tập trung phân tích trên ảnh MRI.\n\n3. Trọng số Fusion Attention: MRI: 70.7% | Lâm sàng: 29.3%\nMô hình dựa nhiều nhất vào MRI để đưa ra kết quả tiên lượng.\n\nKhuyến nghị: Theo dõi lâm sàng sát sao, MRI kiểm tra mỗi 6 tháng. Xem xét sinh thiết lại nếu có diễn biến bất thường.\nLưu ý: Thiếu dữ liệu nguồn WSI, RNA - kết quả tiên lượng có thể chưa đầy đủ.",
             "xai_explanation": "1. Nhóm nguy cơ: Medium (Risk score = -0.2578)\nMô hình AI đánh giá mức nguy cơ trung bình - cân bằng giữa các yếu tố thuận lợi và bất lợi.\n\n2. Phân loại MRI: Pituitary tumor (độ tin cậy 99.0% - rất cao).\nGrad-CAM, Grad-CAM++ và Layer-CAM hiển thị vùng mô hình tập trung phân tích trên ảnh MRI.\n\n3. Trọng số Fusion Attention: MRI: 70.7% | Lâm sàng: 29.3%\nMô hình dựa nhiều nhất vào MRI để đưa ra kết quả tiên lượng.\n\nKhuyến nghị: Theo dõi lâm sàng sát sao, MRI kiểm tra mỗi 6 tháng. Xem xét sinh thiết lại nếu có diễn biến bất thường.\nLưu ý: Thiếu dữ liệu nguồn WSI, RNA - kết quả tiên lượng có thể chưa đầy đủ.",
-            "image_id": 91,
+            "image_id": 1,
             "classification_xai_explanation": "1. Kết quả tóm tắt\n- Mô hình dự đoán: u tuyến yên (Pituitary tumor); độ tin cậy phân loại: 99,04%.\n- Kết quả này là công cụ hỗ trợ tham khảo dựa trên phân tích hình ảnh, không thay thế chẩn đoán xác định của bác sĩ chuyên khoa.\n- Độ tin cậy phân loại 99,04% phản ánh mức độ ưu tiên của mô hình đối với lớp u tuyến yên trong bài toán phân loại, không đại diện cho mức độ nguy hiểm hay kích thước của khối u.\n\n2. Giải thích AI/XAI và vùng heatmap mô hình dựa vào\n- So với lớp so sánh u màng não (Meningioma), độ tin cậy của lớp so sánh khoảng 0,0842%, và điểm chênh lệch giữa hai lớp khoảng 7,07.\n- Heatmap được tạo trên vùng ROI nghi ngờ có tổn thương sau bước phát hiện, không phải toàn bộ ảnh MRI; ROI có kích thước khoảng 75 x 106 pixel; heatmap gốc có độ phân giải 7 x 7; mức độ tập trung của heatmap: còn lan rộng, chưa tập trung mạnh.\n- Vùng sáng nhất của heatmap có tọa độ ROI khoảng (x=68, y=48) (vị trí tương đối: khoảng 64,8% chiều ngang từ trái sang phải và 64,9% chiều dọc từ trên xuống; nằm ở vùng giữa theo chiều dọc, gần trung tâm theo chiều ngang).\n- Tâm chú ý trung bình của heatmap có tọa độ ROI khoảng (x=60,2, y=42,5) (vị trí tương đối: khoảng 57,4% chiều ngang từ trái sang phải và 57,4% chiều dọc từ trên xuống; nằm ở vùng giữa theo chiều dọc, gần trung tâm theo chiều ngang).\n- Vùng nóng nổi bật có hộp bao ROI khoảng (x1=42, y1=24, x2=92, y2=74) (vị trí tương đối: trải từ 39,6% đến 86,8% chiều ngang và từ 32,0% đến 98,7% chiều dọc ROI; tâm vùng này nằm ở vùng giữa theo chiều dọc, gần trung tâm theo chiều ngang). Đây là vùng mô hình dựa vào nhiều hơn khi phân loại, không phải ranh giới chính xác của khối u.\n- 10% vùng nóng nhất chiếm khoảng 20,36% tổng tín hiệu heatmap; nhóm vùng nóng nổi bật chiếm khoảng 20,00% diện tích heatmap.\n- Do heatmap còn lan rộng, khả năng khu trú của mô hình chưa cao, người dùng không nên xem đây là ranh giới chính xác của tổn thương trên ảnh MRI.\n\n3. Thông tin y khoa về loại u này\n- U tuyến yên là một trong những loại u não nguyên phát được phân loại trong hệ thống của WHO.\n- Chụp cộng hưởng từ (MRI) sọ não là phương pháp hình ảnh học ưu tiên để khảo sát chi tiết các mô mềm, giúp phát hiện và đánh giá tổn thương tốt hơn so với CT.\n- Đối với các khối u lành tính có diễn tiến chậm, việc theo dõi định kỳ bằng MRI và thăm khám lâm sàng để ghi nhận các dấu hiệu bất thường là một hướng tiếp cận khả thi.\n- Việc lập kế hoạch điều trị cần dựa trên kết quả MRI kết hợp với đánh giá chuyên khoa, đặc biệt là trong các tình huống cần can thiệp hoặc theo dõi sát.",
             "xai_explanation_metadata": {
               "classification": {
@@ -3201,9 +3165,9 @@
           "error_message": null
         },
         {
-          "id": 111,
+          "id": 17,
           "task_type": "mri_pipeline",
-          "target_id": 92,
+          "target_id": 2,
           "status": "done",
           "created_at": "2026-09-29T04:38:55.346828",
           "updated_at": "2026-09-29T04:39:36.197715",
@@ -3574,9 +3538,9 @@
           "error_message": null
         },
         {
-          "id": 116,
+          "id": 18,
           "task_type": "prognosis",
-          "target_id": 3,
+          "target_id": 1,
           "status": "done",
           "created_at": "2026-10-02T12:01:38.792831",
           "updated_at": "2026-10-02T12:02:49.250206",
@@ -3877,15 +3841,14 @@
             "multimodal_risk_xai_meta_path": "/analysis-results/prognosis/3/task-116/xai_multimodal_risk_gradcam_meta.json",
             "multimodal_xai_explanation": "1. Nhóm nguy cơ: Medium (Risk score = 0.3268)\nMô hình AI đánh giá mức nguy cơ trung bình - cân bằng giữa các yếu tố thuận lợi và bất lợi.\n\n2. Phân loại MRI: Pituitary tumor (độ tin cậy 99.0% - rất cao).\nGrad-CAM, Grad-CAM++ và Layer-CAM hiển thị vùng mô hình tập trung phân tích trên ảnh MRI.\n\n3. Trọng số Fusion Attention: MRI: 23.1% | WSI: 5.5% | RNA: 62.8% | Lâm sàng: 8.6%\nMô hình dựa nhiều nhất vào RNA để đưa ra kết quả tiên lượng.\n\n4. Mô bệnh học (WSI): Đã trích xuất đặc trưng từ 100 mảnh (tiles).\nĐặc trưng cấu trúc vi thể từ ảnh mô bệnh học được trích xuất để nâng cao độ chính xác tiên lượng.\n\n5. Biểu hiện gene (RNA-seq): Đã tích hợp dữ liệu giải trình tự gene.\nThông tin sinh học cấp độ phân tử đóng vai trò quan trọng hỗ trợ phát hiện các dấu ấn sinh học liên quan đến tiên lượng sinh tồn.\n\n6. Chỉ số lâm sàng: KI-67 = 15.0% (trung bình), WHO Grade II (Thấp).\n\nKhuyến nghị: Theo dõi lâm sàng sát sao, MRI kiểm tra mỗi 6 tháng. Xem xét sinh thiết lại nếu có diễn biến bất thường.",
             "xai_explanation": "1. Nhóm nguy cơ: Medium (Risk score = 0.3268)\nMô hình AI đánh giá mức nguy cơ trung bình - cân bằng giữa các yếu tố thuận lợi và bất lợi.\n\n2. Phân loại MRI: Pituitary tumor (độ tin cậy 99.0% - rất cao).\nGrad-CAM, Grad-CAM++ và Layer-CAM hiển thị vùng mô hình tập trung phân tích trên ảnh MRI.\n\n3. Trọng số Fusion Attention: MRI: 23.1% | WSI: 5.5% | RNA: 62.8% | Lâm sàng: 8.6%\nMô hình dựa nhiều nhất vào RNA để đưa ra kết quả tiên lượng.\n\n4. Mô bệnh học (WSI): Đã trích xuất đặc trưng từ 100 mảnh (tiles).\nĐặc trưng cấu trúc vi thể từ ảnh mô bệnh học được trích xuất để nâng cao độ chính xác tiên lượng.\n\n5. Biểu hiện gene (RNA-seq): Đã tích hợp dữ liệu giải trình tự gene.\nThông tin sinh học cấp độ phân tử đóng vai trò quan trọng hỗ trợ phát hiện các dấu ấn sinh học liên quan đến tiên lượng sinh tồn.\n\n6. Chỉ số lâm sàng: KI-67 = 15.0% (trung bình), WHO Grade II (Thấp).\n\nKhuyến nghị: Theo dõi lâm sàng sát sao, MRI kiểm tra mỗi 6 tháng. Xem xét sinh thiết lại nếu có diễn biến bất thường.",
-            "input_signature": "141a0f7e19a8059de63b7be15ae412418795e491c6a4ba8d229918b50454b896",
-            "image_id": 91
+            "image_id": 1
           },
           "error_message": null
         },
         {
-          "id": 121,
+          "id": 19,
           "task_type": "prognosis",
-          "target_id": 3,
+          "target_id": 1,
           "status": "done",
           "created_at": "2026-10-02T14:25:20.208574",
           "updated_at": "2026-10-02T14:26:54.699203",
@@ -4186,8 +4149,7 @@
             "multimodal_risk_xai_meta_path": "/analysis-results/prognosis/3/task-121/xai_multimodal_risk_gradcam_meta.json",
             "multimodal_xai_explanation": "1. Nhóm nguy cơ: High (Risk score = 1.3270)\nMô hình AI đánh giá mức nguy cơ cao - có nhiều yếu tố bất lợi, cần theo dõi sát và trị tích cực.\n\n2. Phân loại MRI: Pituitary tumor (độ tin cậy 95.7% - rất cao).\nGrad-CAM, Grad-CAM++ và Layer-CAM hiển thị vùng mô hình tập trung phân tích trên ảnh MRI.\n\n3. Trọng số Fusion Attention: MRI: 25.7% | WSI: 5.3% | RNA: 60.9% | Lâm sàng: 8.2%\nMô hình dựa nhiều nhất vào RNA để đưa ra kết quả tiên lượng.\n\n4. Mô bệnh học (WSI): Đã trích xuất đặc trưng từ 100 mảnh (tiles).\nĐặc trưng cấu trúc vi thể từ ảnh mô bệnh học được trích xuất để nâng cao độ chính xác tiên lượng.\n\n5. Biểu hiện gene (RNA-seq): Đã tích hợp dữ liệu giải trình tự gene.\nThông tin sinh học cấp độ phân tử đóng vai trò quan trọng hỗ trợ phát hiện các dấu ấn sinh học liên quan đến tiên lượng sinh tồn.\n\n6. Chỉ số lâm sàng: KI-67 = 15.0% (trung bình), WHO Grade II (Thấp).\n\nKhuyến nghị: Hội chẩn đa chuyên khoa sớm. Xem xét phẫu thuật, xạ trị hoặc hóa trị bổ trợ. Theo dõi MRI định kỳ mỗi 3 tháng.",
             "xai_explanation": "1. Nhóm nguy cơ: High (Risk score = 1.3270)\nMô hình AI đánh giá mức nguy cơ cao - có nhiều yếu tố bất lợi, cần theo dõi sát và trị tích cực.\n\n2. Phân loại MRI: Pituitary tumor (độ tin cậy 95.7% - rất cao).\nGrad-CAM, Grad-CAM++ và Layer-CAM hiển thị vùng mô hình tập trung phân tích trên ảnh MRI.\n\n3. Trọng số Fusion Attention: MRI: 25.7% | WSI: 5.3% | RNA: 60.9% | Lâm sàng: 8.2%\nMô hình dựa nhiều nhất vào RNA để đưa ra kết quả tiên lượng.\n\n4. Mô bệnh học (WSI): Đã trích xuất đặc trưng từ 100 mảnh (tiles).\nĐặc trưng cấu trúc vi thể từ ảnh mô bệnh học được trích xuất để nâng cao độ chính xác tiên lượng.\n\n5. Biểu hiện gene (RNA-seq): Đã tích hợp dữ liệu giải trình tự gene.\nThông tin sinh học cấp độ phân tử đóng vai trò quan trọng hỗ trợ phát hiện các dấu ấn sinh học liên quan đến tiên lượng sinh tồn.\n\n6. Chỉ số lâm sàng: KI-67 = 15.0% (trung bình), WHO Grade II (Thấp).\n\nKhuyến nghị: Hội chẩn đa chuyên khoa sớm. Xem xét phẫu thuật, xạ trị hoặc hóa trị bổ trợ. Theo dõi MRI định kỳ mỗi 3 tháng.",
-            "input_signature": "b921320d1f31f89fd2ac8c31612fce6ecf1ab0e6f2ca3c2956421f716d255c29",
-            "image_id": 104,
+            "image_id": 6,
             "classification_xai_explanation": "1. Kết quả tóm tắt\n- Mô hình dự đoán: u tuyến yên (Pituitary tumor); độ tin cậy phân loại: 95,69%.\n- Kết quả này là công cụ hỗ trợ tham khảo cho quá trình chẩn đoán, không thay thế cho kết luận chuyên môn của bác sĩ.\n- Độ tin cậy phân loại chỉ phản ánh mức độ ưu tiên của mô hình đối với loại u này dựa trên dữ liệu học được, không phải là chỉ số đo lường mức độ nguy hiểm hay giai đoạn của bệnh.\n\n2. Giải thích AI/XAI và vùng heatmap mô hình dựa vào\n- So với lớp so sánh u màng não (Meningioma), độ tin cậy của lớp so sánh khoảng 3,4722%, và điểm chênh lệch giữa hai lớp khoảng 3,32.\n- Heatmap được tạo trên vùng ROI nghi ngờ có tổn thương sau bước phát hiện, không phải toàn bộ ảnh MRI; ROI có kích thước khoảng 66 x 68 pixel; heatmap gốc có độ phân giải 7 x 7; mức độ tập trung của heatmap: tập trung ở mức vừa phải.\n- Vùng sáng nhất của heatmap có tọa độ ROI khoảng (x=0, y=32) (vị trí tương đối: khoảng 0,0% chiều ngang từ trái sang phải và 49,2% chiều dọc từ trên xuống; nằm ở vùng giữa theo chiều dọc, lệch trái).\n- Tâm chú ý trung bình của heatmap có tọa độ ROI khoảng (x=18,3, y=32,5) (vị trí tương đối: khoảng 27,3% chiều ngang từ trái sang phải và 50,0% chiều dọc từ trên xuống; nằm ở vùng giữa theo chiều dọc, lệch trái).\n- Vùng nóng nổi bật có hộp bao ROI khoảng (x1=0, y1=11, x2=23, y2=55) (vị trí tương đối: trải từ 0,0% đến 33,8% chiều ngang và từ 16,7% đến 83,3% chiều dọc ROI; tâm vùng này nằm ở vùng giữa theo chiều dọc, lệch trái). Đây là vùng mô hình dựa vào nhiều hơn khi phân loại, không phải ranh giới chính xác của khối u.\n- 10% vùng nóng nhất chiếm khoảng 29,25% tổng tín hiệu heatmap; nhóm vùng nóng nổi bật chiếm khoảng 20,01% diện tích heatmap.\n- Mô hình ưu tiên dự đoán u tuyến yên do sự khác biệt rõ rệt về điểm số (logit) so với lớp u màng não, với các đặc trưng hình ảnh tập trung tại vùng ROI đã xác định.\n- Do heatmap có độ phân giải thấp và mang tính định hướng, đây không phải là bằng chứng khu trú chính xác tuyệt đối về mặt giải phẫu.\n\n3. Thông tin y khoa về loại u này\n- U tuyến yên là một trong những loại u nguyên phát được phân loại trong hệ thống phân loại của WHO về các khối u hệ thần kinh trung ương.\n- Chụp cộng hưởng từ (MRI) sọ não là phương pháp hình ảnh học tiêu chuẩn, có khả năng khảo sát chi tiết các mô mềm và phát hiện tổn thương tốt hơn so với chụp cắt lớp vi tính (CT).\n- Đối với các khối u lành tính có diễn tiến chậm, việc theo dõi định kỳ bằng MRI và thăm khám lâm sàng để ghi nhận các dấu hiệu bất thường là một phương án khả thi.\n- Việc lập kế hoạch điều trị cần dựa trên kết quả MRI chi tiết và đánh giá chuyên khoa, đặc biệt là trong các tình huống không cấp tính.",
             "xai_explanation_metadata": {
               "classification": {
@@ -4329,12 +4291,915 @@
             }
           },
           "error_message": null
+        },
+        {
+          "id": 29,
+          "task_type": "prognosis",
+          "target_id": 1,
+          "status": "done",
+          "created_at": "2026-11-20T15:32:59.145434",
+          "updated_at": "2026-11-20T15:33:09.718986",
+          "result": {
+            "status": "success",
+            "error_msg": "",
+            "no_tumor_detected": false,
+            "bbox": [
+              193,
+              173,
+              299,
+              248
+            ],
+            "bbox_confidence": 0.868486,
+            "tumor_label": "Pituitary tumor",
+            "classification_confidence": 0.99043,
+            "class_probabilities": [
+              0.008725609630346298,
+              0.0008443579426966608,
+              0.9904300570487976
+            ],
+            "original_image_path": "/medical-data/prognosis/1/task-29/step0_original.png",
+            "bbox_image_path": "/medical-data/prognosis/1/task-29/step1_bbox.png",
+            "cropped_roi_path": "/medical-data/prognosis/1/task-29/step2_roi.png",
+            "seg_mask_path": "/medical-data/prognosis/1/task-29/step3_mask.png",
+            "masked_roi_path": "/medical-data/prognosis/1/task-29/step4_masked_roi.png",
+            "mask_overlay_path": "/medical-data/prognosis/1/task-29/step5_mask_overlay.png",
+            "contour_overlay_path": "/medical-data/prognosis/1/task-29/step6_contour_overlay.png",
+            "detection_xai_path": "/medical-data/prognosis/1/task-29/step7_detection_odam.png",
+            "segmentation_xai_path": "/medical-data/prognosis/1/task-29/step8_seg_eigen_cam.png",
+            "classification_xai_path": "/medical-data/prognosis/1/task-29/step9_classification_finer_cam.png",
+            "odam_path": "/medical-data/prognosis/1/task-29/step7_detection_odam.png",
+            "odam_meta_path": "/medical-data/prognosis/1/task-29/xai_detection_odam_meta.json",
+            "xai_methods": {
+              "detection": "yolo_original_odam",
+              "segmentation": "seg_eigen_cam_original",
+              "classification": "finer_cam",
+              "multimodal": "multimodal_mri_branch_cam_suite"
+            },
+            "xai_warnings": {},
+            "xai_metadata": {
+              "detection": {
+                "query": 7018,
+                "queries": [
+                  7018
+                ],
+                "query_scale": "P4",
+                "query_scales": [
+                  "P4"
+                ],
+                "matched_iou": 0.9999992251396179,
+                "class_score": 0.8684855103492737,
+                "confidence_closeness": 0.9999998211860657,
+                "match_score": 0.9776419401168823,
+                "topk": 1,
+                "iou_threshold": 0.5,
+                "raw_box_xyxy_letterbox": [
+                  242.45880126953125,
+                  216.9821319580078,
+                  374.83782958984375,
+                  311.21490478515625
+                ],
+                "selected_box_xyxy_letterbox": [
+                  242.4587860107422,
+                  216.98214721679688,
+                  374.83782958984375,
+                  311.2149353027344
+                ],
+                "selected_class_idx": 2,
+                "selected_confidence": 0.868485689163208,
+                "matching_note": "Post-NMS bbox is mapped to one raw query by class, IoU, and confidence closeness. This matching score is not used as the ODAM target.",
+                "target_layer_index": 19,
+                "target_layer_name": "C3k2",
+                "inside_bbox_energy_ratio": 0.9453557660231399,
+                "top20_inside_bbox_ratio": 0.957583892614879,
+                "top20_metric_note": "ratio of top 20% positive heatmap pixels that fall inside the selected bbox",
+                "method": "odam_original_yolo",
+                "target_scalar": "class_score_and_bbox_coordinates",
+                "target_attributes": [
+                  "class_score",
+                  "x1",
+                  "y1",
+                  "x2",
+                  "y2"
+                ],
+                "combined_heatmap": "max(H_class, H_x1, H_y1, H_x2, H_y2)",
+                "bbox_coordinate_system": "decoded_xyxy_letterbox",
+                "bbox_mask_applied": false,
+                "brain_mask_applied": false,
+                "post_smooth_sigma": 0.0,
+                "gradient_smooth_sigma": 0.8,
+                "fallback_used": false,
+                "method_note": "Original ODAM formulation for a selected YOLO11 detection instance. The post-NMS bbox only selects the instance. The matched pre-NMS query is explained with separate scalar targets for class score and decoded bbox coordinates x1, y1, x2, y2. Each heatmap is computed as ReLU(sum_k(Phi(dY/dA)_k * A_k)); the final map is their element-wise max."
+              },
+              "classification": {
+                "method": "finer_cam",
+                "target_class_idx": 2,
+                "target_class_name": "Pituitary tumor",
+                "target_logit": 3.683103084564209,
+                "target_probability": 0.9904300570487976,
+                "reference_class_idx": 1,
+                "reference_class_name": "Meningioma",
+                "reference_logit": -3.3842148780822754,
+                "reference_probability": 0.0008443579426966608,
+                "target_minus_reference_logit_margin": 7.067317962646484,
+                "target_scalar": "target_logit_minus_gamma_times_reference_logit",
+                "target_scalar_value": 5.713632011413575,
+                "gamma": 0.6,
+                "target_layer_name": "Conv2d",
+                "heatmap_scope": "classification_roi_after_detection",
+                "roi_shape_hw": [
+                  75,
+                  106
+                ],
+                "heatmap_shape_hw": [
+                  7,
+                  7
+                ],
+                "heatmap_summary": {
+                  "max_value": 0.992458701133728,
+                  "mean_value": 0.3970092535018921,
+                  "total_energy": 3156.2236328125,
+                  "peak_xy": [
+                    68,
+                    48
+                  ],
+                  "peak_xy_normalized": [
+                    0.6476190476190476,
+                    0.6486486486486487
+                  ],
+                  "energy_center_xy": [
+                    60.23314305120954,
+                    42.50726891807529
+                  ],
+                  "energy_center_xy_normalized": [
+                    0.5736489814400908,
+                    0.5744225529469634
+                  ],
+                  "top20_threshold": 0.6301655411720276,
+                  "top20_area_ratio": 0.2,
+                  "top20_bbox_xyxy": [
+                    42,
+                    24,
+                    92,
+                    74
+                  ],
+                  "top10_energy_ratio": 0.20366413952096754,
+                  "localization_strength": "diffuse"
+                },
+                "interpretation_notes": [
+                  "Heatmap is computed on the cropped ROI after detection, not on the full MRI image.",
+                  "Higher heatmap values indicate regions that contributed more positively to the Finer-CAM target scalar.",
+                  "The heatmap supports model-behavior explanation only; it is not pathology proof."
+                ]
+              },
+              "multimodal": {
+                "method": "multimodal_mri_branch_cam_suite",
+                "target_scalar": "risk_score",
+                "risk_score": 0.10233684629201889,
+                "target_layer_name": "Conv2d",
+                "input_scope": "masked_roi_after_detection_and_segmentation",
+                "modalities_available": {
+                  "mri": true,
+                  "wsi": true,
+                  "rna": true,
+                  "clinical": true
+                },
+                "heatmap_shape_after_resize": [
+                  512,
+                  512
+                ],
+                "heatmaps_generated": [
+                  "gradcam",
+                  "gradcam++",
+                  "layercam"
+                ],
+                "note": "Suite Grad-CAM, Grad-CAM++, Layer-CAM computed from a single forward+backward pass on the MRI branch of the multimodal prognosis model."
+              }
+            },
+            "seg_eigen_cam_path": "/medical-data/prognosis/1/task-29/step8_seg_eigen_cam.png",
+            "finer_cam_path": "/medical-data/prognosis/1/task-29/step9_classification_finer_cam.png",
+            "classification_xai_meta_path": "/medical-data/prognosis/1/task-29/xai_classification_finer_cam_meta.json",
+            "mri_status": "tumor_detected",
+            "mri_partial": false,
+            "slices_total": 1,
+            "slices_examined": 1,
+            "slices_failed": 0,
+            "failed_slice_reasons": [],
+            "review_required": false,
+            "review_reasons": [],
+            "wsi_num_tiles": 100,
+            "rna_xai": [
+              {
+                "gene": "RN7SL617P",
+                "ensembl_id": "ENSG00000241162",
+                "importance": -0.005004911683499813,
+                "expression": 2.054044008255005,
+                "impact": "Protective"
+              },
+              {
+                "gene": "RN7SL18P",
+                "ensembl_id": "ENSG00000241625",
+                "importance": -0.00402797432616353,
+                "expression": 2.135962963104248,
+                "impact": "Protective"
+              },
+              {
+                "gene": "GSTM1",
+                "ensembl_id": "ENSG00000134184",
+                "importance": -0.0036150519736111164,
+                "expression": -1.0789802074432373,
+                "impact": "Protective"
+              },
+              {
+                "gene": "RN7SL679P",
+                "ensembl_id": "ENSG00000243905",
+                "importance": -0.00359553936868906,
+                "expression": 1.889709234237671,
+                "impact": "Protective"
+              },
+              {
+                "gene": "RN7SL164P",
+                "ensembl_id": "ENSG00000242614",
+                "importance": -0.003542634192854166,
+                "expression": 1.8777613639831543,
+                "impact": "Protective"
+              },
+              {
+                "gene": "RN7SL394P",
+                "ensembl_id": "ENSG00000239942",
+                "importance": -0.0035378143656998873,
+                "expression": 1.4619492292404175,
+                "impact": "Protective"
+              },
+              {
+                "gene": "TMEM179",
+                "ensembl_id": "ENSG00000258986",
+                "importance": 0.0032227770425379276,
+                "expression": -1.8243436813354492,
+                "impact": "High Risk"
+              },
+              {
+                "gene": "RN7SL792P",
+                "ensembl_id": "ENSG00000239888",
+                "importance": 0.003193639451637864,
+                "expression": 1.8491501808166504,
+                "impact": "High Risk"
+              },
+              {
+                "gene": "GPR27",
+                "ensembl_id": "ENSG00000170837",
+                "importance": 0.003184886183589697,
+                "expression": -1.5597940683364868,
+                "impact": "High Risk"
+              },
+              {
+                "gene": "RN7SL597P",
+                "ensembl_id": "ENSG00000244264",
+                "importance": -0.003087232355028391,
+                "expression": 1.882725477218628,
+                "impact": "Protective"
+              }
+            ],
+            "risk_score": 0.102337,
+            "risk_group": "Medium",
+            "survival_curve_data": null,
+            "prognosis_meta": {
+              "calibrated": false,
+              "percentile": 39.9,
+              "group": "Medium",
+              "c_index_test": 0.6481980877666095,
+              "c_index_ci": [
+                0.585350340323124,
+                0.7019366397544488
+              ],
+              "n_train": 764,
+              "n_test": 135,
+              "limitation_text": "Điểm nguy cơ tương đối so với 764 bệnh nhân huấn luyện – không phải xác suất sống còn đã hiệu chuẩn. Khả năng xếp hạng trên 135 bệnh nhân độc lập: C-index 0.65 (KTC95% 0.59–0.70). Chỉ dùng tham khảo, bác sĩ quyết định."
+            },
+            "fusion_attention": [
+              0.32177799940109253,
+              0.27966243028640747,
+              0.031777434051036835,
+              0.36678212881088257
+            ],
+            "multimodal_gradcam_heatmap_path": "/medical-data/prognosis/1/task-29/step10_multimodal_risk_gradcam.png",
+            "multimodal_risk_xai_path": "/medical-data/prognosis/1/task-29/step10_multimodal_risk_gradcam.png",
+            "multimodal_gradcam_plus_heatmap_path": "/medical-data/prognosis/1/task-29/step10_multimodal_risk_gradcam_plus.png",
+            "multimodal_layercam_heatmap_path": "/medical-data/prognosis/1/task-29/step10_multimodal_risk_layercam.png",
+            "multimodal_risk_xai_meta_path": "/medical-data/prognosis/1/task-29/xai_multimodal_risk_gradcam_meta.json",
+            "multimodal_xai_explanation": "1. Nhóm nguy cơ tương đối: Medium (risk score = 0.1023)\nĐiểm của bệnh nhân cao hơn 40% bệnh nhân huấn luyện, thuộc 1/3 bệnh nhân có điểm nguy cơ ở giữa của tập huấn luyện.\nĐiểm nguy cơ tương đối so với 764 bệnh nhân huấn luyện – không phải xác suất sống còn đã hiệu chuẩn. Khả năng xếp hạng trên 135 bệnh nhân độc lập: C-index 0.65 (KTC95% 0.59–0.70). Chỉ dùng tham khảo, bác sĩ quyết định.\n\n2. Phân loại MRI: Pituitary tumor (độ tin cậy 99.0% - rất cao).\nGrad-CAM, Grad-CAM++ và Layer-CAM hiển thị vùng mô hình tập trung phân tích trên ảnh MRI.\n\n3. Trọng số Fusion Attention: MRI: 32.2% | WSI: 28.0% | RNA: 3.2% | Lâm sàng: 36.7%\nMô hình dựa nhiều nhất vào Lâm sàng để đưa ra kết quả tiên lượng.\n\n4. Mô bệnh học (WSI): Đã trích xuất đặc trưng từ 100 mảnh (tiles).\nĐặc trưng cấu trúc vi thể từ ảnh mô bệnh học được trích xuất để nâng cao độ chính xác tiên lượng.\n\n5. Biểu hiện gene (RNA-seq): Đã tích hợp dữ liệu giải trình tự gene.\nThông tin sinh học cấp độ phân tử đóng vai trò quan trọng hỗ trợ phát hiện các dấu ấn sinh học liên quan đến tiên lượng sinh tồn.\n\n6. Chỉ số lâm sàng: KI-67 = 15.0% (trung bình), WHO Grade II (Thấp).\n\nGợi ý tham khảo: kết hợp điểm nguy cơ tương đối với đánh giá lâm sàng đầy đủ. Quyết định điều trị thuộc về bác sĩ.",
+            "xai_explanation": "1. Nhóm nguy cơ tương đối: Medium (risk score = 0.1023)\nĐiểm của bệnh nhân cao hơn 40% bệnh nhân huấn luyện, thuộc 1/3 bệnh nhân có điểm nguy cơ ở giữa của tập huấn luyện.\nĐiểm nguy cơ tương đối so với 764 bệnh nhân huấn luyện – không phải xác suất sống còn đã hiệu chuẩn. Khả năng xếp hạng trên 135 bệnh nhân độc lập: C-index 0.65 (KTC95% 0.59–0.70). Chỉ dùng tham khảo, bác sĩ quyết định.\n\n2. Phân loại MRI: Pituitary tumor (độ tin cậy 99.0% - rất cao).\nGrad-CAM, Grad-CAM++ và Layer-CAM hiển thị vùng mô hình tập trung phân tích trên ảnh MRI.\n\n3. Trọng số Fusion Attention: MRI: 32.2% | WSI: 28.0% | RNA: 3.2% | Lâm sàng: 36.7%\nMô hình dựa nhiều nhất vào Lâm sàng để đưa ra kết quả tiên lượng.\n\n4. Mô bệnh học (WSI): Đã trích xuất đặc trưng từ 100 mảnh (tiles).\nĐặc trưng cấu trúc vi thể từ ảnh mô bệnh học được trích xuất để nâng cao độ chính xác tiên lượng.\n\n5. Biểu hiện gene (RNA-seq): Đã tích hợp dữ liệu giải trình tự gene.\nThông tin sinh học cấp độ phân tử đóng vai trò quan trọng hỗ trợ phát hiện các dấu ấn sinh học liên quan đến tiên lượng sinh tồn.\n\n6. Chỉ số lâm sàng: KI-67 = 15.0% (trung bình), WHO Grade II (Thấp).\n\nGợi ý tham khảo: kết hợp điểm nguy cơ tương đối với đánh giá lâm sàng đầy đủ. Quyết định điều trị thuộc về bác sĩ.",
+            "input_signature": "6a9c5b1c4d06cb1419e2890e5d4725df6ee18b311a5caf5ef9102c2b3ca59b6b",
+            "image_id": 1
+          },
+          "error_message": null
+        },
+        {
+          "id": 30,
+          "task_type": "prognosis",
+          "target_id": 1,
+          "status": "done",
+          "created_at": "2026-11-20T15:33:11.379345",
+          "updated_at": "2026-11-20T15:33:18.948875",
+          "result": {
+            "status": "success",
+            "error_msg": "",
+            "no_tumor_detected": false,
+            "bbox": [
+              219,
+              186,
+              287,
+              252
+            ],
+            "bbox_confidence": 0.877103,
+            "tumor_label": "Pituitary tumor",
+            "classification_confidence": 0.956984,
+            "class_probabilities": [
+              0.008341831155121326,
+              0.03467397764325142,
+              0.9569842219352722
+            ],
+            "original_image_path": "/medical-data/prognosis/1/task-30/step0_original.png",
+            "bbox_image_path": "/medical-data/prognosis/1/task-30/step1_bbox.png",
+            "cropped_roi_path": "/medical-data/prognosis/1/task-30/step2_roi.png",
+            "seg_mask_path": "/medical-data/prognosis/1/task-30/step3_mask.png",
+            "masked_roi_path": "/medical-data/prognosis/1/task-30/step4_masked_roi.png",
+            "mask_overlay_path": "/medical-data/prognosis/1/task-30/step5_mask_overlay.png",
+            "contour_overlay_path": "/medical-data/prognosis/1/task-30/step6_contour_overlay.png",
+            "detection_xai_path": "/medical-data/prognosis/1/task-30/step7_detection_odam.png",
+            "segmentation_xai_path": "/medical-data/prognosis/1/task-30/step8_seg_eigen_cam.png",
+            "classification_xai_path": "/medical-data/prognosis/1/task-30/step9_classification_finer_cam.png",
+            "odam_path": "/medical-data/prognosis/1/task-30/step7_detection_odam.png",
+            "odam_meta_path": "/medical-data/prognosis/1/task-30/xai_detection_odam_meta.json",
+            "xai_methods": {
+              "detection": "yolo_original_odam",
+              "segmentation": "seg_eigen_cam_original",
+              "classification": "finer_cam",
+              "multimodal": "multimodal_mri_branch_cam_suite"
+            },
+            "xai_warnings": {},
+            "xai_metadata": {
+              "detection": {
+                "query": 7140,
+                "queries": [
+                  7140
+                ],
+                "query_scale": "P4",
+                "query_scales": [
+                  "P4"
+                ],
+                "matched_iou": 1.0,
+                "class_score": 0.8771024942398071,
+                "confidence_closeness": 0.9999997615814209,
+                "match_score": 0.9791074395179749,
+                "topk": 1,
+                "iou_threshold": 0.5,
+                "raw_box_xyxy_letterbox": [
+                  274.188720703125,
+                  233.66195678710938,
+                  359.1387939453125,
+                  315.4349060058594
+                ],
+                "selected_box_xyxy_letterbox": [
+                  274.188720703125,
+                  233.66195678710938,
+                  359.1387939453125,
+                  315.4349060058594
+                ],
+                "selected_class_idx": 2,
+                "selected_confidence": 0.8771027326583862,
+                "matching_note": "Post-NMS bbox is mapped to one raw query by class, IoU, and confidence closeness. This matching score is not used as the ODAM target.",
+                "target_layer_index": 19,
+                "target_layer_name": "C3k2",
+                "inside_bbox_energy_ratio": 0.7873207744169719,
+                "top20_inside_bbox_ratio": 0.8102375565587946,
+                "top20_metric_note": "ratio of top 20% positive heatmap pixels that fall inside the selected bbox",
+                "method": "odam_original_yolo",
+                "target_scalar": "class_score_and_bbox_coordinates",
+                "target_attributes": [
+                  "class_score",
+                  "x1",
+                  "y1",
+                  "x2",
+                  "y2"
+                ],
+                "combined_heatmap": "max(H_class, H_x1, H_y1, H_x2, H_y2)",
+                "bbox_coordinate_system": "decoded_xyxy_letterbox",
+                "bbox_mask_applied": false,
+                "brain_mask_applied": false,
+                "post_smooth_sigma": 0.0,
+                "gradient_smooth_sigma": 0.8,
+                "fallback_used": false,
+                "method_note": "Original ODAM formulation for a selected YOLO11 detection instance. The post-NMS bbox only selects the instance. The matched pre-NMS query is explained with separate scalar targets for class score and decoded bbox coordinates x1, y1, x2, y2. Each heatmap is computed as ReLU(sum_k(Phi(dY/dA)_k * A_k)); the final map is their element-wise max."
+              },
+              "classification": {
+                "method": "finer_cam",
+                "target_class_idx": 2,
+                "target_class_name": "Pituitary tumor",
+                "target_logit": 2.668076992034912,
+                "target_probability": 0.9569842219352722,
+                "reference_class_idx": 1,
+                "reference_class_name": "Meningioma",
+                "reference_logit": -0.6497204303741455,
+                "reference_probability": 0.03467397764325142,
+                "target_minus_reference_logit_margin": 3.3177974224090576,
+                "target_scalar": "target_logit_minus_gamma_times_reference_logit",
+                "target_scalar_value": 3.0579092502593994,
+                "gamma": 0.6,
+                "target_layer_name": "Conv2d",
+                "heatmap_scope": "classification_roi_after_detection",
+                "roi_shape_hw": [
+                  66,
+                  68
+                ],
+                "heatmap_shape_hw": [
+                  7,
+                  7
+                ],
+                "heatmap_summary": {
+                  "max_value": 0.996177613735199,
+                  "mean_value": 0.30723947286605835,
+                  "total_energy": 1378.8907470703125,
+                  "peak_xy": [
+                    0,
+                    32
+                  ],
+                  "peak_xy_normalized": [
+                    0.0,
+                    0.49230769230769234
+                  ],
+                  "energy_center_xy": [
+                    18.272192281415453,
+                    32.48822902611767
+                  ],
+                  "energy_center_xy_normalized": [
+                    0.2727192877823202,
+                    0.49981890809411805
+                  ],
+                  "top20_threshold": 0.6172361612319947,
+                  "top20_area_ratio": 0.2000891265597148,
+                  "top20_bbox_xyxy": [
+                    0,
+                    11,
+                    23,
+                    55
+                  ],
+                  "top10_energy_ratio": 0.292517718639365,
+                  "localization_strength": "moderately_focal"
+                },
+                "interpretation_notes": [
+                  "Heatmap is computed on the cropped ROI after detection, not on the full MRI image.",
+                  "Higher heatmap values indicate regions that contributed more positively to the Finer-CAM target scalar.",
+                  "The heatmap supports model-behavior explanation only; it is not pathology proof."
+                ]
+              },
+              "multimodal": {
+                "method": "multimodal_mri_branch_cam_suite",
+                "target_scalar": "risk_score",
+                "risk_score": 0.0902174860239029,
+                "target_layer_name": "Conv2d",
+                "input_scope": "masked_roi_after_detection_and_segmentation",
+                "modalities_available": {
+                  "mri": true,
+                  "wsi": true,
+                  "rna": true,
+                  "clinical": true
+                },
+                "heatmap_shape_after_resize": [
+                  512,
+                  512
+                ],
+                "heatmaps_generated": [
+                  "gradcam",
+                  "gradcam++",
+                  "layercam"
+                ],
+                "note": "Suite Grad-CAM, Grad-CAM++, Layer-CAM computed from a single forward+backward pass on the MRI branch of the multimodal prognosis model."
+              }
+            },
+            "seg_eigen_cam_path": "/medical-data/prognosis/1/task-30/step8_seg_eigen_cam.png",
+            "finer_cam_path": "/medical-data/prognosis/1/task-30/step9_classification_finer_cam.png",
+            "classification_xai_meta_path": "/medical-data/prognosis/1/task-30/xai_classification_finer_cam_meta.json",
+            "mri_status": "tumor_detected",
+            "mri_partial": false,
+            "slices_total": 1,
+            "slices_examined": 1,
+            "slices_failed": 0,
+            "failed_slice_reasons": [],
+            "review_required": false,
+            "review_reasons": [],
+            "wsi_num_tiles": 100,
+            "rna_xai": [
+              {
+                "gene": "RN7SL617P",
+                "ensembl_id": "ENSG00000241162",
+                "importance": -0.004566964693367481,
+                "expression": 2.054044008255005,
+                "impact": "Protective"
+              },
+              {
+                "gene": "RN7SL18P",
+                "ensembl_id": "ENSG00000241625",
+                "importance": -0.003717878134921193,
+                "expression": 2.135962963104248,
+                "impact": "Protective"
+              },
+              {
+                "gene": "GSTM1",
+                "ensembl_id": "ENSG00000134184",
+                "importance": -0.0032916641794145107,
+                "expression": -1.0789802074432373,
+                "impact": "Protective"
+              },
+              {
+                "gene": "RN7SL679P",
+                "ensembl_id": "ENSG00000243905",
+                "importance": -0.0032784154172986746,
+                "expression": 1.889709234237671,
+                "impact": "Protective"
+              },
+              {
+                "gene": "RN7SL164P",
+                "ensembl_id": "ENSG00000242614",
+                "importance": -0.0032509486190974712,
+                "expression": 1.8777613639831543,
+                "impact": "Protective"
+              },
+              {
+                "gene": "RN7SL394P",
+                "ensembl_id": "ENSG00000239942",
+                "importance": -0.003237303113564849,
+                "expression": 1.4619492292404175,
+                "impact": "Protective"
+              },
+              {
+                "gene": "TMEM179",
+                "ensembl_id": "ENSG00000258986",
+                "importance": 0.00293122255243361,
+                "expression": -1.8243436813354492,
+                "impact": "High Risk"
+              },
+              {
+                "gene": "GPR27",
+                "ensembl_id": "ENSG00000170837",
+                "importance": 0.0029040889348834753,
+                "expression": -1.5597940683364868,
+                "impact": "High Risk"
+              },
+              {
+                "gene": "RN7SL792P",
+                "ensembl_id": "ENSG00000239888",
+                "importance": 0.0028749434277415276,
+                "expression": 1.8491501808166504,
+                "impact": "High Risk"
+              },
+              {
+                "gene": "RN7SL597P",
+                "ensembl_id": "ENSG00000244264",
+                "importance": -0.0028323435690253973,
+                "expression": 1.882725477218628,
+                "impact": "Protective"
+              }
+            ],
+            "risk_score": 0.090217,
+            "risk_group": "Medium",
+            "survival_curve_data": null,
+            "prognosis_meta": {
+              "calibrated": false,
+              "percentile": 39.8,
+              "group": "Medium",
+              "c_index_test": 0.6481980877666095,
+              "c_index_ci": [
+                0.585350340323124,
+                0.7019366397544488
+              ],
+              "n_train": 764,
+              "n_test": 135,
+              "limitation_text": "Điểm nguy cơ tương đối so với 764 bệnh nhân huấn luyện – không phải xác suất sống còn đã hiệu chuẩn. Khả năng xếp hạng trên 135 bệnh nhân độc lập: C-index 0.65 (KTC95% 0.59–0.70). Chỉ dùng tham khảo, bác sĩ quyết định."
+            },
+            "fusion_attention": [
+              0.39318856596946716,
+              0.25032106041908264,
+              0.028488699346780777,
+              0.32800161838531494
+            ],
+            "multimodal_gradcam_heatmap_path": "/medical-data/prognosis/1/task-30/step10_multimodal_risk_gradcam.png",
+            "multimodal_risk_xai_path": "/medical-data/prognosis/1/task-30/step10_multimodal_risk_gradcam.png",
+            "multimodal_gradcam_plus_heatmap_path": "/medical-data/prognosis/1/task-30/step10_multimodal_risk_gradcam_plus.png",
+            "multimodal_layercam_heatmap_path": "/medical-data/prognosis/1/task-30/step10_multimodal_risk_layercam.png",
+            "multimodal_risk_xai_meta_path": "/medical-data/prognosis/1/task-30/xai_multimodal_risk_gradcam_meta.json",
+            "multimodal_xai_explanation": "1. Nhóm nguy cơ tương đối: Medium (risk score = 0.0902)\nĐiểm của bệnh nhân cao hơn 40% bệnh nhân huấn luyện, thuộc 1/3 bệnh nhân có điểm nguy cơ ở giữa của tập huấn luyện.\nĐiểm nguy cơ tương đối so với 764 bệnh nhân huấn luyện – không phải xác suất sống còn đã hiệu chuẩn. Khả năng xếp hạng trên 135 bệnh nhân độc lập: C-index 0.65 (KTC95% 0.59–0.70). Chỉ dùng tham khảo, bác sĩ quyết định.\n\n2. Phân loại MRI: Pituitary tumor (độ tin cậy 95.7% - rất cao).\nGrad-CAM, Grad-CAM++ và Layer-CAM hiển thị vùng mô hình tập trung phân tích trên ảnh MRI.\n\n3. Trọng số Fusion Attention: MRI: 39.3% | WSI: 25.0% | RNA: 2.8% | Lâm sàng: 32.8%\nMô hình dựa nhiều nhất vào MRI để đưa ra kết quả tiên lượng.\n\n4. Mô bệnh học (WSI): Đã trích xuất đặc trưng từ 100 mảnh (tiles).\nĐặc trưng cấu trúc vi thể từ ảnh mô bệnh học được trích xuất để nâng cao độ chính xác tiên lượng.\n\n5. Biểu hiện gene (RNA-seq): Đã tích hợp dữ liệu giải trình tự gene.\nThông tin sinh học cấp độ phân tử đóng vai trò quan trọng hỗ trợ phát hiện các dấu ấn sinh học liên quan đến tiên lượng sinh tồn.\n\n6. Chỉ số lâm sàng: KI-67 = 15.0% (trung bình), WHO Grade II (Thấp).\n\nGợi ý tham khảo: kết hợp điểm nguy cơ tương đối với đánh giá lâm sàng đầy đủ. Quyết định điều trị thuộc về bác sĩ.",
+            "xai_explanation": "1. Nhóm nguy cơ tương đối: Medium (risk score = 0.0902)\nĐiểm của bệnh nhân cao hơn 40% bệnh nhân huấn luyện, thuộc 1/3 bệnh nhân có điểm nguy cơ ở giữa của tập huấn luyện.\nĐiểm nguy cơ tương đối so với 764 bệnh nhân huấn luyện – không phải xác suất sống còn đã hiệu chuẩn. Khả năng xếp hạng trên 135 bệnh nhân độc lập: C-index 0.65 (KTC95% 0.59–0.70). Chỉ dùng tham khảo, bác sĩ quyết định.\n\n2. Phân loại MRI: Pituitary tumor (độ tin cậy 95.7% - rất cao).\nGrad-CAM, Grad-CAM++ và Layer-CAM hiển thị vùng mô hình tập trung phân tích trên ảnh MRI.\n\n3. Trọng số Fusion Attention: MRI: 39.3% | WSI: 25.0% | RNA: 2.8% | Lâm sàng: 32.8%\nMô hình dựa nhiều nhất vào MRI để đưa ra kết quả tiên lượng.\n\n4. Mô bệnh học (WSI): Đã trích xuất đặc trưng từ 100 mảnh (tiles).\nĐặc trưng cấu trúc vi thể từ ảnh mô bệnh học được trích xuất để nâng cao độ chính xác tiên lượng.\n\n5. Biểu hiện gene (RNA-seq): Đã tích hợp dữ liệu giải trình tự gene.\nThông tin sinh học cấp độ phân tử đóng vai trò quan trọng hỗ trợ phát hiện các dấu ấn sinh học liên quan đến tiên lượng sinh tồn.\n\n6. Chỉ số lâm sàng: KI-67 = 15.0% (trung bình), WHO Grade II (Thấp).\n\nGợi ý tham khảo: kết hợp điểm nguy cơ tương đối với đánh giá lâm sàng đầy đủ. Quyết định điều trị thuộc về bác sĩ.",
+            "input_signature": "62e1ee9a41a57afd6211ca282086ce63c1e2db1b143fe379f6cd2f8d66027f09",
+            "image_id": 2
+          },
+          "error_message": null
+        },
+        {
+          "id": 31,
+          "task_type": "prognosis",
+          "target_id": 1,
+          "status": "done",
+          "created_at": "2026-11-20T15:33:19.485531",
+          "updated_at": "2026-11-20T15:33:27.512417",
+          "result": {
+            "status": "success",
+            "error_msg": "",
+            "no_tumor_detected": false,
+            "bbox": [
+              219,
+              186,
+              287,
+              252
+            ],
+            "bbox_confidence": 0.877103,
+            "tumor_label": "Pituitary tumor",
+            "classification_confidence": 0.956984,
+            "class_probabilities": [
+              0.008341831155121326,
+              0.03467397764325142,
+              0.9569842219352722
+            ],
+            "original_image_path": "/medical-data/prognosis/1/task-31/step0_original.png",
+            "bbox_image_path": "/medical-data/prognosis/1/task-31/step1_bbox.png",
+            "cropped_roi_path": "/medical-data/prognosis/1/task-31/step2_roi.png",
+            "seg_mask_path": "/medical-data/prognosis/1/task-31/step3_mask.png",
+            "masked_roi_path": "/medical-data/prognosis/1/task-31/step4_masked_roi.png",
+            "mask_overlay_path": "/medical-data/prognosis/1/task-31/step5_mask_overlay.png",
+            "contour_overlay_path": "/medical-data/prognosis/1/task-31/step6_contour_overlay.png",
+            "detection_xai_path": "/medical-data/prognosis/1/task-31/step7_detection_odam.png",
+            "segmentation_xai_path": "/medical-data/prognosis/1/task-31/step8_seg_eigen_cam.png",
+            "classification_xai_path": "/medical-data/prognosis/1/task-31/step9_classification_finer_cam.png",
+            "odam_path": "/medical-data/prognosis/1/task-31/step7_detection_odam.png",
+            "odam_meta_path": "/medical-data/prognosis/1/task-31/xai_detection_odam_meta.json",
+            "xai_methods": {
+              "detection": "yolo_original_odam",
+              "segmentation": "seg_eigen_cam_original",
+              "classification": "finer_cam",
+              "multimodal": "multimodal_mri_branch_cam_suite"
+            },
+            "xai_warnings": {},
+            "xai_metadata": {
+              "detection": {
+                "query": 7140,
+                "queries": [
+                  7140
+                ],
+                "query_scale": "P4",
+                "query_scales": [
+                  "P4"
+                ],
+                "matched_iou": 1.0,
+                "class_score": 0.8771024942398071,
+                "confidence_closeness": 0.9999997615814209,
+                "match_score": 0.9791074395179749,
+                "topk": 1,
+                "iou_threshold": 0.5,
+                "raw_box_xyxy_letterbox": [
+                  274.188720703125,
+                  233.66195678710938,
+                  359.1387939453125,
+                  315.4349060058594
+                ],
+                "selected_box_xyxy_letterbox": [
+                  274.188720703125,
+                  233.66195678710938,
+                  359.1387939453125,
+                  315.4349060058594
+                ],
+                "selected_class_idx": 2,
+                "selected_confidence": 0.8771027326583862,
+                "matching_note": "Post-NMS bbox is mapped to one raw query by class, IoU, and confidence closeness. This matching score is not used as the ODAM target.",
+                "target_layer_index": 19,
+                "target_layer_name": "C3k2",
+                "inside_bbox_energy_ratio": 0.7873207744169719,
+                "top20_inside_bbox_ratio": 0.8102375565587946,
+                "top20_metric_note": "ratio of top 20% positive heatmap pixels that fall inside the selected bbox",
+                "method": "odam_original_yolo",
+                "target_scalar": "class_score_and_bbox_coordinates",
+                "target_attributes": [
+                  "class_score",
+                  "x1",
+                  "y1",
+                  "x2",
+                  "y2"
+                ],
+                "combined_heatmap": "max(H_class, H_x1, H_y1, H_x2, H_y2)",
+                "bbox_coordinate_system": "decoded_xyxy_letterbox",
+                "bbox_mask_applied": false,
+                "brain_mask_applied": false,
+                "post_smooth_sigma": 0.0,
+                "gradient_smooth_sigma": 0.8,
+                "fallback_used": false,
+                "method_note": "Original ODAM formulation for a selected YOLO11 detection instance. The post-NMS bbox only selects the instance. The matched pre-NMS query is explained with separate scalar targets for class score and decoded bbox coordinates x1, y1, x2, y2. Each heatmap is computed as ReLU(sum_k(Phi(dY/dA)_k * A_k)); the final map is their element-wise max."
+              },
+              "classification": {
+                "method": "finer_cam",
+                "target_class_idx": 2,
+                "target_class_name": "Pituitary tumor",
+                "target_logit": 2.668076992034912,
+                "target_probability": 0.9569842219352722,
+                "reference_class_idx": 1,
+                "reference_class_name": "Meningioma",
+                "reference_logit": -0.6497204303741455,
+                "reference_probability": 0.03467397764325142,
+                "target_minus_reference_logit_margin": 3.3177974224090576,
+                "target_scalar": "target_logit_minus_gamma_times_reference_logit",
+                "target_scalar_value": 3.0579092502593994,
+                "gamma": 0.6,
+                "target_layer_name": "Conv2d",
+                "heatmap_scope": "classification_roi_after_detection",
+                "roi_shape_hw": [
+                  66,
+                  68
+                ],
+                "heatmap_shape_hw": [
+                  7,
+                  7
+                ],
+                "heatmap_summary": {
+                  "max_value": 0.996177613735199,
+                  "mean_value": 0.30723947286605835,
+                  "total_energy": 1378.8907470703125,
+                  "peak_xy": [
+                    0,
+                    32
+                  ],
+                  "peak_xy_normalized": [
+                    0.0,
+                    0.49230769230769234
+                  ],
+                  "energy_center_xy": [
+                    18.272192281415453,
+                    32.48822902611767
+                  ],
+                  "energy_center_xy_normalized": [
+                    0.2727192877823202,
+                    0.49981890809411805
+                  ],
+                  "top20_threshold": 0.6172361612319947,
+                  "top20_area_ratio": 0.2000891265597148,
+                  "top20_bbox_xyxy": [
+                    0,
+                    11,
+                    23,
+                    55
+                  ],
+                  "top10_energy_ratio": 0.292517718639365,
+                  "localization_strength": "moderately_focal"
+                },
+                "interpretation_notes": [
+                  "Heatmap is computed on the cropped ROI after detection, not on the full MRI image.",
+                  "Higher heatmap values indicate regions that contributed more positively to the Finer-CAM target scalar.",
+                  "The heatmap supports model-behavior explanation only; it is not pathology proof."
+                ]
+              },
+              "multimodal": {
+                "method": "multimodal_mri_branch_cam_suite",
+                "target_scalar": "risk_score",
+                "risk_score": 0.0902174860239029,
+                "target_layer_name": "Conv2d",
+                "input_scope": "masked_roi_after_detection_and_segmentation",
+                "modalities_available": {
+                  "mri": true,
+                  "wsi": true,
+                  "rna": true,
+                  "clinical": true
+                },
+                "heatmap_shape_after_resize": [
+                  512,
+                  512
+                ],
+                "heatmaps_generated": [
+                  "gradcam",
+                  "gradcam++",
+                  "layercam"
+                ],
+                "note": "Suite Grad-CAM, Grad-CAM++, Layer-CAM computed from a single forward+backward pass on the MRI branch of the multimodal prognosis model."
+              }
+            },
+            "seg_eigen_cam_path": "/medical-data/prognosis/1/task-31/step8_seg_eigen_cam.png",
+            "finer_cam_path": "/medical-data/prognosis/1/task-31/step9_classification_finer_cam.png",
+            "classification_xai_meta_path": "/medical-data/prognosis/1/task-31/xai_classification_finer_cam_meta.json",
+            "mri_status": "tumor_detected",
+            "mri_partial": false,
+            "slices_total": 1,
+            "slices_examined": 1,
+            "slices_failed": 0,
+            "failed_slice_reasons": [],
+            "review_required": false,
+            "review_reasons": [],
+            "wsi_num_tiles": 100,
+            "rna_xai": [
+              {
+                "gene": "RN7SL617P",
+                "ensembl_id": "ENSG00000241162",
+                "importance": -0.004566964693367481,
+                "expression": 2.054044008255005,
+                "impact": "Protective"
+              },
+              {
+                "gene": "RN7SL18P",
+                "ensembl_id": "ENSG00000241625",
+                "importance": -0.003717878134921193,
+                "expression": 2.135962963104248,
+                "impact": "Protective"
+              },
+              {
+                "gene": "GSTM1",
+                "ensembl_id": "ENSG00000134184",
+                "importance": -0.0032916641794145107,
+                "expression": -1.0789802074432373,
+                "impact": "Protective"
+              },
+              {
+                "gene": "RN7SL679P",
+                "ensembl_id": "ENSG00000243905",
+                "importance": -0.0032784154172986746,
+                "expression": 1.889709234237671,
+                "impact": "Protective"
+              },
+              {
+                "gene": "RN7SL164P",
+                "ensembl_id": "ENSG00000242614",
+                "importance": -0.0032509486190974712,
+                "expression": 1.8777613639831543,
+                "impact": "Protective"
+              },
+              {
+                "gene": "RN7SL394P",
+                "ensembl_id": "ENSG00000239942",
+                "importance": -0.003237303113564849,
+                "expression": 1.4619492292404175,
+                "impact": "Protective"
+              },
+              {
+                "gene": "TMEM179",
+                "ensembl_id": "ENSG00000258986",
+                "importance": 0.00293122255243361,
+                "expression": -1.8243436813354492,
+                "impact": "High Risk"
+              },
+              {
+                "gene": "GPR27",
+                "ensembl_id": "ENSG00000170837",
+                "importance": 0.0029040889348834753,
+                "expression": -1.5597940683364868,
+                "impact": "High Risk"
+              },
+              {
+                "gene": "RN7SL792P",
+                "ensembl_id": "ENSG00000239888",
+                "importance": 0.0028749434277415276,
+                "expression": 1.8491501808166504,
+                "impact": "High Risk"
+              },
+              {
+                "gene": "RN7SL597P",
+                "ensembl_id": "ENSG00000244264",
+                "importance": -0.0028323435690253973,
+                "expression": 1.882725477218628,
+                "impact": "Protective"
+              }
+            ],
+            "risk_score": 0.090217,
+            "risk_group": "Medium",
+            "survival_curve_data": null,
+            "prognosis_meta": {
+              "calibrated": false,
+              "percentile": 39.8,
+              "group": "Medium",
+              "c_index_test": 0.6481980877666095,
+              "c_index_ci": [
+                0.585350340323124,
+                0.7019366397544488
+              ],
+              "n_train": 764,
+              "n_test": 135,
+              "limitation_text": "Điểm nguy cơ tương đối so với 764 bệnh nhân huấn luyện – không phải xác suất sống còn đã hiệu chuẩn. Khả năng xếp hạng trên 135 bệnh nhân độc lập: C-index 0.65 (KTC95% 0.59–0.70). Chỉ dùng tham khảo, bác sĩ quyết định."
+            },
+            "fusion_attention": [
+              0.39318856596946716,
+              0.25032106041908264,
+              0.028488699346780777,
+              0.32800161838531494
+            ],
+            "multimodal_gradcam_heatmap_path": "/medical-data/prognosis/1/task-31/step10_multimodal_risk_gradcam.png",
+            "multimodal_risk_xai_path": "/medical-data/prognosis/1/task-31/step10_multimodal_risk_gradcam.png",
+            "multimodal_gradcam_plus_heatmap_path": "/medical-data/prognosis/1/task-31/step10_multimodal_risk_gradcam_plus.png",
+            "multimodal_layercam_heatmap_path": "/medical-data/prognosis/1/task-31/step10_multimodal_risk_layercam.png",
+            "multimodal_risk_xai_meta_path": "/medical-data/prognosis/1/task-31/xai_multimodal_risk_gradcam_meta.json",
+            "multimodal_xai_explanation": "1. Nhóm nguy cơ tương đối: Medium (risk score = 0.0902)\nĐiểm của bệnh nhân cao hơn 40% bệnh nhân huấn luyện, thuộc 1/3 bệnh nhân có điểm nguy cơ ở giữa của tập huấn luyện.\nĐiểm nguy cơ tương đối so với 764 bệnh nhân huấn luyện – không phải xác suất sống còn đã hiệu chuẩn. Khả năng xếp hạng trên 135 bệnh nhân độc lập: C-index 0.65 (KTC95% 0.59–0.70). Chỉ dùng tham khảo, bác sĩ quyết định.\n\n2. Phân loại MRI: Pituitary tumor (độ tin cậy 95.7% - rất cao).\nGrad-CAM, Grad-CAM++ và Layer-CAM hiển thị vùng mô hình tập trung phân tích trên ảnh MRI.\n\n3. Trọng số Fusion Attention: MRI: 39.3% | WSI: 25.0% | RNA: 2.8% | Lâm sàng: 32.8%\nMô hình dựa nhiều nhất vào MRI để đưa ra kết quả tiên lượng.\n\n4. Mô bệnh học (WSI): Đã trích xuất đặc trưng từ 100 mảnh (tiles).\nĐặc trưng cấu trúc vi thể từ ảnh mô bệnh học được trích xuất để nâng cao độ chính xác tiên lượng.\n\n5. Biểu hiện gene (RNA-seq): Đã tích hợp dữ liệu giải trình tự gene.\nThông tin sinh học cấp độ phân tử đóng vai trò quan trọng hỗ trợ phát hiện các dấu ấn sinh học liên quan đến tiên lượng sinh tồn.\n\n6. Chỉ số lâm sàng: KI-67 = 15.0% (trung bình), WHO Grade II (Thấp).\n\nGợi ý tham khảo: kết hợp điểm nguy cơ tương đối với đánh giá lâm sàng đầy đủ. Quyết định điều trị thuộc về bác sĩ.",
+            "xai_explanation": "1. Nhóm nguy cơ tương đối: Medium (risk score = 0.0902)\nĐiểm của bệnh nhân cao hơn 40% bệnh nhân huấn luyện, thuộc 1/3 bệnh nhân có điểm nguy cơ ở giữa của tập huấn luyện.\nĐiểm nguy cơ tương đối so với 764 bệnh nhân huấn luyện – không phải xác suất sống còn đã hiệu chuẩn. Khả năng xếp hạng trên 135 bệnh nhân độc lập: C-index 0.65 (KTC95% 0.59–0.70). Chỉ dùng tham khảo, bác sĩ quyết định.\n\n2. Phân loại MRI: Pituitary tumor (độ tin cậy 95.7% - rất cao).\nGrad-CAM, Grad-CAM++ và Layer-CAM hiển thị vùng mô hình tập trung phân tích trên ảnh MRI.\n\n3. Trọng số Fusion Attention: MRI: 39.3% | WSI: 25.0% | RNA: 2.8% | Lâm sàng: 32.8%\nMô hình dựa nhiều nhất vào MRI để đưa ra kết quả tiên lượng.\n\n4. Mô bệnh học (WSI): Đã trích xuất đặc trưng từ 100 mảnh (tiles).\nĐặc trưng cấu trúc vi thể từ ảnh mô bệnh học được trích xuất để nâng cao độ chính xác tiên lượng.\n\n5. Biểu hiện gene (RNA-seq): Đã tích hợp dữ liệu giải trình tự gene.\nThông tin sinh học cấp độ phân tử đóng vai trò quan trọng hỗ trợ phát hiện các dấu ấn sinh học liên quan đến tiên lượng sinh tồn.\n\n6. Chỉ số lâm sàng: KI-67 = 15.0% (trung bình), WHO Grade II (Thấp).\n\nGợi ý tham khảo: kết hợp điểm nguy cơ tương đối với đánh giá lâm sàng đầy đủ. Quyết định điều trị thuộc về bác sĩ.",
+            "input_signature": "7eb11e9eef1c42dff29af3604c69c3c26e25d29cbd7eac944a72b2444d5e63b2",
+            "image_id": 6
+          },
+          "error_message": null
         }
       ]
     },
     {
       "patient": {
-        "id": 1,
+        "id": 2,
         "name": "Nguyễn Văn A",
         "patient_external_id": "UCSF-001",
         "age": null,
@@ -4342,8 +5207,8 @@
       },
       "images": [
         {
-          "id": 4,
-          "patient_id": 1,
+          "id": 7,
+          "patient_id": 2,
           "scan_date": "2026-05-25T15:10:10.741367",
           "modality": "MRI",
           "file_path": "/analysis-results/4966dd76-d2c5-498d-bb85-0e4e863f6ff3_M_2.jpg",
@@ -4352,8 +5217,8 @@
           "key_slice_index": 0
         },
         {
-          "id": 7,
-          "patient_id": 1,
+          "id": 8,
+          "patient_id": 2,
           "scan_date": "2026-05-29T08:23:58.434263",
           "modality": "MRI",
           "file_path": "/analysis-results/55130487-5aac-4570-87bc-2fa7f5b4c5ba_brisc2025_test_00004_gl_ax_t1.jpg",
@@ -4362,8 +5227,8 @@
           "key_slice_index": 0
         },
         {
-          "id": 82,
-          "patient_id": 1,
+          "id": 9,
+          "patient_id": 2,
           "scan_date": "2026-06-27T06:40:20.632850",
           "modality": "MRI",
           "file_path": "/analysis-results/0ecf89a6-af5f-485a-a5c6-cc6f1d10b85b_brisc2025_test_00003_gl_ax_t1.jpg",
@@ -4376,164 +5241,125 @@
       "clinical": [],
       "analysis": [
         {
-          "id": 3,
-          "image_id": 4,
-          "patient_id": 1,
+          "id": 4,
+          "image_id": 7,
+          "patient_id": 2,
           "created_at": "2026-05-25T15:11:07.837253",
           "no_tumor_detected": false,
-          "tumor_label": "Glioma",
-          "classification_confidence": 0.999996,
+          "tumor_label": "Meningioma",
+          "classification_confidence": 0.999989,
           "dice_score": null,
           "iou_score": null,
           "accuracy": null,
           "c_index": null,
-          "risk_score": -0.386298,
-          "risk_group": "Medium",
+          "risk_score": -0.150267,
+          "risk_group": "Low",
           "gradcam_path": null,
           "mask_path": null,
-          "finer_cam_path": "/analysis-results/prognosis/1/task-8/step9_classification_finer_cam.png",
-          "seg_eigen_cam_path": "/analysis-results/prognosis/1/task-8/step8_seg_eigen_cam.png",
-          "odam_path": "/analysis-results/prognosis/1/task-8/step7_detection_odam.png",
+          "finer_cam_path": "/medical-data/prognosis/2/task-32/step9_classification_finer_cam.png",
+          "seg_eigen_cam_path": "/medical-data/prognosis/2/task-32/step8_seg_eigen_cam.png",
+          "odam_path": "/medical-data/prognosis/2/task-32/step7_detection_odam.png",
           "xai_3_panel_path": null,
-          "survival_curve_data": [
-            {
-              "time": 0,
-              "survival_probability": 1.0
-            },
-            {
-              "time": 6,
-              "survival_probability": 0.966
-            },
-            {
-              "time": 12,
-              "survival_probability": 0.895
-            },
-            {
-              "time": 18,
-              "survival_probability": 0.785
-            },
-            {
-              "time": 24,
-              "survival_probability": 0.666
-            },
-            {
-              "time": 30,
-              "survival_probability": 0.537
-            },
-            {
-              "time": 36,
-              "survival_probability": 0.441
-            }
-          ]
+          "survival_curve_data": null,
+          "mri_status": "tumor_detected",
+          "review_required": false,
+          "review_reasons": [],
+          "prognosis_meta": {
+            "calibrated": false,
+            "percentile": 29.5,
+            "group": "Low",
+            "c_index_test": 0.6481980877666095,
+            "c_index_ci": [
+              0.585350340323124,
+              0.7019366397544488
+            ],
+            "n_train": 764,
+            "n_test": 135,
+            "limitation_text": "Điểm nguy cơ tương đối so với 764 bệnh nhân huấn luyện – không phải xác suất sống còn đã hiệu chuẩn. Khả năng xếp hạng trên 135 bệnh nhân độc lập: C-index 0.65 (KTC95% 0.59–0.70). Chỉ dùng tham khảo, bác sĩ quyết định."
+          }
         },
         {
-          "id": 4,
-          "image_id": 7,
-          "patient_id": 1,
+          "id": 5,
+          "image_id": 8,
+          "patient_id": 2,
           "created_at": "2026-05-29T08:27:53.416690",
           "no_tumor_detected": false,
           "tumor_label": "Glioma",
-          "classification_confidence": 0.990927,
+          "classification_confidence": 0.990916,
           "dice_score": null,
           "iou_score": null,
           "accuracy": null,
           "c_index": null,
-          "risk_score": 2.315361,
-          "risk_group": "Very High",
+          "risk_score": 1.26662,
+          "risk_group": "High",
           "gradcam_path": null,
           "mask_path": "/analysis-results/mri/7/task-7/step3_mask.png",
-          "finer_cam_path": "/analysis-results/mri/7/task-7/step9_classification_finer_cam.png",
-          "seg_eigen_cam_path": "/analysis-results/mri/7/task-7/step8_seg_eigen_cam.png",
-          "odam_path": "/analysis-results/mri/7/task-7/step7_detection_odam.png",
+          "finer_cam_path": "/medical-data/prognosis/2/task-33/step9_classification_finer_cam.png",
+          "seg_eigen_cam_path": "/medical-data/prognosis/2/task-33/step8_seg_eigen_cam.png",
+          "odam_path": "/medical-data/prognosis/2/task-33/step7_detection_odam.png",
           "xai_3_panel_path": null,
-          "survival_curve_data": [
-            {
-              "time": 0,
-              "survival_probability": 1.0
-            },
-            {
-              "time": 6,
-              "survival_probability": 0.595
-            },
-            {
-              "time": 12,
-              "survival_probability": 0.193
-            },
-            {
-              "time": 18,
-              "survival_probability": 0.027
-            },
-            {
-              "time": 24,
-              "survival_probability": 0.002
-            },
-            {
-              "time": 30,
-              "survival_probability": 0.0
-            },
-            {
-              "time": 36,
-              "survival_probability": 0.0
-            }
-          ]
+          "survival_curve_data": null,
+          "mri_status": "tumor_detected",
+          "review_required": false,
+          "review_reasons": [],
+          "prognosis_meta": {
+            "calibrated": false,
+            "percentile": 91.4,
+            "group": "High",
+            "c_index_test": 0.6481980877666095,
+            "c_index_ci": [
+              0.585350340323124,
+              0.7019366397544488
+            ],
+            "n_train": 764,
+            "n_test": 135,
+            "limitation_text": "Điểm nguy cơ tương đối so với 764 bệnh nhân huấn luyện – không phải xác suất sống còn đã hiệu chuẩn. Khả năng xếp hạng trên 135 bệnh nhân độc lập: C-index 0.65 (KTC95% 0.59–0.70). Chỉ dùng tham khảo, bác sĩ quyết định."
+          }
         },
         {
-          "id": 45,
-          "image_id": 82,
-          "patient_id": 1,
+          "id": 6,
+          "image_id": 9,
+          "patient_id": 2,
           "created_at": "2026-06-27T06:41:11.387297",
           "no_tumor_detected": false,
           "tumor_label": "Glioma",
-          "classification_confidence": 0.999767,
+          "classification_confidence": 0.999766,
           "dice_score": null,
           "iou_score": null,
           "accuracy": null,
           "c_index": null,
-          "risk_score": -1.714555,
+          "risk_score": -1.051641,
           "risk_group": "Low",
           "gradcam_path": null,
           "mask_path": "/analysis-results/mri/82/task-88/step3_mask.png",
-          "finer_cam_path": "/analysis-results/mri/82/task-88/step9_classification_finer_cam.png",
-          "seg_eigen_cam_path": "/analysis-results/mri/82/task-88/step8_seg_eigen_cam.png",
-          "odam_path": "/analysis-results/mri/82/task-88/step7_detection_odam.png",
+          "finer_cam_path": "/medical-data/prognosis/2/task-34/step9_classification_finer_cam.png",
+          "seg_eigen_cam_path": "/medical-data/prognosis/2/task-34/step8_seg_eigen_cam.png",
+          "odam_path": "/medical-data/prognosis/2/task-34/step7_detection_odam.png",
           "xai_3_panel_path": null,
-          "survival_curve_data": [
-            {
-              "time": 0,
-              "survival_probability": 1.0
-            },
-            {
-              "time": 6,
-              "survival_probability": 0.991
-            },
-            {
-              "time": 12,
-              "survival_probability": 0.971
-            },
-            {
-              "time": 18,
-              "survival_probability": 0.938
-            },
-            {
-              "time": 24,
-              "survival_probability": 0.898
-            },
-            {
-              "time": 30,
-              "survival_probability": 0.848
-            },
-            {
-              "time": 36,
-              "survival_probability": 0.805
-            }
-          ]
+          "survival_curve_data": null,
+          "mri_status": "tumor_detected",
+          "review_required": false,
+          "review_reasons": [],
+          "prognosis_meta": {
+            "calibrated": false,
+            "percentile": 14.0,
+            "group": "Low",
+            "c_index_test": 0.6481980877666095,
+            "c_index_ci": [
+              0.585350340323124,
+              0.7019366397544488
+            ],
+            "n_train": 764,
+            "n_test": 135,
+            "limitation_text": "Điểm nguy cơ tương đối so với 764 bệnh nhân huấn luyện – không phải xác suất sống còn đã hiệu chuẩn. Khả năng xếp hạng trên 135 bệnh nhân độc lập: C-index 0.65 (KTC95% 0.59–0.70). Chỉ dùng tham khảo, bác sĩ quyết định."
+          }
         }
       ],
       "explanations": [],
       "history_reports": [
         {
-          "id": 1,
-          "patient_id": 1,
+          "id": 2,
+          "patient_id": 2,
           "report_type": "diagnosis_history",
           "status": "ready",
           "data_hash": "a86e3fe3459334d3acb08c9a453d0dbc51f4b5a4d3d02321f5c40eb2d0a89335",
@@ -4569,7 +5395,7 @@
             "timeline": [
               {
                 "diagnosis_index": 3,
-                "image_id": 82,
+                "image_id": 9,
                 "modality": "MRI",
                 "scan_date": "2026-06-27T06:40:20.632850",
                 "image_url": "https://2e513a2571521578b512fa0a95aad385.r2.cloudflarestorage.com/analysis-results/0ecf89a6-af5f-485a-a5c6-cc6f1d10b85b_brisc2025_test_00003_gl_ax_t1.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=36e2f2148abf870a5bbaa5f149c06ad3%2F20260627%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260627T064441Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=0022b7f7acea8f1f7f670c1a3a254bbf98eb464a633a0b6f77c7977a72586f41",
@@ -4592,7 +5418,7 @@
               },
               {
                 "diagnosis_index": 2,
-                "image_id": 7,
+                "image_id": 8,
                 "modality": "MRI",
                 "scan_date": "2026-05-29T08:23:58.434263",
                 "image_url": "https://2e513a2571521578b512fa0a95aad385.r2.cloudflarestorage.com/analysis-results/55130487-5aac-4570-87bc-2fa7f5b4c5ba_brisc2025_test_00004_gl_ax_t1.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=36e2f2148abf870a5bbaa5f149c06ad3%2F20260627%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260627T064441Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=499a85a04f2985c8cecbe9dd0d15e974142878ea921fa97a673f43359d54acfc",
@@ -4615,7 +5441,7 @@
               },
               {
                 "diagnosis_index": 1,
-                "image_id": 4,
+                "image_id": 7,
                 "modality": "MRI",
                 "scan_date": "2026-05-25T15:10:10.741367",
                 "image_url": "https://2e513a2571521578b512fa0a95aad385.r2.cloudflarestorage.com/analysis-results/4966dd76-d2c5-498d-bb85-0e4e863f6ff3_M_2.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=36e2f2148abf870a5bbaa5f149c06ad3%2F20260627%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260627T064441Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=7cf52c99b0ac3b8efb33b1b2f6172ff361fdb9bb0e363e480cc571fd0a71e26f",
@@ -4684,9 +5510,9 @@
       "validations": [],
       "tasks": [
         {
-          "id": 1,
+          "id": 20,
           "task_type": "prognosis",
-          "target_id": 1,
+          "target_id": 2,
           "status": "done",
           "created_at": "2026-05-25T11:51:50.815582",
           "updated_at": "2026-05-25T14:47:27.608271",
@@ -5051,9 +5877,9 @@
           "error_message": null
         },
         {
-          "id": 3,
+          "id": 21,
           "task_type": "prognosis",
-          "target_id": 1,
+          "target_id": 2,
           "status": "done",
           "created_at": "2026-05-25T15:10:13.234023",
           "updated_at": "2026-05-25T15:11:56.428523",
@@ -5422,9 +6248,9 @@
           "error_message": null
         },
         {
-          "id": 5,
+          "id": 22,
           "task_type": "prognosis",
-          "target_id": 1,
+          "target_id": 2,
           "status": "done",
           "created_at": "2026-05-29T08:24:01.553040",
           "updated_at": "2026-05-29T08:27:05.390315",
@@ -5794,9 +6620,9 @@
           "error_message": null
         },
         {
-          "id": 6,
+          "id": 23,
           "task_type": "mri_pipeline",
-          "target_id": 7,
+          "target_id": 8,
           "status": "done",
           "created_at": "2026-05-29T08:27:42.873573",
           "updated_at": "2026-05-29T10:32:15.837299",
@@ -6166,9 +6992,9 @@
           "error_message": null
         },
         {
-          "id": 7,
+          "id": 24,
           "task_type": "mri_pipeline",
-          "target_id": 7,
+          "target_id": 8,
           "status": "done",
           "created_at": "2026-05-29T10:30:19.182342",
           "updated_at": "2026-05-29T10:33:15.069724",
@@ -6538,9 +7364,9 @@
           "error_message": null
         },
         {
-          "id": 8,
+          "id": 25,
           "task_type": "prognosis",
-          "target_id": 1,
+          "target_id": 2,
           "status": "done",
           "created_at": "2026-05-29T10:31:58.264355",
           "updated_at": "2026-05-29T10:32:29.795048",
@@ -6913,9 +7739,9 @@
           "error_message": null
         },
         {
-          "id": 88,
+          "id": 26,
           "task_type": "mri_pipeline",
-          "target_id": 82,
+          "target_id": 9,
           "status": "done",
           "created_at": "2026-06-27T06:40:20.653453",
           "updated_at": "2026-06-27T06:41:37.808698",
@@ -7281,6 +8107,690 @@
                 "model_name": "gemini-3.1-flash-lite"
               }
             }
+          },
+          "error_message": null
+        },
+        {
+          "id": 32,
+          "task_type": "prognosis",
+          "target_id": 2,
+          "status": "done",
+          "created_at": "2026-11-20T15:33:27.606459",
+          "updated_at": "2026-11-20T15:33:33.594810",
+          "result": {
+            "status": "success",
+            "error_msg": "",
+            "no_tumor_detected": false,
+            "bbox": [
+              194,
+              56,
+              360,
+              224
+            ],
+            "bbox_confidence": 0.872119,
+            "tumor_label": "Meningioma",
+            "classification_confidence": 0.999989,
+            "class_probabilities": [
+              5.48646539755282e-06,
+              0.9999891519546509,
+              5.329585746949306e-06
+            ],
+            "original_image_path": "/medical-data/prognosis/2/task-32/step0_original.png",
+            "bbox_image_path": "/medical-data/prognosis/2/task-32/step1_bbox.png",
+            "cropped_roi_path": "/medical-data/prognosis/2/task-32/step2_roi.png",
+            "seg_mask_path": "/medical-data/prognosis/2/task-32/step3_mask.png",
+            "masked_roi_path": "/medical-data/prognosis/2/task-32/step4_masked_roi.png",
+            "mask_overlay_path": "/medical-data/prognosis/2/task-32/step5_mask_overlay.png",
+            "contour_overlay_path": "/medical-data/prognosis/2/task-32/step6_contour_overlay.png",
+            "detection_xai_path": "/medical-data/prognosis/2/task-32/step7_detection_odam.png",
+            "segmentation_xai_path": "/medical-data/prognosis/2/task-32/step8_seg_eigen_cam.png",
+            "classification_xai_path": "/medical-data/prognosis/2/task-32/step9_classification_finer_cam.png",
+            "odam_path": "/medical-data/prognosis/2/task-32/step7_detection_odam.png",
+            "odam_meta_path": "/medical-data/prognosis/2/task-32/xai_detection_odam_meta.json",
+            "xai_methods": {
+              "detection": "yolo_original_odam",
+              "segmentation": "seg_eigen_cam_original",
+              "classification": "finer_cam",
+              "multimodal": "multimodal_mri_branch_cam_suite"
+            },
+            "xai_warnings": {},
+            "xai_metadata": {
+              "detection": {
+                "query": 6822,
+                "queries": [
+                  6822
+                ],
+                "query_scale": "P4",
+                "query_scales": [
+                  "P4"
+                ],
+                "matched_iou": 1.0,
+                "class_score": 0.8721185922622681,
+                "confidence_closeness": 0.9999998807907104,
+                "match_score": 0.9782601594924927,
+                "topk": 1,
+                "iou_threshold": 0.5,
+                "raw_box_xyxy_letterbox": [
+                  243.66513061523438,
+                  71.080078125,
+                  450.3620300292969,
+                  281.01019287109375
+                ],
+                "selected_box_xyxy_letterbox": [
+                  243.66513061523438,
+                  71.08007049560547,
+                  450.36199951171875,
+                  281.01019287109375
+                ],
+                "selected_class_idx": 1,
+                "selected_confidence": 0.8721187114715576,
+                "matching_note": "Post-NMS bbox is mapped to one raw query by class, IoU, and confidence closeness. This matching score is not used as the ODAM target.",
+                "target_layer_index": 19,
+                "target_layer_name": "C3k2",
+                "inside_bbox_energy_ratio": 0.9998236299979187,
+                "top20_inside_bbox_ratio": 0.9999999999985014,
+                "top20_metric_note": "ratio of top 20% positive heatmap pixels that fall inside the selected bbox",
+                "method": "odam_original_yolo",
+                "target_scalar": "class_score_and_bbox_coordinates",
+                "target_attributes": [
+                  "class_score",
+                  "x1",
+                  "y1",
+                  "x2",
+                  "y2"
+                ],
+                "combined_heatmap": "max(H_class, H_x1, H_y1, H_x2, H_y2)",
+                "bbox_coordinate_system": "decoded_xyxy_letterbox",
+                "bbox_mask_applied": false,
+                "brain_mask_applied": false,
+                "post_smooth_sigma": 0.0,
+                "gradient_smooth_sigma": 1.2918554306030274,
+                "fallback_used": false,
+                "method_note": "Original ODAM formulation for a selected YOLO11 detection instance. The post-NMS bbox only selects the instance. The matched pre-NMS query is explained with separate scalar targets for class score and decoded bbox coordinates x1, y1, x2, y2. Each heatmap is computed as ReLU(sum_k(Phi(dY/dA)_k * A_k)); the final map is their element-wise max."
+              },
+              "classification": {
+                "method": "finer_cam",
+                "target_class_idx": 1,
+                "target_class_name": "Meningioma",
+                "target_logit": 8.170802116394043,
+                "target_probability": 0.9999891519546509,
+                "reference_class_idx": 2,
+                "reference_class_name": "Pituitary tumor",
+                "reference_logit": -3.9714243412017822,
+                "reference_probability": 5.329585746949306e-06,
+                "target_minus_reference_logit_margin": 12.142226457595825,
+                "target_scalar": "target_logit_minus_gamma_times_reference_logit",
+                "target_scalar_value": 10.553656721115113,
+                "gamma": 0.6,
+                "target_layer_name": "Conv2d",
+                "heatmap_scope": "classification_roi_after_detection",
+                "roi_shape_hw": [
+                  168,
+                  166
+                ],
+                "heatmap_shape_hw": [
+                  7,
+                  7
+                ],
+                "heatmap_summary": {
+                  "max_value": 0.9950562119483948,
+                  "mean_value": 0.5347369313240051,
+                  "total_energy": 14912.7431640625,
+                  "peak_xy": [
+                    106,
+                    59
+                  ],
+                  "peak_xy_normalized": [
+                    0.6424242424242425,
+                    0.3532934131736527
+                  ],
+                  "energy_center_xy": [
+                    86.10739061623113,
+                    85.27593148928993
+                  ],
+                  "energy_center_xy_normalized": [
+                    0.5218629734317038,
+                    0.5106343202951493
+                  ],
+                  "top20_threshold": 0.6973544120788574,
+                  "top20_area_ratio": 0.20001434308663224,
+                  "top20_bbox_xyxy": [
+                    27,
+                    19,
+                    137,
+                    124
+                  ],
+                  "top10_energy_ratio": 0.1522474912493896,
+                  "localization_strength": "diffuse"
+                },
+                "interpretation_notes": [
+                  "Heatmap is computed on the cropped ROI after detection, not on the full MRI image.",
+                  "Higher heatmap values indicate regions that contributed more positively to the Finer-CAM target scalar.",
+                  "The heatmap supports model-behavior explanation only; it is not pathology proof."
+                ]
+              },
+              "multimodal": {
+                "method": "multimodal_mri_branch_cam_suite",
+                "target_scalar": "risk_score",
+                "risk_score": -0.15026693046092987,
+                "target_layer_name": "Conv2d",
+                "input_scope": "masked_roi_after_detection_and_segmentation",
+                "modalities_available": {
+                  "mri": true,
+                  "wsi": false,
+                  "rna": false,
+                  "clinical": true
+                },
+                "heatmap_shape_after_resize": [
+                  512,
+                  512
+                ],
+                "heatmaps_generated": [
+                  "gradcam",
+                  "gradcam++",
+                  "layercam"
+                ],
+                "note": "Suite Grad-CAM, Grad-CAM++, Layer-CAM computed from a single forward+backward pass on the MRI branch of the multimodal prognosis model."
+              }
+            },
+            "seg_eigen_cam_path": "/medical-data/prognosis/2/task-32/step8_seg_eigen_cam.png",
+            "finer_cam_path": "/medical-data/prognosis/2/task-32/step9_classification_finer_cam.png",
+            "classification_xai_meta_path": "/medical-data/prognosis/2/task-32/xai_classification_finer_cam_meta.json",
+            "mri_status": "tumor_detected",
+            "mri_partial": false,
+            "slices_total": 1,
+            "slices_examined": 1,
+            "slices_failed": 0,
+            "failed_slice_reasons": [],
+            "review_required": false,
+            "review_reasons": [],
+            "risk_score": -0.150267,
+            "risk_group": "Low",
+            "survival_curve_data": null,
+            "prognosis_meta": {
+              "calibrated": false,
+              "percentile": 29.5,
+              "group": "Low",
+              "c_index_test": 0.6481980877666095,
+              "c_index_ci": [
+                0.585350340323124,
+                0.7019366397544488
+              ],
+              "n_train": 764,
+              "n_test": 135,
+              "limitation_text": "Điểm nguy cơ tương đối so với 764 bệnh nhân huấn luyện – không phải xác suất sống còn đã hiệu chuẩn. Khả năng xếp hạng trên 135 bệnh nhân độc lập: C-index 0.65 (KTC95% 0.59–0.70). Chỉ dùng tham khảo, bác sĩ quyết định."
+            },
+            "fusion_attention": [
+              0.5943372845649719,
+              0.0,
+              0.0,
+              0.4056627154350281
+            ],
+            "multimodal_gradcam_heatmap_path": "/medical-data/prognosis/2/task-32/step10_multimodal_risk_gradcam.png",
+            "multimodal_risk_xai_path": "/medical-data/prognosis/2/task-32/step10_multimodal_risk_gradcam.png",
+            "multimodal_gradcam_plus_heatmap_path": "/medical-data/prognosis/2/task-32/step10_multimodal_risk_gradcam_plus.png",
+            "multimodal_layercam_heatmap_path": "/medical-data/prognosis/2/task-32/step10_multimodal_risk_layercam.png",
+            "multimodal_risk_xai_meta_path": "/medical-data/prognosis/2/task-32/xai_multimodal_risk_gradcam_meta.json",
+            "multimodal_xai_explanation": "1. Nhóm nguy cơ tương đối: Low (risk score = -0.1503)\nĐiểm của bệnh nhân cao hơn 30% bệnh nhân huấn luyện, thuộc 1/3 bệnh nhân có điểm nguy cơ thấp nhất của tập huấn luyện.\nĐiểm nguy cơ tương đối so với 764 bệnh nhân huấn luyện – không phải xác suất sống còn đã hiệu chuẩn. Khả năng xếp hạng trên 135 bệnh nhân độc lập: C-index 0.65 (KTC95% 0.59–0.70). Chỉ dùng tham khảo, bác sĩ quyết định.\n\n2. Phân loại MRI: Meningioma (độ tin cậy 100.0% - rất cao).\nGrad-CAM, Grad-CAM++ và Layer-CAM hiển thị vùng mô hình tập trung phân tích trên ảnh MRI.\n\n3. Trọng số Fusion Attention: MRI: 59.4% | Lâm sàng: 40.6%\nMô hình dựa nhiều nhất vào MRI để đưa ra kết quả tiên lượng.\n\nGợi ý tham khảo: kết hợp điểm nguy cơ tương đối với đánh giá lâm sàng đầy đủ. Quyết định điều trị thuộc về bác sĩ.\nLưu ý: Thiếu dữ liệu nguồn WSI, RNA - kết quả tiên lượng có thể chưa đầy đủ.",
+            "xai_explanation": "1. Nhóm nguy cơ tương đối: Low (risk score = -0.1503)\nĐiểm của bệnh nhân cao hơn 30% bệnh nhân huấn luyện, thuộc 1/3 bệnh nhân có điểm nguy cơ thấp nhất của tập huấn luyện.\nĐiểm nguy cơ tương đối so với 764 bệnh nhân huấn luyện – không phải xác suất sống còn đã hiệu chuẩn. Khả năng xếp hạng trên 135 bệnh nhân độc lập: C-index 0.65 (KTC95% 0.59–0.70). Chỉ dùng tham khảo, bác sĩ quyết định.\n\n2. Phân loại MRI: Meningioma (độ tin cậy 100.0% - rất cao).\nGrad-CAM, Grad-CAM++ và Layer-CAM hiển thị vùng mô hình tập trung phân tích trên ảnh MRI.\n\n3. Trọng số Fusion Attention: MRI: 59.4% | Lâm sàng: 40.6%\nMô hình dựa nhiều nhất vào MRI để đưa ra kết quả tiên lượng.\n\nGợi ý tham khảo: kết hợp điểm nguy cơ tương đối với đánh giá lâm sàng đầy đủ. Quyết định điều trị thuộc về bác sĩ.\nLưu ý: Thiếu dữ liệu nguồn WSI, RNA - kết quả tiên lượng có thể chưa đầy đủ.",
+            "input_signature": "de7ffb3ed2ec4140c1d9f277bf009eabfe0d5aca6faaeadd6802db4939369f2e",
+            "image_id": 7
+          },
+          "error_message": null
+        },
+        {
+          "id": 33,
+          "task_type": "prognosis",
+          "target_id": 2,
+          "status": "done",
+          "created_at": "2026-11-20T15:33:33.714299",
+          "updated_at": "2026-11-20T15:33:40.169511",
+          "result": {
+            "status": "success",
+            "error_msg": "",
+            "no_tumor_detected": false,
+            "bbox": [
+              280,
+              193,
+              373,
+              265
+            ],
+            "bbox_confidence": 0.631132,
+            "tumor_label": "Glioma",
+            "classification_confidence": 0.990916,
+            "class_probabilities": [
+              0.9909160733222961,
+              0.007580658886581659,
+              0.0015032932860776782
+            ],
+            "original_image_path": "/medical-data/prognosis/2/task-33/step0_original.png",
+            "bbox_image_path": "/medical-data/prognosis/2/task-33/step1_bbox.png",
+            "cropped_roi_path": "/medical-data/prognosis/2/task-33/step2_roi.png",
+            "seg_mask_path": "/medical-data/prognosis/2/task-33/step3_mask.png",
+            "masked_roi_path": "/medical-data/prognosis/2/task-33/step4_masked_roi.png",
+            "mask_overlay_path": "/medical-data/prognosis/2/task-33/step5_mask_overlay.png",
+            "contour_overlay_path": "/medical-data/prognosis/2/task-33/step6_contour_overlay.png",
+            "detection_xai_path": "/medical-data/prognosis/2/task-33/step7_detection_odam.png",
+            "segmentation_xai_path": "/medical-data/prognosis/2/task-33/step8_seg_eigen_cam.png",
+            "classification_xai_path": "/medical-data/prognosis/2/task-33/step9_classification_finer_cam.png",
+            "odam_path": "/medical-data/prognosis/2/task-33/step7_detection_odam.png",
+            "odam_meta_path": "/medical-data/prognosis/2/task-33/xai_detection_odam_meta.json",
+            "xai_methods": {
+              "detection": "yolo_original_odam",
+              "segmentation": "seg_eigen_cam_original",
+              "classification": "finer_cam",
+              "multimodal": "multimodal_mri_branch_cam_suite"
+            },
+            "xai_warnings": {},
+            "xai_metadata": {
+              "detection": {
+                "query": 7064,
+                "queries": [
+                  7064
+                ],
+                "query_scale": "P4",
+                "query_scales": [
+                  "P4"
+                ],
+                "matched_iou": 0.9999988675117493,
+                "class_score": 0.6311329007148743,
+                "confidence_closeness": 0.9999990463256836,
+                "match_score": 0.9372916221618652,
+                "topk": 1,
+                "iou_threshold": 0.5,
+                "raw_box_xyxy_letterbox": [
+                  351.18927001953125,
+                  241.35401916503906,
+                  466.33648681640625,
+                  332.1395263671875
+                ],
+                "selected_box_xyxy_letterbox": [
+                  351.1892395019531,
+                  241.35403442382812,
+                  466.3365173339844,
+                  332.1395568847656
+                ],
+                "selected_class_idx": 0,
+                "selected_confidence": 0.6311319470405579,
+                "matching_note": "Post-NMS bbox is mapped to one raw query by class, IoU, and confidence closeness. This matching score is not used as the ODAM target.",
+                "target_layer_index": 19,
+                "target_layer_name": "C3k2",
+                "inside_bbox_energy_ratio": 0.8778866534398905,
+                "top20_inside_bbox_ratio": 0.8823971915725116,
+                "top20_metric_note": "ratio of top 20% positive heatmap pixels that fall inside the selected bbox",
+                "method": "odam_original_yolo",
+                "target_scalar": "class_score_and_bbox_coordinates",
+                "target_attributes": [
+                  "class_score",
+                  "x1",
+                  "y1",
+                  "x2",
+                  "y2"
+                ],
+                "combined_heatmap": "max(H_class, H_x1, H_y1, H_x2, H_y2)",
+                "bbox_coordinate_system": "decoded_xyxy_letterbox",
+                "bbox_mask_applied": false,
+                "brain_mask_applied": false,
+                "post_smooth_sigma": 0.0,
+                "gradient_smooth_sigma": 0.8,
+                "fallback_used": false,
+                "method_note": "Original ODAM formulation for a selected YOLO11 detection instance. The post-NMS bbox only selects the instance. The matched pre-NMS query is explained with separate scalar targets for class score and decoded bbox coordinates x1, y1, x2, y2. Each heatmap is computed as ReLU(sum_k(Phi(dY/dA)_k * A_k)); the final map is their element-wise max."
+              },
+              "classification": {
+                "method": "finer_cam",
+                "target_class_idx": 0,
+                "target_class_name": "Glioma",
+                "target_logit": 3.323706865310669,
+                "target_probability": 0.9909160733222961,
+                "reference_class_idx": 1,
+                "reference_class_name": "Meningioma",
+                "reference_logit": -1.5493227243423462,
+                "reference_probability": 0.007580658886581659,
+                "target_minus_reference_logit_margin": 4.873029589653015,
+                "target_scalar": "target_logit_minus_gamma_times_reference_logit",
+                "target_scalar_value": 4.253300499916077,
+                "gamma": 0.6,
+                "target_layer_name": "Conv2d",
+                "heatmap_scope": "classification_roi_after_detection",
+                "roi_shape_hw": [
+                  72,
+                  93
+                ],
+                "heatmap_shape_hw": [
+                  7,
+                  7
+                ],
+                "heatmap_summary": {
+                  "max_value": 0.9907782077789307,
+                  "mean_value": 0.5175818204879761,
+                  "total_energy": 3465.72802734375,
+                  "peak_xy": [
+                    19,
+                    46
+                  ],
+                  "peak_xy_normalized": [
+                    0.20652173913043478,
+                    0.647887323943662
+                  ],
+                  "energy_center_xy": [
+                    40.99434976489253,
+                    31.289237050185847
+                  ],
+                  "energy_center_xy_normalized": [
+                    0.44559075831404926,
+                    0.44069347958008237
+                  ],
+                  "top20_threshold": 0.7598925232887268,
+                  "top20_area_ratio": 0.2001194743130227,
+                  "top20_bbox_xyxy": [
+                    0,
+                    9,
+                    67,
+                    59
+                  ],
+                  "top10_energy_ratio": 0.17010679419330832,
+                  "localization_strength": "diffuse"
+                },
+                "interpretation_notes": [
+                  "Heatmap is computed on the cropped ROI after detection, not on the full MRI image.",
+                  "Higher heatmap values indicate regions that contributed more positively to the Finer-CAM target scalar.",
+                  "The heatmap supports model-behavior explanation only; it is not pathology proof."
+                ]
+              },
+              "multimodal": {
+                "method": "multimodal_mri_branch_cam_suite",
+                "target_scalar": "risk_score",
+                "risk_score": 1.2666200399398804,
+                "target_layer_name": "Conv2d",
+                "input_scope": "masked_roi_after_detection_and_segmentation",
+                "modalities_available": {
+                  "mri": true,
+                  "wsi": false,
+                  "rna": false,
+                  "clinical": true
+                },
+                "heatmap_shape_after_resize": [
+                  512,
+                  512
+                ],
+                "heatmaps_generated": [
+                  "gradcam",
+                  "gradcam++",
+                  "layercam"
+                ],
+                "note": "Suite Grad-CAM, Grad-CAM++, Layer-CAM computed from a single forward+backward pass on the MRI branch of the multimodal prognosis model."
+              }
+            },
+            "seg_eigen_cam_path": "/medical-data/prognosis/2/task-33/step8_seg_eigen_cam.png",
+            "finer_cam_path": "/medical-data/prognosis/2/task-33/step9_classification_finer_cam.png",
+            "classification_xai_meta_path": "/medical-data/prognosis/2/task-33/xai_classification_finer_cam_meta.json",
+            "mri_status": "tumor_detected",
+            "mri_partial": false,
+            "slices_total": 1,
+            "slices_examined": 1,
+            "slices_failed": 0,
+            "failed_slice_reasons": [],
+            "review_required": false,
+            "review_reasons": [],
+            "risk_score": 1.26662,
+            "risk_group": "High",
+            "survival_curve_data": null,
+            "prognosis_meta": {
+              "calibrated": false,
+              "percentile": 91.4,
+              "group": "High",
+              "c_index_test": 0.6481980877666095,
+              "c_index_ci": [
+                0.585350340323124,
+                0.7019366397544488
+              ],
+              "n_train": 764,
+              "n_test": 135,
+              "limitation_text": "Điểm nguy cơ tương đối so với 764 bệnh nhân huấn luyện – không phải xác suất sống còn đã hiệu chuẩn. Khả năng xếp hạng trên 135 bệnh nhân độc lập: C-index 0.65 (KTC95% 0.59–0.70). Chỉ dùng tham khảo, bác sĩ quyết định."
+            },
+            "fusion_attention": [
+              0.6297056674957275,
+              0.0,
+              0.0,
+              0.37029433250427246
+            ],
+            "multimodal_gradcam_heatmap_path": "/medical-data/prognosis/2/task-33/step10_multimodal_risk_gradcam.png",
+            "multimodal_risk_xai_path": "/medical-data/prognosis/2/task-33/step10_multimodal_risk_gradcam.png",
+            "multimodal_gradcam_plus_heatmap_path": "/medical-data/prognosis/2/task-33/step10_multimodal_risk_gradcam_plus.png",
+            "multimodal_layercam_heatmap_path": "/medical-data/prognosis/2/task-33/step10_multimodal_risk_layercam.png",
+            "multimodal_risk_xai_meta_path": "/medical-data/prognosis/2/task-33/xai_multimodal_risk_gradcam_meta.json",
+            "multimodal_xai_explanation": "1. Nhóm nguy cơ tương đối: High (risk score = 1.2666)\nĐiểm của bệnh nhân cao hơn 91% bệnh nhân huấn luyện, thuộc 1/3 bệnh nhân có điểm nguy cơ cao nhất của tập huấn luyện.\nĐiểm nguy cơ tương đối so với 764 bệnh nhân huấn luyện – không phải xác suất sống còn đã hiệu chuẩn. Khả năng xếp hạng trên 135 bệnh nhân độc lập: C-index 0.65 (KTC95% 0.59–0.70). Chỉ dùng tham khảo, bác sĩ quyết định.\n\n2. Phân loại MRI: Glioma (độ tin cậy 99.1% - rất cao).\nGrad-CAM, Grad-CAM++ và Layer-CAM hiển thị vùng mô hình tập trung phân tích trên ảnh MRI.\n\n3. Trọng số Fusion Attention: MRI: 63.0% | Lâm sàng: 37.0%\nMô hình dựa nhiều nhất vào MRI để đưa ra kết quả tiên lượng.\n\nGợi ý tham khảo: điểm nguy cơ tương đối cao, có thể cân nhắc đưa ca bệnh ra hội chẩn. Quyết định điều trị thuộc về bác sĩ.\nLưu ý: Thiếu dữ liệu nguồn WSI, RNA - kết quả tiên lượng có thể chưa đầy đủ.",
+            "xai_explanation": "1. Nhóm nguy cơ tương đối: High (risk score = 1.2666)\nĐiểm của bệnh nhân cao hơn 91% bệnh nhân huấn luyện, thuộc 1/3 bệnh nhân có điểm nguy cơ cao nhất của tập huấn luyện.\nĐiểm nguy cơ tương đối so với 764 bệnh nhân huấn luyện – không phải xác suất sống còn đã hiệu chuẩn. Khả năng xếp hạng trên 135 bệnh nhân độc lập: C-index 0.65 (KTC95% 0.59–0.70). Chỉ dùng tham khảo, bác sĩ quyết định.\n\n2. Phân loại MRI: Glioma (độ tin cậy 99.1% - rất cao).\nGrad-CAM, Grad-CAM++ và Layer-CAM hiển thị vùng mô hình tập trung phân tích trên ảnh MRI.\n\n3. Trọng số Fusion Attention: MRI: 63.0% | Lâm sàng: 37.0%\nMô hình dựa nhiều nhất vào MRI để đưa ra kết quả tiên lượng.\n\nGợi ý tham khảo: điểm nguy cơ tương đối cao, có thể cân nhắc đưa ca bệnh ra hội chẩn. Quyết định điều trị thuộc về bác sĩ.\nLưu ý: Thiếu dữ liệu nguồn WSI, RNA - kết quả tiên lượng có thể chưa đầy đủ.",
+            "input_signature": "d81c5b20b0c81225af7640e9e8e97bd891e413a421d813e26d7c7a230bc42a4e",
+            "image_id": 8
+          },
+          "error_message": null
+        },
+        {
+          "id": 34,
+          "task_type": "prognosis",
+          "target_id": 2,
+          "status": "done",
+          "created_at": "2026-11-20T15:33:42.005006",
+          "updated_at": "2026-11-20T15:33:49.571474",
+          "result": {
+            "status": "success",
+            "error_msg": "",
+            "no_tumor_detected": false,
+            "bbox": [
+              159,
+              135,
+              248,
+              203
+            ],
+            "bbox_confidence": 0.773498,
+            "tumor_label": "Glioma",
+            "classification_confidence": 0.999766,
+            "class_probabilities": [
+              0.9997664093971252,
+              3.085221760557033e-05,
+              0.00020268962543923408
+            ],
+            "original_image_path": "/medical-data/prognosis/2/task-34/step0_original.png",
+            "bbox_image_path": "/medical-data/prognosis/2/task-34/step1_bbox.png",
+            "cropped_roi_path": "/medical-data/prognosis/2/task-34/step2_roi.png",
+            "seg_mask_path": "/medical-data/prognosis/2/task-34/step3_mask.png",
+            "masked_roi_path": "/medical-data/prognosis/2/task-34/step4_masked_roi.png",
+            "mask_overlay_path": "/medical-data/prognosis/2/task-34/step5_mask_overlay.png",
+            "contour_overlay_path": "/medical-data/prognosis/2/task-34/step6_contour_overlay.png",
+            "detection_xai_path": "/medical-data/prognosis/2/task-34/step7_detection_odam.png",
+            "segmentation_xai_path": "/medical-data/prognosis/2/task-34/step8_seg_eigen_cam.png",
+            "classification_xai_path": "/medical-data/prognosis/2/task-34/step9_classification_finer_cam.png",
+            "odam_path": "/medical-data/prognosis/2/task-34/step7_detection_odam.png",
+            "odam_meta_path": "/medical-data/prognosis/2/task-34/xai_detection_odam_meta.json",
+            "xai_methods": {
+              "detection": "yolo_original_odam",
+              "segmentation": "seg_eigen_cam_original",
+              "classification": "finer_cam",
+              "multimodal": "multimodal_mri_branch_cam_suite"
+            },
+            "xai_warnings": {},
+            "xai_metadata": {
+              "detection": {
+                "query": 6934,
+                "queries": [
+                  6934
+                ],
+                "query_scale": "P4",
+                "query_scales": [
+                  "P4"
+                ],
+                "matched_iou": 0.9999989867210388,
+                "class_score": 0.7734981179237366,
+                "confidence_closeness": 0.9999999403953552,
+                "match_score": 0.9614939093589783,
+                "topk": 1,
+                "iou_threshold": 0.5,
+                "raw_box_xyxy_letterbox": [
+                  199.0367431640625,
+                  169.01808166503906,
+                  310.60137939453125,
+                  254.54066467285156
+                ],
+                "selected_box_xyxy_letterbox": [
+                  199.03668212890625,
+                  169.01806640625,
+                  310.60137939453125,
+                  254.5406494140625
+                ],
+                "selected_class_idx": 0,
+                "selected_confidence": 0.7734981775283813,
+                "matching_note": "Post-NMS bbox is mapped to one raw query by class, IoU, and confidence closeness. This matching score is not used as the ODAM target.",
+                "target_layer_index": 19,
+                "target_layer_name": "C3k2",
+                "inside_bbox_energy_ratio": 0.8314900696214188,
+                "top20_inside_bbox_ratio": 0.8680894831553919,
+                "top20_metric_note": "ratio of top 20% positive heatmap pixels that fall inside the selected bbox",
+                "method": "odam_original_yolo",
+                "target_scalar": "class_score_and_bbox_coordinates",
+                "target_attributes": [
+                  "class_score",
+                  "x1",
+                  "y1",
+                  "x2",
+                  "y2"
+                ],
+                "combined_heatmap": "max(H_class, H_x1, H_y1, H_x2, H_y2)",
+                "bbox_coordinate_system": "decoded_xyxy_letterbox",
+                "bbox_mask_applied": false,
+                "brain_mask_applied": false,
+                "post_smooth_sigma": 0.0,
+                "gradient_smooth_sigma": 0.8,
+                "fallback_used": false,
+                "method_note": "Original ODAM formulation for a selected YOLO11 detection instance. The post-NMS bbox only selects the instance. The matched pre-NMS query is explained with separate scalar targets for class score and decoded bbox coordinates x1, y1, x2, y2. Each heatmap is computed as ReLU(sum_k(Phi(dY/dA)_k * A_k)); the final map is their element-wise max."
+              },
+              "classification": {
+                "method": "finer_cam",
+                "target_class_idx": 0,
+                "target_class_name": "Glioma",
+                "target_logit": 5.681634426116943,
+                "target_probability": 0.9997664093971252,
+                "reference_class_idx": 1,
+                "reference_class_name": "Meningioma",
+                "reference_logit": -4.704433441162109,
+                "reference_probability": 3.085221760557033e-05,
+                "target_minus_reference_logit_margin": 10.386067867279053,
+                "target_scalar": "target_logit_minus_gamma_times_reference_logit",
+                "target_scalar_value": 8.504294490814209,
+                "gamma": 0.6,
+                "target_layer_name": "Conv2d",
+                "heatmap_scope": "classification_roi_after_detection",
+                "roi_shape_hw": [
+                  68,
+                  89
+                ],
+                "heatmap_shape_hw": [
+                  7,
+                  7
+                ],
+                "heatmap_summary": {
+                  "max_value": 0.9902188181877136,
+                  "mean_value": 0.4715310335159302,
+                  "total_energy": 2853.705810546875,
+                  "peak_xy": [
+                    31,
+                    53
+                  ],
+                  "peak_xy_normalized": [
+                    0.3522727272727273,
+                    0.7910447761194029
+                  ],
+                  "energy_center_xy": [
+                    48.09767191232829,
+                    36.132210822861005
+                  ],
+                  "energy_center_xy_normalized": [
+                    0.546564453549185,
+                    0.539286728699418
+                  ],
+                  "top20_threshold": 0.6565016508102417,
+                  "top20_area_ratio": 0.20009914077990748,
+                  "top20_bbox_xyxy": [
+                    17,
+                    5,
+                    74,
+                    61
+                  ],
+                  "top10_energy_ratio": 0.1680182656374973,
+                  "localization_strength": "diffuse"
+                },
+                "interpretation_notes": [
+                  "Heatmap is computed on the cropped ROI after detection, not on the full MRI image.",
+                  "Higher heatmap values indicate regions that contributed more positively to the Finer-CAM target scalar.",
+                  "The heatmap supports model-behavior explanation only; it is not pathology proof."
+                ]
+              },
+              "multimodal": {
+                "method": "multimodal_mri_branch_cam_suite",
+                "target_scalar": "risk_score",
+                "risk_score": -1.0516411066055298,
+                "target_layer_name": "Conv2d",
+                "input_scope": "masked_roi_after_detection_and_segmentation",
+                "modalities_available": {
+                  "mri": true,
+                  "wsi": false,
+                  "rna": false,
+                  "clinical": true
+                },
+                "heatmap_shape_after_resize": [
+                  512,
+                  512
+                ],
+                "heatmaps_generated": [
+                  "gradcam",
+                  "gradcam++",
+                  "layercam"
+                ],
+                "note": "Suite Grad-CAM, Grad-CAM++, Layer-CAM computed from a single forward+backward pass on the MRI branch of the multimodal prognosis model."
+              }
+            },
+            "seg_eigen_cam_path": "/medical-data/prognosis/2/task-34/step8_seg_eigen_cam.png",
+            "finer_cam_path": "/medical-data/prognosis/2/task-34/step9_classification_finer_cam.png",
+            "classification_xai_meta_path": "/medical-data/prognosis/2/task-34/xai_classification_finer_cam_meta.json",
+            "mri_status": "tumor_detected",
+            "mri_partial": false,
+            "slices_total": 1,
+            "slices_examined": 1,
+            "slices_failed": 0,
+            "failed_slice_reasons": [],
+            "review_required": false,
+            "review_reasons": [],
+            "risk_score": -1.051641,
+            "risk_group": "Low",
+            "survival_curve_data": null,
+            "prognosis_meta": {
+              "calibrated": false,
+              "percentile": 14.0,
+              "group": "Low",
+              "c_index_test": 0.6481980877666095,
+              "c_index_ci": [
+                0.585350340323124,
+                0.7019366397544488
+              ],
+              "n_train": 764,
+              "n_test": 135,
+              "limitation_text": "Điểm nguy cơ tương đối so với 764 bệnh nhân huấn luyện – không phải xác suất sống còn đã hiệu chuẩn. Khả năng xếp hạng trên 135 bệnh nhân độc lập: C-index 0.65 (KTC95% 0.59–0.70). Chỉ dùng tham khảo, bác sĩ quyết định."
+            },
+            "fusion_attention": [
+              0.7027437090873718,
+              0.0,
+              0.0,
+              0.2972562909126282
+            ],
+            "multimodal_gradcam_heatmap_path": "/medical-data/prognosis/2/task-34/step10_multimodal_risk_gradcam.png",
+            "multimodal_risk_xai_path": "/medical-data/prognosis/2/task-34/step10_multimodal_risk_gradcam.png",
+            "multimodal_gradcam_plus_heatmap_path": "/medical-data/prognosis/2/task-34/step10_multimodal_risk_gradcam_plus.png",
+            "multimodal_layercam_heatmap_path": "/medical-data/prognosis/2/task-34/step10_multimodal_risk_layercam.png",
+            "multimodal_risk_xai_meta_path": "/medical-data/prognosis/2/task-34/xai_multimodal_risk_gradcam_meta.json",
+            "multimodal_xai_explanation": "1. Nhóm nguy cơ tương đối: Low (risk score = -1.0516)\nĐiểm của bệnh nhân cao hơn 14% bệnh nhân huấn luyện, thuộc 1/3 bệnh nhân có điểm nguy cơ thấp nhất của tập huấn luyện.\nĐiểm nguy cơ tương đối so với 764 bệnh nhân huấn luyện – không phải xác suất sống còn đã hiệu chuẩn. Khả năng xếp hạng trên 135 bệnh nhân độc lập: C-index 0.65 (KTC95% 0.59–0.70). Chỉ dùng tham khảo, bác sĩ quyết định.\n\n2. Phân loại MRI: Glioma (độ tin cậy 100.0% - rất cao).\nGrad-CAM, Grad-CAM++ và Layer-CAM hiển thị vùng mô hình tập trung phân tích trên ảnh MRI.\n\n3. Trọng số Fusion Attention: MRI: 70.3% | Lâm sàng: 29.7%\nMô hình dựa nhiều nhất vào MRI để đưa ra kết quả tiên lượng.\n\nGợi ý tham khảo: kết hợp điểm nguy cơ tương đối với đánh giá lâm sàng đầy đủ. Quyết định điều trị thuộc về bác sĩ.\nLưu ý: Thiếu dữ liệu nguồn WSI, RNA - kết quả tiên lượng có thể chưa đầy đủ.",
+            "xai_explanation": "1. Nhóm nguy cơ tương đối: Low (risk score = -1.0516)\nĐiểm của bệnh nhân cao hơn 14% bệnh nhân huấn luyện, thuộc 1/3 bệnh nhân có điểm nguy cơ thấp nhất của tập huấn luyện.\nĐiểm nguy cơ tương đối so với 764 bệnh nhân huấn luyện – không phải xác suất sống còn đã hiệu chuẩn. Khả năng xếp hạng trên 135 bệnh nhân độc lập: C-index 0.65 (KTC95% 0.59–0.70). Chỉ dùng tham khảo, bác sĩ quyết định.\n\n2. Phân loại MRI: Glioma (độ tin cậy 100.0% - rất cao).\nGrad-CAM, Grad-CAM++ và Layer-CAM hiển thị vùng mô hình tập trung phân tích trên ảnh MRI.\n\n3. Trọng số Fusion Attention: MRI: 70.3% | Lâm sàng: 29.7%\nMô hình dựa nhiều nhất vào MRI để đưa ra kết quả tiên lượng.\n\nGợi ý tham khảo: kết hợp điểm nguy cơ tương đối với đánh giá lâm sàng đầy đủ. Quyết định điều trị thuộc về bác sĩ.\nLưu ý: Thiếu dữ liệu nguồn WSI, RNA - kết quả tiên lượng có thể chưa đầy đủ.",
+            "input_signature": "68ea96c560eee2ad739259cf422d79562f07dc7a4c7038088bf2f15bb99622c0",
+            "image_id": 9
           },
           "error_message": null
         }
@@ -11732,6 +13242,678 @@
       "sha256": "abad29da1ae760cce2ca0e546cab336c60f995056070b23103b160d23725ebf8",
       "size": 147104,
       "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-29/step0_original.png",
+      "member": "objects/fa4cc715ea6f5a1e14f889be9edd58219a0bd485f58feb17a091371866fe247c",
+      "sha256": "fa4cc715ea6f5a1e14f889be9edd58219a0bd485f58feb17a091371866fe247c",
+      "size": 312779,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-29/step10_multimodal_risk_gradcam.png",
+      "member": "objects/9d53b6824f279c33964118b1d5bf8053a494045106a93338f4198b18469b9bdc",
+      "sha256": "9d53b6824f279c33964118b1d5bf8053a494045106a93338f4198b18469b9bdc",
+      "size": 327297,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-29/step10_multimodal_risk_gradcam_plus.png",
+      "member": "objects/1818aa16acf7a9eb76e7ac7e9f54b317a293a7fc76847309ac4825e7d77a0c60",
+      "sha256": "1818aa16acf7a9eb76e7ac7e9f54b317a293a7fc76847309ac4825e7d77a0c60",
+      "size": 328571,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-29/step10_multimodal_risk_layercam.png",
+      "member": "objects/f3d54679b0dc51b44ee67818dbeab260eaafb951d2a40f4c734fe044657736b4",
+      "sha256": "f3d54679b0dc51b44ee67818dbeab260eaafb951d2a40f4c734fe044657736b4",
+      "size": 333385,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-29/step1_bbox.png",
+      "member": "objects/e8f56dd7d53ed95fbe4e21861d29263fad8d7713b535b0265bc1d6afc7d49168",
+      "sha256": "e8f56dd7d53ed95fbe4e21861d29263fad8d7713b535b0265bc1d6afc7d49168",
+      "size": 313848,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-29/step2_roi.png",
+      "member": "objects/8cffbcea7963acfbf9f1875fc2e7a339fc79717d6724b32b796c2a932da4dee1",
+      "sha256": "8cffbcea7963acfbf9f1875fc2e7a339fc79717d6724b32b796c2a932da4dee1",
+      "size": 12791,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-29/step3_mask.png",
+      "member": "objects/b6e0205582ed753e6f8f36d98c32e73de3b3d8c9c08f33e4ae96802dbcc7b410",
+      "sha256": "b6e0205582ed753e6f8f36d98c32e73de3b3d8c9c08f33e4ae96802dbcc7b410",
+      "size": 401,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-29/step4_masked_roi.png",
+      "member": "objects/7482c1cda00206cf7a272494d5243e0ea33a6bc6db5a09d9c748c94fc0329bdc",
+      "sha256": "7482c1cda00206cf7a272494d5243e0ea33a6bc6db5a09d9c748c94fc0329bdc",
+      "size": 5937,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-29/step5_mask_overlay.png",
+      "member": "objects/ea1de37dda23a7e4da177f5f79d88f1b43889eca49e5955a071d630465f8631e",
+      "sha256": "ea1de37dda23a7e4da177f5f79d88f1b43889eca49e5955a071d630465f8631e",
+      "size": 312921,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-29/step6_contour_overlay.png",
+      "member": "objects/0f8455ae632413bb0ecc929f19b11beed9202a8a0f3f2409f6dbb7f804b45171",
+      "sha256": "0f8455ae632413bb0ecc929f19b11beed9202a8a0f3f2409f6dbb7f804b45171",
+      "size": 312743,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-29/step7_detection_odam.png",
+      "member": "objects/5da91b421635f70123057c2b3d55e17ec230269a973147ad93b232dc16234727",
+      "sha256": "5da91b421635f70123057c2b3d55e17ec230269a973147ad93b232dc16234727",
+      "size": 316911,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-29/step8_seg_eigen_cam.png",
+      "member": "objects/2ab29261ba83873ac972e87d31ca277a4296fbc8bdbb59f5ec102ec9303c32ab",
+      "sha256": "2ab29261ba83873ac972e87d31ca277a4296fbc8bdbb59f5ec102ec9303c32ab",
+      "size": 13332,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-29/step9_classification_finer_cam.png",
+      "member": "objects/938f7fd7fcf16cc675c7b5657281d1df25d7b2653bd8a427632b5923b90822f7",
+      "sha256": "938f7fd7fcf16cc675c7b5657281d1df25d7b2653bd8a427632b5923b90822f7",
+      "size": 13242,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-29/xai_classification_finer_cam_meta.json",
+      "member": "objects/2864158d6b7ac49325ac08294bfa25a5f894386297312e307739d9cb69330b0b",
+      "sha256": "2864158d6b7ac49325ac08294bfa25a5f894386297312e307739d9cb69330b0b",
+      "size": 1692,
+      "content_type": "application/json"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-29/xai_detection_odam_meta.json",
+      "member": "objects/e953771dc65894019759de62b0e9a7220cbe66484465683cbaa6f5407e4cbc67",
+      "sha256": "e953771dc65894019759de62b0e9a7220cbe66484465683cbaa6f5407e4cbc67",
+      "size": 1851,
+      "content_type": "application/json"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-29/xai_multimodal_risk_gradcam_meta.json",
+      "member": "objects/f444ac64c1cf4e936c169869d6a1f7bfc3dabc94b25fca2a8aa70fa4f5dd4664",
+      "sha256": "f444ac64c1cf4e936c169869d6a1f7bfc3dabc94b25fca2a8aa70fa4f5dd4664",
+      "size": 604,
+      "content_type": "application/json"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-30/step0_original.png",
+      "member": "objects/6a9ab5461672c3b4e91846d07341728334a83ada2a1b0523054e7e23f63e9ca6",
+      "sha256": "6a9ab5461672c3b4e91846d07341728334a83ada2a1b0523054e7e23f63e9ca6",
+      "size": 313029,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-30/step10_multimodal_risk_gradcam.png",
+      "member": "objects/a85dbc7e1575bc3affccfa7efaeffe3d13dab19978b33950aa80c18f01df9ef9",
+      "sha256": "a85dbc7e1575bc3affccfa7efaeffe3d13dab19978b33950aa80c18f01df9ef9",
+      "size": 325481,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-30/step10_multimodal_risk_gradcam_plus.png",
+      "member": "objects/f178e5bf583415eb07ae28506c5a67804e6d2a4dc4b6766a10450d8b626a6fc7",
+      "sha256": "f178e5bf583415eb07ae28506c5a67804e6d2a4dc4b6766a10450d8b626a6fc7",
+      "size": 323995,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-30/step10_multimodal_risk_layercam.png",
+      "member": "objects/7b00d725003ab7e3bfbad78616c2205b9a3c6dcbac8c0e2c5c6751dd2a1329ba",
+      "sha256": "7b00d725003ab7e3bfbad78616c2205b9a3c6dcbac8c0e2c5c6751dd2a1329ba",
+      "size": 328173,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-30/step1_bbox.png",
+      "member": "objects/e281e9f507d83ca7871e93e4e0db843770251bce264fe52d3f99a8bb36dfd309",
+      "sha256": "e281e9f507d83ca7871e93e4e0db843770251bce264fe52d3f99a8bb36dfd309",
+      "size": 315395,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-30/step2_roi.png",
+      "member": "objects/af28d996ef0ca2bc5479693e308d7c190dbe3c54c1ee6f76578dab8b19004bf4",
+      "sha256": "af28d996ef0ca2bc5479693e308d7c190dbe3c54c1ee6f76578dab8b19004bf4",
+      "size": 6831,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-30/step3_mask.png",
+      "member": "objects/32e0006c4af81347fd5ea9578a55bda87e16f17ae53013e7d5f79afe5878c839",
+      "sha256": "32e0006c4af81347fd5ea9578a55bda87e16f17ae53013e7d5f79afe5878c839",
+      "size": 327,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-30/step4_masked_roi.png",
+      "member": "objects/d45f7301a768b85f51c9a7fcddc33b0dc2a15b9e78e654935bc67907186aba21",
+      "sha256": "d45f7301a768b85f51c9a7fcddc33b0dc2a15b9e78e654935bc67907186aba21",
+      "size": 3016,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-30/step5_mask_overlay.png",
+      "member": "objects/6b54d7dd2ff8b9bfd21f7932581e8920b43350e0921230ff551aa6f49772f9a8",
+      "sha256": "6b54d7dd2ff8b9bfd21f7932581e8920b43350e0921230ff551aa6f49772f9a8",
+      "size": 313108,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-30/step6_contour_overlay.png",
+      "member": "objects/0e816c8e3b2bb33a446acbf42b95e351b0e2b86fa9c415f9db77e1fcb62e0e0c",
+      "sha256": "0e816c8e3b2bb33a446acbf42b95e351b0e2b86fa9c415f9db77e1fcb62e0e0c",
+      "size": 313110,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-30/step7_detection_odam.png",
+      "member": "objects/75e697fe54cb044b986f1a6f2520356bd826c77daf0999cfeef16ae15f442f0b",
+      "sha256": "75e697fe54cb044b986f1a6f2520356bd826c77daf0999cfeef16ae15f442f0b",
+      "size": 318377,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-30/step8_seg_eigen_cam.png",
+      "member": "objects/9f9394d47104cb61b7ad2771470e7c3d5a322039d2bac344e6bbd4ba26005ad4",
+      "sha256": "9f9394d47104cb61b7ad2771470e7c3d5a322039d2bac344e6bbd4ba26005ad4",
+      "size": 7740,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-30/step9_classification_finer_cam.png",
+      "member": "objects/bfb09d3daeaac3baaa8cecc4dfb37a9a56bf324d94a94ed9d2430c86153460c6",
+      "sha256": "bfb09d3daeaac3baaa8cecc4dfb37a9a56bf324d94a94ed9d2430c86153460c6",
+      "size": 7662,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-30/xai_classification_finer_cam_meta.json",
+      "member": "objects/cb72851c866c6ec246e35425c7ad464028b92e6f1d7779a3967e844475b50af4",
+      "sha256": "cb72851c866c6ec246e35425c7ad464028b92e6f1d7779a3967e844475b50af4",
+      "size": 1703,
+      "content_type": "application/json"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-30/xai_detection_odam_meta.json",
+      "member": "objects/b68e4bafe7adda39a309a8c9e13a5be50fc628f3761776c3faf6aba0bbebfe80",
+      "sha256": "b68e4bafe7adda39a309a8c9e13a5be50fc628f3761776c3faf6aba0bbebfe80",
+      "size": 1833,
+      "content_type": "application/json"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-30/xai_multimodal_risk_gradcam_meta.json",
+      "member": "objects/82e5eddc7286157628f0986cf2ea2595af307017c4d23b0d8f20486b339f1dec",
+      "sha256": "82e5eddc7286157628f0986cf2ea2595af307017c4d23b0d8f20486b339f1dec",
+      "size": 603,
+      "content_type": "application/json"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-31/step0_original.png",
+      "member": "objects/6a9ab5461672c3b4e91846d07341728334a83ada2a1b0523054e7e23f63e9ca6",
+      "sha256": "6a9ab5461672c3b4e91846d07341728334a83ada2a1b0523054e7e23f63e9ca6",
+      "size": 313029,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-31/step10_multimodal_risk_gradcam.png",
+      "member": "objects/a85dbc7e1575bc3affccfa7efaeffe3d13dab19978b33950aa80c18f01df9ef9",
+      "sha256": "a85dbc7e1575bc3affccfa7efaeffe3d13dab19978b33950aa80c18f01df9ef9",
+      "size": 325481,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-31/step10_multimodal_risk_gradcam_plus.png",
+      "member": "objects/f178e5bf583415eb07ae28506c5a67804e6d2a4dc4b6766a10450d8b626a6fc7",
+      "sha256": "f178e5bf583415eb07ae28506c5a67804e6d2a4dc4b6766a10450d8b626a6fc7",
+      "size": 323995,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-31/step10_multimodal_risk_layercam.png",
+      "member": "objects/7b00d725003ab7e3bfbad78616c2205b9a3c6dcbac8c0e2c5c6751dd2a1329ba",
+      "sha256": "7b00d725003ab7e3bfbad78616c2205b9a3c6dcbac8c0e2c5c6751dd2a1329ba",
+      "size": 328173,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-31/step1_bbox.png",
+      "member": "objects/e281e9f507d83ca7871e93e4e0db843770251bce264fe52d3f99a8bb36dfd309",
+      "sha256": "e281e9f507d83ca7871e93e4e0db843770251bce264fe52d3f99a8bb36dfd309",
+      "size": 315395,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-31/step2_roi.png",
+      "member": "objects/af28d996ef0ca2bc5479693e308d7c190dbe3c54c1ee6f76578dab8b19004bf4",
+      "sha256": "af28d996ef0ca2bc5479693e308d7c190dbe3c54c1ee6f76578dab8b19004bf4",
+      "size": 6831,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-31/step3_mask.png",
+      "member": "objects/32e0006c4af81347fd5ea9578a55bda87e16f17ae53013e7d5f79afe5878c839",
+      "sha256": "32e0006c4af81347fd5ea9578a55bda87e16f17ae53013e7d5f79afe5878c839",
+      "size": 327,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-31/step4_masked_roi.png",
+      "member": "objects/d45f7301a768b85f51c9a7fcddc33b0dc2a15b9e78e654935bc67907186aba21",
+      "sha256": "d45f7301a768b85f51c9a7fcddc33b0dc2a15b9e78e654935bc67907186aba21",
+      "size": 3016,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-31/step5_mask_overlay.png",
+      "member": "objects/6b54d7dd2ff8b9bfd21f7932581e8920b43350e0921230ff551aa6f49772f9a8",
+      "sha256": "6b54d7dd2ff8b9bfd21f7932581e8920b43350e0921230ff551aa6f49772f9a8",
+      "size": 313108,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-31/step6_contour_overlay.png",
+      "member": "objects/0e816c8e3b2bb33a446acbf42b95e351b0e2b86fa9c415f9db77e1fcb62e0e0c",
+      "sha256": "0e816c8e3b2bb33a446acbf42b95e351b0e2b86fa9c415f9db77e1fcb62e0e0c",
+      "size": 313110,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-31/step7_detection_odam.png",
+      "member": "objects/75e697fe54cb044b986f1a6f2520356bd826c77daf0999cfeef16ae15f442f0b",
+      "sha256": "75e697fe54cb044b986f1a6f2520356bd826c77daf0999cfeef16ae15f442f0b",
+      "size": 318377,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-31/step8_seg_eigen_cam.png",
+      "member": "objects/9f9394d47104cb61b7ad2771470e7c3d5a322039d2bac344e6bbd4ba26005ad4",
+      "sha256": "9f9394d47104cb61b7ad2771470e7c3d5a322039d2bac344e6bbd4ba26005ad4",
+      "size": 7740,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-31/step9_classification_finer_cam.png",
+      "member": "objects/bfb09d3daeaac3baaa8cecc4dfb37a9a56bf324d94a94ed9d2430c86153460c6",
+      "sha256": "bfb09d3daeaac3baaa8cecc4dfb37a9a56bf324d94a94ed9d2430c86153460c6",
+      "size": 7662,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-31/xai_classification_finer_cam_meta.json",
+      "member": "objects/cb72851c866c6ec246e35425c7ad464028b92e6f1d7779a3967e844475b50af4",
+      "sha256": "cb72851c866c6ec246e35425c7ad464028b92e6f1d7779a3967e844475b50af4",
+      "size": 1703,
+      "content_type": "application/json"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-31/xai_detection_odam_meta.json",
+      "member": "objects/b68e4bafe7adda39a309a8c9e13a5be50fc628f3761776c3faf6aba0bbebfe80",
+      "sha256": "b68e4bafe7adda39a309a8c9e13a5be50fc628f3761776c3faf6aba0bbebfe80",
+      "size": 1833,
+      "content_type": "application/json"
+    },
+    {
+      "path": "/medical-data/prognosis/1/task-31/xai_multimodal_risk_gradcam_meta.json",
+      "member": "objects/82e5eddc7286157628f0986cf2ea2595af307017c4d23b0d8f20486b339f1dec",
+      "sha256": "82e5eddc7286157628f0986cf2ea2595af307017c4d23b0d8f20486b339f1dec",
+      "size": 603,
+      "content_type": "application/json"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-32/step0_original.png",
+      "member": "objects/cf279f6dc0ad940dde27ab5c7101f9505965cc75b315df572863ee78907b7b8d",
+      "sha256": "cf279f6dc0ad940dde27ab5c7101f9505965cc75b315df572863ee78907b7b8d",
+      "size": 230551,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-32/step10_multimodal_risk_gradcam.png",
+      "member": "objects/28117f4081908dbd8c946b3f64d1a5ffa10c02bfea75190652fc74400c15a870",
+      "sha256": "28117f4081908dbd8c946b3f64d1a5ffa10c02bfea75190652fc74400c15a870",
+      "size": 268758,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-32/step10_multimodal_risk_gradcam_plus.png",
+      "member": "objects/abdc404476676f5250748e8a6f08f01a7d79bff2e7a0d58f9bd0b89e9499b613",
+      "sha256": "abdc404476676f5250748e8a6f08f01a7d79bff2e7a0d58f9bd0b89e9499b613",
+      "size": 280715,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-32/step10_multimodal_risk_layercam.png",
+      "member": "objects/55db9ea6471a63a3048fedd5ef0ff98249787adb8368fc0b9e6f74513ed2a476",
+      "sha256": "55db9ea6471a63a3048fedd5ef0ff98249787adb8368fc0b9e6f74513ed2a476",
+      "size": 282120,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-32/step1_bbox.png",
+      "member": "objects/07eaf5a9e8182c168eeb597ebe2f793423735032963c1c3812bb6e47c41b456b",
+      "sha256": "07eaf5a9e8182c168eeb597ebe2f793423735032963c1c3812bb6e47c41b456b",
+      "size": 233814,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-32/step2_roi.png",
+      "member": "objects/f4db136e0c3c07f9a8b986e0df3cfdd6656fcbec7ce3e7eb7fede53edb03d62d",
+      "sha256": "f4db136e0c3c07f9a8b986e0df3cfdd6656fcbec7ce3e7eb7fede53edb03d62d",
+      "size": 33212,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-32/step3_mask.png",
+      "member": "objects/fdc1a93270b6c774ac522c35080573a974994b0159be41fb7712a3210e3d8d6e",
+      "sha256": "fdc1a93270b6c774ac522c35080573a974994b0159be41fb7712a3210e3d8d6e",
+      "size": 952,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-32/step4_masked_roi.png",
+      "member": "objects/1f4b4967763dd632b6867ca14962dbc0c0c277d9b04b4f3f846a42f91cd8d523",
+      "sha256": "1f4b4967763dd632b6867ca14962dbc0c0c277d9b04b4f3f846a42f91cd8d523",
+      "size": 16726,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-32/step5_mask_overlay.png",
+      "member": "objects/83e957e71742aeee9ffa840c43c184e8e74c734cd913dba7a68c184b63135564",
+      "sha256": "83e957e71742aeee9ffa840c43c184e8e74c734cd913dba7a68c184b63135564",
+      "size": 232683,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-32/step6_contour_overlay.png",
+      "member": "objects/0a0400837bc4505191dbfa97595aa10d01e0fd604cab1263f701b0f3cc39e236",
+      "sha256": "0a0400837bc4505191dbfa97595aa10d01e0fd604cab1263f701b0f3cc39e236",
+      "size": 231835,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-32/step7_detection_odam.png",
+      "member": "objects/f5687aec10f1276ac7fee6b29057ebae01d58898e183bc24f7396c07a40d0d5d",
+      "sha256": "f5687aec10f1276ac7fee6b29057ebae01d58898e183bc24f7396c07a40d0d5d",
+      "size": 241844,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-32/step8_seg_eigen_cam.png",
+      "member": "objects/a88f4bc0cad78b0521d7082a5e7d654b54d6af9ffd9f01e05e7ba6486e9ab368",
+      "sha256": "a88f4bc0cad78b0521d7082a5e7d654b54d6af9ffd9f01e05e7ba6486e9ab368",
+      "size": 41759,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-32/step9_classification_finer_cam.png",
+      "member": "objects/8cfdb3a399ca707c82925f21635b5c705ef889232894ae730ff45bcabc49df8c",
+      "sha256": "8cfdb3a399ca707c82925f21635b5c705ef889232894ae730ff45bcabc49df8c",
+      "size": 38928,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-32/xai_classification_finer_cam_meta.json",
+      "member": "objects/8aec65776bc415fb4118c9054f90201cd0f508cbd0ba130adc1bf14b80e43e30",
+      "sha256": "8aec65776bc415fb4118c9054f90201cd0f508cbd0ba130adc1bf14b80e43e30",
+      "size": 1715,
+      "content_type": "application/json"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-32/xai_detection_odam_meta.json",
+      "member": "objects/9249497ba23d595dc2c38cf6e3d1deb6fd17d876a8ca0d9a477fa8e33d15efc9",
+      "sha256": "9249497ba23d595dc2c38cf6e3d1deb6fd17d876a8ca0d9a477fa8e33d15efc9",
+      "size": 1848,
+      "content_type": "application/json"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-32/xai_multimodal_risk_gradcam_meta.json",
+      "member": "objects/627986231a722332eb31a71a9a27dd8b23f853400c4019655e22202eefd2a9c5",
+      "sha256": "627986231a722332eb31a71a9a27dd8b23f853400c4019655e22202eefd2a9c5",
+      "size": 607,
+      "content_type": "application/json"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-33/step0_original.png",
+      "member": "objects/5d48c3fb07d3e3bf4e21ecca59d0286cec7d6ed85158e95df97bca11c5aef9ff",
+      "sha256": "5d48c3fb07d3e3bf4e21ecca59d0286cec7d6ed85158e95df97bca11c5aef9ff",
+      "size": 233015,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-33/step10_multimodal_risk_gradcam.png",
+      "member": "objects/757bdd80dfb40fd364b6603dd8afec7310b35362d2ff6614b2d2a9f279db4f88",
+      "sha256": "757bdd80dfb40fd364b6603dd8afec7310b35362d2ff6614b2d2a9f279db4f88",
+      "size": 262548,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-33/step10_multimodal_risk_gradcam_plus.png",
+      "member": "objects/3025a579687f0b3ad855f44ee145c53efa3026dbe09dda95ca0d40474fab5bb5",
+      "sha256": "3025a579687f0b3ad855f44ee145c53efa3026dbe09dda95ca0d40474fab5bb5",
+      "size": 283679,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-33/step10_multimodal_risk_layercam.png",
+      "member": "objects/52d5d1ce22e481cd4826fb81feebdaad41b76c99abf38454664188107c216969",
+      "sha256": "52d5d1ce22e481cd4826fb81feebdaad41b76c99abf38454664188107c216969",
+      "size": 280456,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-33/step1_bbox.png",
+      "member": "objects/a34a2481c126908b6d0eebf9179de2746a0e39136722164b11163a82b56a7267",
+      "sha256": "a34a2481c126908b6d0eebf9179de2746a0e39136722164b11163a82b56a7267",
+      "size": 233582,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-33/step2_roi.png",
+      "member": "objects/a7a8b3a3dcdfbc11421e056fa611fc3d1de8224d449cf13e19d7b96f3a139e45",
+      "sha256": "a7a8b3a3dcdfbc11421e056fa611fc3d1de8224d449cf13e19d7b96f3a139e45",
+      "size": 9733,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-33/step3_mask.png",
+      "member": "objects/4b5b0dbfb941b8fb8832fb56b01466ada1a0aca3613308e02b6ad5e7daef9067",
+      "sha256": "4b5b0dbfb941b8fb8832fb56b01466ada1a0aca3613308e02b6ad5e7daef9067",
+      "size": 361,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-33/step4_masked_roi.png",
+      "member": "objects/7efc94525aaf64046f9d3cf0e8d6813aa67f61f89a170c1e59a0a3954d366268",
+      "sha256": "7efc94525aaf64046f9d3cf0e8d6813aa67f61f89a170c1e59a0a3954d366268",
+      "size": 3432,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-33/step5_mask_overlay.png",
+      "member": "objects/e825cac59b3918c004635f018707d6aa322aefdd313f9a7bcae86a42d3d61976",
+      "sha256": "e825cac59b3918c004635f018707d6aa322aefdd313f9a7bcae86a42d3d61976",
+      "size": 233427,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-33/step6_contour_overlay.png",
+      "member": "objects/dc291dad9bc48f87f2febf547e5a3e256195ea614cd493c41140f041869398bf",
+      "sha256": "dc291dad9bc48f87f2febf547e5a3e256195ea614cd493c41140f041869398bf",
+      "size": 233238,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-33/step7_detection_odam.png",
+      "member": "objects/97514fae0a698d3673f94247cc85a2dac68b96eda5b410ca1487055f6bd5f933",
+      "sha256": "97514fae0a698d3673f94247cc85a2dac68b96eda5b410ca1487055f6bd5f933",
+      "size": 237837,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-33/step8_seg_eigen_cam.png",
+      "member": "objects/c962c975082ebc86c954c9abada250abd0447646d8022001282c97a668dd654b",
+      "sha256": "c962c975082ebc86c954c9abada250abd0447646d8022001282c97a668dd654b",
+      "size": 10149,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-33/step9_classification_finer_cam.png",
+      "member": "objects/5c2deaaeb625b13e6856a770d656533fe6e6ff342480ed654a22c8914c179b53",
+      "sha256": "5c2deaaeb625b13e6856a770d656533fe6e6ff342480ed654a22c8914c179b53",
+      "size": 11480,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-33/xai_classification_finer_cam_meta.json",
+      "member": "objects/97f1462cbc2370c5dfdbc4626a4c5280e3cec8826553a24ab1c28052038b6961",
+      "sha256": "97f1462cbc2370c5dfdbc4626a4c5280e3cec8826553a24ab1c28052038b6961",
+      "size": 1699,
+      "content_type": "application/json"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-33/xai_detection_odam_meta.json",
+      "member": "objects/208cf9a665a0ddcf93197d4f1d73bb71d1c8dd411e83ecbce4ee93bb5ec457a8",
+      "sha256": "208cf9a665a0ddcf93197d4f1d73bb71d1c8dd411e83ecbce4ee93bb5ec457a8",
+      "size": 1852,
+      "content_type": "application/json"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-33/xai_multimodal_risk_gradcam_meta.json",
+      "member": "objects/c54609f3c1968a72123025fdf0b53f1af24240a607226214d99f13f925e930b9",
+      "sha256": "c54609f3c1968a72123025fdf0b53f1af24240a607226214d99f13f925e930b9",
+      "size": 605,
+      "content_type": "application/json"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-34/step0_original.png",
+      "member": "objects/1cd9f84655232eea996dfc09c703250adaf820c2ffe032b4a6ab1c77680b3b6a",
+      "sha256": "1cd9f84655232eea996dfc09c703250adaf820c2ffe032b4a6ab1c77680b3b6a",
+      "size": 131439,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-34/step10_multimodal_risk_gradcam.png",
+      "member": "objects/e33ed5c1e39f9d81fed2ef90342a5a3460d7a17c1382d766d4e49f22e461fbb4",
+      "sha256": "e33ed5c1e39f9d81fed2ef90342a5a3460d7a17c1382d766d4e49f22e461fbb4",
+      "size": 209213,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-34/step10_multimodal_risk_gradcam_plus.png",
+      "member": "objects/1b3bfb72aa58ab234456c4f4b92b8cfa33aae5a4b6c0d9e9fb982cd6c7889be8",
+      "sha256": "1b3bfb72aa58ab234456c4f4b92b8cfa33aae5a4b6c0d9e9fb982cd6c7889be8",
+      "size": 216540,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-34/step10_multimodal_risk_layercam.png",
+      "member": "objects/4cabf2aa75daf8f1136f89076a730b3fbbdb0236623e5610b7a47e264655a4eb",
+      "sha256": "4cabf2aa75daf8f1136f89076a730b3fbbdb0236623e5610b7a47e264655a4eb",
+      "size": 218073,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-34/step1_bbox.png",
+      "member": "objects/b86edfcd255e8d74c79b115ad9261d46d57961c27383a45a004e0b0a0c0f6fe9",
+      "sha256": "b86edfcd255e8d74c79b115ad9261d46d57961c27383a45a004e0b0a0c0f6fe9",
+      "size": 133415,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-34/step2_roi.png",
+      "member": "objects/a730febe4d97be113ddd05c86199e3f09f98b1692a7c5afae72d7a0657fb1bd3",
+      "sha256": "a730febe4d97be113ddd05c86199e3f09f98b1692a7c5afae72d7a0657fb1bd3",
+      "size": 6780,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-34/step3_mask.png",
+      "member": "objects/c4334221368b854a22b29e8faabd738e3dbc3da59a489b803b3ccbd3a301624a",
+      "sha256": "c4334221368b854a22b29e8faabd738e3dbc3da59a489b803b3ccbd3a301624a",
+      "size": 332,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-34/step4_masked_roi.png",
+      "member": "objects/2b459d2a6bf25077770432b54ba8c0bff057ac1e44bd29127e6cf9cfbef39dfe",
+      "sha256": "2b459d2a6bf25077770432b54ba8c0bff057ac1e44bd29127e6cf9cfbef39dfe",
+      "size": 2744,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-34/step5_mask_overlay.png",
+      "member": "objects/94994aee571f439fd8325cec6063b1103f9a92589afb009f3c4c5914edd2a70d",
+      "sha256": "94994aee571f439fd8325cec6063b1103f9a92589afb009f3c4c5914edd2a70d",
+      "size": 131742,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-34/step6_contour_overlay.png",
+      "member": "objects/c12beb53a1306b5241420fbf2d7a426a8a31ef78c9ca07e18adea553293d610f",
+      "sha256": "c12beb53a1306b5241420fbf2d7a426a8a31ef78c9ca07e18adea553293d610f",
+      "size": 131685,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-34/step7_detection_odam.png",
+      "member": "objects/5570ef583d49aabad11f5c80d4ed4a0b83a95432110f9bab46174a334d28ac8a",
+      "sha256": "5570ef583d49aabad11f5c80d4ed4a0b83a95432110f9bab46174a334d28ac8a",
+      "size": 138498,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-34/step8_seg_eigen_cam.png",
+      "member": "objects/2762fd0a189b36538e277bf8635bafc89a901233e023626a6ea17d09e9fbebf2",
+      "sha256": "2762fd0a189b36538e277bf8635bafc89a901233e023626a6ea17d09e9fbebf2",
+      "size": 7545,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-34/step9_classification_finer_cam.png",
+      "member": "objects/7d8d7d8b93dee6326652f5ea474defc7f96fc499ef3306c1e6ecf20ab92671ef",
+      "sha256": "7d8d7d8b93dee6326652f5ea474defc7f96fc499ef3306c1e6ecf20ab92671ef",
+      "size": 9806,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-34/xai_classification_finer_cam_meta.json",
+      "member": "objects/3319482d5d13d8e58317e92df8e4db8e219ca2a19dd28929e427c6e1aa0aa1dd",
+      "sha256": "3319482d5d13d8e58317e92df8e4db8e219ca2a19dd28929e427c6e1aa0aa1dd",
+      "size": 1698,
+      "content_type": "application/json"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-34/xai_detection_odam_meta.json",
+      "member": "objects/f9cd255290ff7d3c4df086b5a0d9f27efe6fa96cd9bb5b14a692733c06ef710c",
+      "sha256": "f9cd255290ff7d3c4df086b5a0d9f27efe6fa96cd9bb5b14a692733c06ef710c",
+      "size": 1851,
+      "content_type": "application/json"
+    },
+    {
+      "path": "/medical-data/prognosis/2/task-34/xai_multimodal_risk_gradcam_meta.json",
+      "member": "objects/270b4361f14e2ed92946b90da82335086929eb034e32350e0bdcdb00c853d067",
+      "sha256": "270b4361f14e2ed92946b90da82335086929eb034e32350e0bdcdb00c853d067",
+      "size": 606,
+      "content_type": "application/json"
     }
   ],
   "missing_optional_files": []
