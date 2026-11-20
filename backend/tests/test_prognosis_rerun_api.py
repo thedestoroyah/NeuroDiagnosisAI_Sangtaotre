@@ -56,3 +56,37 @@ def test_image_detail_keeps_mri_payload_when_mri_rerun_is_newer():
         body = client.get(f"/records/analysis/image/{image.id}").json()
 
     assert body["risk_group"] == "Very High"
+
+
+def test_writing_explanation_to_old_mri_task_does_not_bring_back_old_prognosis():
+    """Review độc lập: ghi giải thích vào task MRI cũ làm updated_at mới → số v1 quay lại. Phải so theo lúc chạy."""
+    db = _db()
+    owner, image = _image(db)
+    _tasks(db, image, mri_time=dt.datetime(2026, 5, 1), prognosis_time=dt.datetime(2026, 11, 20))
+    mri = db.query(models.InferenceTask).filter_by(task_type="mri_pipeline").first()
+    mri.result = {**mri.result, "classification_xai_explanation": "x"}
+    mri.updated_at = dt.datetime(2026, 11, 21)  # như onupdate=utcnow khi endpoint giải thích commit
+    db.commit()
+
+    with _client(db, {"sub": str(owner.id), "role": "doctor"}) as client:
+        body = client.get(f"/records/analysis/image/{image.id}").json()
+
+    assert body["risk_group"] == "Medium"
+    assert not body.get("survival_curve_data")
+
+
+def test_failed_mri_task_does_not_show_old_prognosis_payload():
+    db = _db()
+    owner, image = _image(db)
+    db.add(models.InferenceTask(celery_task_id="p", task_type="prognosis", target_id=image.patient_id, status="done",
+                                result={**OLD, "image_id": image.id}, created_at=dt.datetime(2026, 5, 1)))
+    db.add(models.InferenceTask(celery_task_id="m", task_type="mri_pipeline", target_id=image.id, status="failed",
+                                result=None, error_message="worker crashed", created_at=dt.datetime(2026, 11, 20)))
+    db.commit()
+
+    with _client(db, {"sub": str(owner.id), "role": "doctor"}) as client:
+        body = client.get(f"/records/analysis/image/{image.id}").json()
+
+    assert body["status"] == "failed"
+    assert body.get("risk_group") is None
+    assert body.get("tumor_label") is None

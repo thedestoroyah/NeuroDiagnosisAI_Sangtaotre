@@ -31,21 +31,7 @@ LABEL_MAP = {
     "class_2": "Pituitary tumor",
 }
 
-PROGNOSIS_ONLY_KEYS = {
-    "risk_score",
-    "risk_group",
-    "survival_curve_data",
-    "fusion_attention",
-    "rna_xai",
-    "multimodal_xai_explanation",
-    "xai_explanation",
-    "multimodal_risk_xai_path",
-    "multimodal_risk_xai_meta_path",
-    "multimodal_gradcam_heatmap_path",
-    "multimodal_gradcam_plus_heatmap_path",
-    "multimodal_layercam_heatmap_path",
-    "prognosis_meta",
-}
+from prognosis_payload import PROGNOSIS_ONLY_KEYS  # noqa: E402  (giữ tên cho code cũ)
 
 NAVY = (18, 42, 66)
 TEAL = (38, 120, 133)
@@ -65,42 +51,9 @@ SLATE_900 = (15, 23, 42)
 RED_500 = (239, 68, 68)
 
 
-def _merge_prognosis_only(base_payload: dict, prognosis_payload: dict | None) -> dict:
-    """Add prognosis outputs without overwriting MRI core detection/seg/class fields.
-
-    Khóa có trong prognosis_payload luôn ghi đè, kể cả None: mô hình chưa hiệu chuẩn trả survival_curve_data=None
-    và đường cũ không được giữ lại.
-    """
-    merged = dict(base_payload or {})
-    if not prognosis_payload:
-        return merged
-    for key in PROGNOSIS_ONLY_KEYS:
-        if key in prognosis_payload:
-            merged[key] = prognosis_payload.get(key)
-    return merged
-
-
-def _task_time(task) -> datetime.datetime:
-    return task.updated_at or task.created_at or datetime.datetime.min
-
-
-def _payload_with_prognosis(mri_task, prognosis_task) -> dict:
-    """Payload task MRI, gộp kết quả tiên lượng nếu task tiên lượng mới hơn (chạy lại tiên lượng phải thay số cũ).
-
-    Args:
-        mri_task, prognosis_task: InferenceTask hoặc None.
-
-    Returns:
-        dict mới (không sửa result của task).
-    """
-    payload = dict(mri_task.result or {}) if mri_task and mri_task.result else {}
-    if not (prognosis_task and prognosis_task.result):
-        return payload
-    if not payload:
-        return dict(prognosis_task.result)
-    if mri_task is None or _task_time(prognosis_task) >= _task_time(mri_task):
-        return _merge_prognosis_only(payload, prognosis_task.result)
-    return payload
+# Quy tắc gộp nằm ở prognosis_payload (dùng chung với chatbox); giữ tên cũ trong module này.
+from prognosis_payload import merge_prognosis_only as _merge_prognosis_only  # noqa: E402
+from prognosis_payload import payload_with_prognosis as _payload_with_prognosis  # noqa: E402
 
 
 def _get_presigned_url(file_path: str | None) -> str | None:
@@ -1128,9 +1081,6 @@ def get_patient_full_analysis(
         analysis_query = analysis_query.filter(models.AnalysisResult.image_id == image_id)
     analysis = analysis_query.order_by(models.AnalysisResult.created_at.desc()).first()
 
-    # Lấy InferenceTask mới nhất (prognosis hoặc mri_pipeline)
-    prognosis_task = _get_latest_prognosis_task(db, real_id, image_id)
-
     # Cũng tìm MRI task nếu có (để lấy overlay images)
     mri_image = selected_image or (
         db.query(models.Image)
@@ -1145,6 +1095,8 @@ def get_patient_full_analysis(
     mri_task = None
     if mri_image:
         mri_task = _get_latest_mri_task(db, mri_image.id)
+    # Tiên lượng của đúng ảnh đang hiển thị (không lấy lần tiên lượng mới nhất của một ảnh khác).
+    prognosis_task = _get_latest_prognosis_task(db, real_id, mri_image.id if mri_image else image_id)
 
     if not analysis and not prognosis_task and not mri_task:
         raise HTTPException(status_code=404, detail="Chua co ket qua phan tich cho benh nhan nay.")

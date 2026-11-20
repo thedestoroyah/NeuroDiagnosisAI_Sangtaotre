@@ -154,3 +154,45 @@ def test_agent_keeps_mri_task_score_when_mri_rerun_is_newer():
 
     assert serialize_analysis_with_visuals(db, analysis)["risk_score"] == 2.0
     db.close()
+
+
+def test_agent_does_not_mix_newer_mri_score_with_older_prognosis_meta():
+    """Review độc lập: task MRI mới hơn thì không lấp prognosis_meta / heatmap của lần tiên lượng cũ hơn."""
+    import datetime as dt
+
+    db = _session()
+    analysis = _analysis_fixture(db)
+    db.add(models.InferenceTask(
+        celery_task_id="m", task_type="mri_pipeline", target_id=analysis.image_id, status="done",
+        result={"risk_score": 2.0, "risk_group": "High"}, created_at=dt.datetime(2026, 11, 21),
+    ))
+    db.add(models.InferenceTask(
+        celery_task_id="p", task_type="prognosis", target_id=analysis.patient_id, status="done",
+        result={"image_id": analysis.image_id, "risk_score": -1.05, "prognosis_meta": {"percentile": 14.0},
+                "multimodal_risk_xai_path": "/old/heatmap.png"},
+        created_at=dt.datetime(2026, 11, 20),
+    ))
+    db.commit()
+
+    payload = serialize_analysis_with_visuals(db, analysis)
+    assert payload["risk_score"] == 2.0
+    assert payload.get("prognosis_meta") is None
+    db.close()
+
+
+def test_agent_ignores_updated_at_bump_on_old_mri_task():
+    import datetime as dt
+
+    db = _session()
+    analysis = _analysis_fixture(db)
+    db.add(models.InferenceTask(
+        celery_task_id="m", task_type="mri_pipeline", target_id=analysis.image_id, status="done",
+        result={"risk_score": -1.71}, created_at=dt.datetime(2026, 6, 27), updated_at=dt.datetime(2026, 11, 21),
+    ))
+    db.add(models.InferenceTask(
+        celery_task_id="p", task_type="prognosis", target_id=analysis.patient_id, status="done",
+        result={"image_id": analysis.image_id, "risk_score": -1.05}, created_at=dt.datetime(2026, 11, 20),
+    ))
+    db.commit()
+    assert serialize_analysis_with_visuals(db, analysis)["risk_score"] == -1.05
+    db.close()

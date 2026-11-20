@@ -3,6 +3,8 @@ from typing import Any, Optional
 
 from sqlalchemy.orm import Session
 
+from prognosis_payload import payload_with_prognosis
+
 import crud
 import models
 from review_utils import classification_review_state
@@ -29,19 +31,6 @@ def _latest_task(db: Session, task_type: str, target_id: int) -> Optional[models
         .order_by(models.InferenceTask.created_at.desc())
         .first()
     )
-
-
-PROGNOSIS_RESULT_KEYS = ("risk_score", "risk_group", "survival_curve_data", "prognosis_meta")
-
-
-def _task_time(task: Optional[models.InferenceTask]):
-    return (task.updated_at or task.created_at) if task else None
-
-
-def _is_newer_or_equal(task: models.InferenceTask, other: Optional[models.InferenceTask]) -> bool:
-    """True nếu `task` được ghi sau hoặc cùng lúc `other` (hoặc `other` không có / thiếu mốc thời gian)."""
-    other_time, task_time = _task_time(other), _task_time(task)
-    return other_time is None or task_time is None or task_time >= other_time
 
 
 def _task_id_from_analysis_paths(analysis: models.AnalysisResult) -> int | None:
@@ -211,10 +200,9 @@ def serialize_analysis_with_visuals(
     image = db.query(models.Image).filter(models.Image.id == analysis.image_id).first()
     mri_task = _latest_task(db, "mri_pipeline", analysis.image_id)
     prognosis_task = _matching_prognosis_task(db, analysis)
-    payload: dict[str, Any] = {}
-    if mri_task and isinstance(mri_task.result, dict):
-        payload.update(mri_task.result)
-    if prognosis_task and isinstance(prognosis_task.result, dict):
+    # Khóa tiên lượng theo quy tắc chung (so lúc chạy, task MRI phải xong); khóa hình ảnh MRI chỉ lấp chỗ trống.
+    payload: dict[str, Any] = payload_with_prognosis(mri_task, prognosis_task)
+    if mri_task and prognosis_task and isinstance(prognosis_task.result, dict):
         for key in (
             "bbox",
             "bbox_confidence",
@@ -223,20 +211,10 @@ def serialize_analysis_with_visuals(
             "seg_mask_path",
             "mask_overlay_path",
             "contour_overlay_path",
-            "multimodal_risk_xai_path",
             "gradcam_heatmap_path",
         ):
             if key in prognosis_task.result and not payload.get(key):
                 payload[key] = prognosis_task.result[key]
-        # Khóa tiên lượng: lần chạy tiên lượng mới hơn task MRI thì thay hẳn số cũ (kể cả None, vd. không còn đường sống còn).
-        if _is_newer_or_equal(prognosis_task, mri_task):
-            for key in PROGNOSIS_RESULT_KEYS:
-                if key in prognosis_task.result:
-                    payload[key] = prognosis_task.result[key]
-        else:
-            for key in PROGNOSIS_RESULT_KEYS:
-                if key in prognosis_task.result and not payload.get(key):
-                    payload[key] = prognosis_task.result[key]
 
     bbox = payload.get("bbox")
     seg_mask_path = payload.get("seg_mask_path") or analysis.mask_path
