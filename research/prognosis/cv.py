@@ -5,7 +5,8 @@ Chạy:
     python research/prognosis/cv.py --data $DATA --manifest ... --out research/prognosis/runs_v2 --final [--install]
 
 Bước CV ghi out/cv_results.json. --final đọc file đó, train 5 seed của cấu hình được chọn trên toàn bộ train+val
-và ghi out/selection.json, out/rna_reference.npz, out/seed*/final.pth. Không bước nào đọc tập test.
+và ghi out/selection.json, out/rna_reference.npz, out/seed*/final.pth; --install gộp vào weights serving.
+Không bước nào đọc tập test.
 """
 
 from __future__ import annotations
@@ -181,13 +182,16 @@ def train_final(rows: pd.DataFrame, patients: list[Patient], rna_matrix: pd.Data
 
 
 def install(out: Path) -> None:
-    """Chép 5 checkpoint, rna_reference và selection của v2 vào backend/ai_core/weights/ensemble/ (serving nạp)."""
-    target = WEIGHTS_DIR / "ensemble"
-    target.mkdir(exist_ok=True)
+    """Gộp 5 checkpoint thành backend/ai_core/weights/prognosis_ensemble.pth (backbone một lần) và chép rna_reference."""
+    import torch
+
+    from ai_core.architectures.ensemble import save_ensemble
+    from ai_core.pipeline import ENSEMBLE_WEIGHTS
+
     selection = json.loads((out / "selection.json").read_text())
-    for seed in selection["ensemble_seeds"]:
-        shutil.copy2(out / f"seed{seed}" / "final.pth", target / f"seed{seed}.pth")
-    shutil.copy2(out / "selection.json", target / "selection.json")
+    states = [torch.load(out / f"seed{s}" / selection["checkpoint"], map_location="cpu", weights_only=True)
+              for s in selection["ensemble_seeds"]]
+    save_ensemble(states, WEIGHTS_DIR / ENSEMBLE_WEIGHTS, meta=selection)
     shutil.copy2(out / "rna_reference.npz", WEIGHTS_DIR / "rna_reference.npz")
 
 
