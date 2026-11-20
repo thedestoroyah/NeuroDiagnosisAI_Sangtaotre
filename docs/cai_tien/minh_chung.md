@@ -47,5 +47,8 @@ Chạy toàn bộ test backend: `cd backend && ../.venv/bin/python -m pytest -q 
 - Tập test đã được đánh giá **hai lần**: v1 (0,599), rồi v2 (0,648) theo kế hoạch chốt trước. Lần 2 không dùng kết quả lần 1 để chọn cấu hình, nhưng việc đánh giá lại vẫn làm con số kém "độc lập" hơn một lần duy nhất; cả hai lần đều được báo cáo.
 - Mô hình v2 (C-index test 0,648) chỉ **ngang** mô hình CoxPH chỉ dùng lâm sàng (0,651; trên CV là 0,666 so với 0,662). Ablation v2: tắt cả RNA và WSI thì C-index giảm từ 0,648 xuống 0,629. Mức giảm 0,02 nhỏ hơn nhiều so với độ rộng KTC95% (khoảng ±0,06) nên chỉ là dấu hiệu, chưa chứng minh được hai nhánh này có đóng góp; và cũng chưa đủ để vượt các biến lâm sàng với cỡ mẫu hiện có (178 ca có RNA, 151 ca có WSI trong train+val).
 - v2 phân biệt tốt hơn v1 nhưng **không hiệu chuẩn**: ở 24 tháng, nhóm nguy cơ cao dự đoán sống 5% trong khi quan sát 22%. Vì vậy giao diện không hiện xác suất sống còn.
+- Percentile và ngưỡng nhóm nguy cơ tính từ risk của chính 764 bệnh nhân đã dùng để train, nên phân tán rộng hơn risk của bệnh nhân mới; percentile hiển thị chỉ mang tính tương đối.
+- C-index CV 0,666 là giá trị cao nhất trong 30 epoch trên chính các fold dùng để chọn số epoch, nên hơi lạc quan (R0 cũng được tính cùng cách nên phép so sánh vẫn công bằng). Bản cuối train 23 epoch trên 764 ca, nhiều bước cập nhật hơn khoảng 25% so với mỗi fold CV (~611 ca).
+- Câu giới hạn trên giao diện chưa nhắc rằng mô hình chỉ dùng lâm sàng đạt C-index tương đương (0,651); báo cáo cần nói rõ điều này.
 - 172/194 ca WSI cũ bị mất. Đã tải lại 177 slide TCGA từ GDC; 17 ca UPENN được coi là thiếu WSI.
 - Backbone DenseNet121 dùng trọng số ImageNet, đóng băng và không fine-tune, vì phần cứng không đủ (RTX 3050 4 GB) để Cox loss có risk set đủ lớn.
