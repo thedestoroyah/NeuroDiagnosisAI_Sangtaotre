@@ -16,6 +16,7 @@ import torchvision.transforms as transforms
 from PIL import Image, ImageFile
 
 from .architectures.densenet_classifier import DenseNetClassifier
+from .architectures.ensemble import load_ensemble
 from .architectures.survival_net import MultimodalBrainTumorModel
 from .architectures.unet import UNetSegmenter
 from .architectures.yolo_net import YOLODetector
@@ -38,6 +39,8 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 logger = logging.getLogger(__name__)
 
 MRI_UNREADABLE = "mri_unreadable"
+ENSEMBLE_WEIGHTS = "prognosis_ensemble.pth"
+LEGACY_NUM_GENES = 60664
 _MAX_FAILED_REASONS = 5
 
 
@@ -104,9 +107,10 @@ class TumorAnalysisPipeline:
     def __init__(self, weights_dir: str, device: str = "cpu"):
         self.device = device
         self.weights_dir = weights_dir
-        self.num_genes = 60664
         rna_reference_path = os.path.join(weights_dir, "rna_reference.npz")
         self.rna_reference = load_rna_reference(rna_reference_path) if os.path.exists(rna_reference_path) else None
+        # Số cột RNA của mô hình = số cột của rna_reference đi kèm (v1: 60.664, v2: chỉ các gen đã chọn).
+        self.num_genes = len(self.rna_reference.columns) if self.rna_reference is not None else LEGACY_NUM_GENES
         if self.rna_reference is None:
             print(f"[AI PIPELINE] Warning: thiếu {rna_reference_path}, nhánh RNA sẽ bị tắt (has_rna=0).")
         risk_reference_path = os.path.join(weights_dir, "risk_reference.json")
@@ -131,18 +135,7 @@ class TumorAnalysisPipeline:
         self.classifier = DenseNetClassifier(device=device)
         self.classifier.load_weights(os.path.join(weights_dir, "densenet169_weights.pth"))
 
-        self.multimodal_model: MultimodalBrainTumorModel | None = None
-        multimodal_weights = os.path.join(weights_dir, "best_multimodal_model.pth")
-        if os.path.exists(multimodal_weights):
-            self.multimodal_model = MultimodalBrainTumorModel(
-                num_genes=self.num_genes,
-                feature_dim=512,
-            )
-            self.multimodal_model.load_state_dict(
-                torch.load(multimodal_weights, map_location=device)
-            )
-            self.multimodal_model.to(device)
-            self.multimodal_model.eval()
+        self.multimodal_model = self._load_prognosis_model(weights_dir, device)
 
         print(f"[AI PIPELINE] Initialization completed on device: {device}")
         
@@ -163,6 +156,24 @@ class TumorAnalysisPipeline:
         self.detection_xai = XAIFactory.detection(self.detector)
         self.segmentation_xai = XAIFactory.segmentation(self.segmentor)
         self.classification_xai = XAIFactory.classification(self.classifier)
+
+    def _load_prognosis_model(self, weights_dir: str, device: str):
+        """Nạp mô hình tiên lượng: ưu tiên ensemble v2 (prognosis_ensemble.pth), không có thì checkpoint đơn v1.
+
+        Returns:
+            EnsembleSurvivalModel hoặc MultimodalBrainTumorModel ở chế độ eval; None nếu không có file weights nào.
+        """
+        ensemble_path = os.path.join(weights_dir, ENSEMBLE_WEIGHTS)
+        if os.path.exists(ensemble_path):
+            model, meta = load_ensemble(Path(ensemble_path), self.num_genes, device)
+            print(f"[AI PIPELINE] Mô hình tiên lượng v2: ensemble {len(model.members)} seed, {self.num_genes} cột RNA ({meta}).")
+            return model
+        single_path = os.path.join(weights_dir, "best_multimodal_model.pth")
+        if not os.path.exists(single_path):
+            return None
+        model = MultimodalBrainTumorModel(num_genes=self.num_genes, feature_dim=512)
+        model.load_state_dict(torch.load(single_path, map_location=device, weights_only=True))
+        return model.to(device).eval()
 
     def run_inference(self, image_source: str | bytes, output_dir: str) -> dict[str, Any]:
         os.makedirs(output_dir, exist_ok=True)
