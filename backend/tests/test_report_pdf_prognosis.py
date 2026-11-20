@@ -26,3 +26,39 @@ class ReportPdfPrognosisTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+# ── Yêu cầu 3: PDF không bao giờ biến MRI lỗi / âm tính chưa xác nhận thành kết luận "không có u" ──
+from routers.analysis import _report_headline  # noqa: E402
+
+
+def test_negative_needing_review_is_not_a_conclusion():
+    title, summary = _report_headline(no_tumor_detected=True, tumor_label=None,
+                                      mri_review_required=True, mri_review_reasons=["negative_needs_confirmation"])
+    assert "Không phát hiện khối u" in title
+    assert "chưa có kết luận" in summary.lower()
+    assert "bác sĩ xác nhận" in summary
+
+
+def test_missing_label_without_negative_is_not_reported_as_no_tumor():
+    title, summary = _report_headline(no_tumor_detected=False, tumor_label=None,
+                                      mri_review_required=False, mri_review_reasons=[])
+    assert "Không phát hiện" not in title
+
+
+def test_unreadable_mri_report_is_refused():
+    from test_mri_safety_api import _client, _db, _image
+    import models
+
+    db = _db()
+    owner, image = _image(db)
+    db.add(models.InferenceTask(
+        celery_task_id="c1", task_type="mri_pipeline", target_id=image.id, status="failed",
+        error_message="Không đọc được ảnh MRI (0/4 lát) – chưa có kết luận, cần kiểm tra lại dữ liệu.",
+        result={"mri_status": "mri_unreadable", "review_required": True, "review_reasons": ["mri_unreadable"]},
+    ))
+    db.commit()
+    with _client(db, {"sub": str(owner.id), "role": "doctor"}) as client:
+        response = client.get(f"/records/analysis/image/{image.id}/report")
+    assert response.status_code == 409
+    assert "Không đọc được MRI" in response.json()["detail"]

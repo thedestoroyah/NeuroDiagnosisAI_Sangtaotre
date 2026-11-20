@@ -439,6 +439,41 @@ def _load_image_for_report(minio_file_path: str | None = None, local_path: str |
     return None
 
 
+MRI_REVIEW_REASON_TEXT = {
+    "mri_unreadable": "không lát MRI nào đọc được",
+    "slices_failed": "một số lát MRI không đọc được",
+    "negative_needs_confirmation": "kết quả âm tính phải được bác sĩ xác nhận",
+    "low_classification_confidence": "độ tin cậy phân loại thấp",
+}
+
+
+def _report_headline(
+    no_tumor_detected: bool,
+    tumor_label: str | None,
+    mri_review_required: bool,
+    mri_review_reasons: list[str] | None,
+) -> tuple[str, str | None]:
+    """Tiêu đề và câu tóm tắt trang 1 của PDF theo nguyên tắc an toàn (yêu cầu 3).
+
+    Returns:
+        (tiêu đề, câu tóm tắt) — câu tóm tắt None nghĩa là dùng _build_summary_text như cũ.
+        Âm tính cần rà soát thì ghi rõ "chưa có kết luận"; thiếu nhãn mà không âm tính thì không in "không phát hiện u".
+    """
+    if tumor_label:
+        return tumor_label, None
+    if not no_tumor_detected:
+        return "Chưa xác định", "Chưa có nhãn phân loại cho ảnh này. Kết luận phải do bác sĩ chuyên khoa đưa ra."
+    if mri_review_required:
+        # Lý do "âm tính cần xác nhận" đã nằm trong câu chính nên chỉ liệt kê các lý do còn lại.
+        reasons = [MRI_REVIEW_REASON_TEXT.get(r, r) for r in (mri_review_reasons or []) if r != "negative_needs_confirmation"]
+        detail = f" Lý do cần rà soát: {'; '.join(reasons)}." if reasons else ""
+        return "Không phát hiện khối u", (
+            "AI không phát hiện khối u trên phim MRI này, nhưng đây CHƯA CÓ KẾT LUẬN: "
+            "kết quả âm tính phải được bác sĩ xác nhận, hệ thống không tự kết luận." + detail
+        )
+    return "Không phát hiện khối u", None
+
+
 def _build_summary_text(no_tumor_detected: bool, tumor_label: str | None, bbox_confidence: float | None) -> str:
     if no_tumor_detected:
         return (
@@ -527,6 +562,8 @@ def _build_professional_report_pdf(
     risk_group: str | None = None,
     survival_curve_data: list[dict] | None = None,
     prognosis_meta: dict | None = None,
+    mri_review_required: bool = False,
+    mri_review_reasons: list[str] | None = None,
     heatmap_image: Image.Image | None = None,
     gradcam_plus_image: Image.Image | None = None,
     layercam_image: Image.Image | None = None,
@@ -589,9 +626,9 @@ def _build_professional_report_pdf(
     summary_box = (60 * scale, 360 * scale, page_size[0] - 60 * scale, 520 * scale)
     draw1.rounded_rectangle(summary_box, radius=12 * scale, fill=WHITE, outline=SLATE_100, width=2 * scale)
 
-    predicted_display = tumor_label or "Không phát hiện khối u"
+    predicted_display, safety_summary = _report_headline(no_tumor_detected, tumor_label, mri_review_required, mri_review_reasons)
     classification_display = _format_percent(classification_confidence)
-    summary_text = _build_summary_text(no_tumor_detected, tumor_label, bbox_confidence).replace("Predicted tumor type", "Loại u dự đoán").replace("No lesion detected", "Không phát hiện u").replace("Confidence", "Độ tin cậy")
+    summary_text = safety_summary or _build_summary_text(no_tumor_detected, tumor_label, bbox_confidence).replace("Predicted tumor type", "Loại u dự đoán").replace("No lesion detected", "Không phát hiện u").replace("Confidence", "Độ tin cậy")
 
     draw1.text((90 * scale, 390 * scale), predicted_display, font=font_title, fill=RED_500 if not no_tumor_detected else SLATE_800)
     
@@ -1543,6 +1580,10 @@ def download_image_report(
 
     # Merge results from both task types
     result_payload = _payload_with_prognosis(latest_task, prognosis_task)
+    mri_safety = _mri_safety_payload(result_payload, analysis)
+    # Yêu cầu 3: MRI không đọc được thì không có kết luận để xuất báo cáo (tránh in "không phát hiện u").
+    if mri_safety["mri_status"] == "mri_unreadable" or (latest_task and latest_task.status == "failed"):
+        raise HTTPException(status_code=409, detail="Không đọc được MRI – chưa có kết luận, không xuất báo cáo. Hãy kiểm tra và tải lại dữ liệu.")
     no_tumor_detected = bool(result_payload.get("no_tumor_detected") or (analysis and getattr(analysis, "no_tumor_detected", False)))
     tumor_label = _display_tumor_label(
         result_payload.get("tumor_label") or (analysis.tumor_label if analysis else None),
@@ -1624,6 +1665,8 @@ def download_image_report(
             risk_group=None if no_tumor_detected else (result_payload.get("risk_group") or (analysis.risk_group if analysis else None)),
             survival_curve_data=None if no_tumor_detected else (result_payload.get("survival_curve_data") or (analysis.survival_curve_data if analysis else None)),
             prognosis_meta=None if no_tumor_detected else (result_payload.get("prognosis_meta") or (analysis.prognosis_meta if analysis else None)),
+            mri_review_required=mri_safety["mri_review_required"],
+            mri_review_reasons=mri_safety["mri_review_reasons"],
             heatmap_image=_bgr_path_to_pil(result_payload.get("multimodal_risk_xai_path") or result_payload.get("gradcam_heatmap_path")),
             gradcam_plus_image=_bgr_path_to_pil(result_payload.get("multimodal_gradcam_plus_heatmap_path") or result_payload.get("gradcam_plus_heatmap_path")),
             layercam_image=_bgr_path_to_pil(result_payload.get("multimodal_layercam_heatmap_path") or result_payload.get("layercam_heatmap_path")),
