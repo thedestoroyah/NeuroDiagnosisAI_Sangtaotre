@@ -1,6 +1,6 @@
 # Local demo patients
 
-`local-demo.zip` is included in normal Git (about 26 MB). It contains a
+`local-demo.zip` is included in normal Git (about 32 MB). It contains a
 `manifest.json`, checksums and the actual storage files for two demo cases
 exported from `neuroproject-tunnel`:
 
@@ -10,7 +10,10 @@ exported from `neuroproject-tunnel`:
 | `UCSF-001` | 3 MRI images; no current WSI, RNA or clinical record in the source database |
 
 Both cases also include their available diagnosis/prognosis results, XAI
-images, explanations and patient history records. Historical results can
+images, explanations and patient history records. Prognosis for every MRI was re-run on 2026-11-20 with the deployed v2 model
+(5-seed ensemble, relative risk only); older prognosis tasks remain as history and the newest one is shown.
+The patient history reports were written before that re-run and are flagged as stale until regenerated
+(regeneration needs a Gemini key). Historical results can
 reflect inputs available at the time of that run. Failed/pending jobs are not
 seeded. WSI/RNA attached to UCSF-003 were uploaded for testing from the
 TCGA-12-1093 sample; these are demonstration inputs, not a claim of a matched
