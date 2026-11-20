@@ -44,6 +44,7 @@ PROGNOSIS_ONLY_KEYS = {
     "multimodal_gradcam_heatmap_path",
     "multimodal_gradcam_plus_heatmap_path",
     "multimodal_layercam_heatmap_path",
+    "prognosis_meta",
 }
 
 NAVY = (18, 42, 66)
@@ -65,14 +66,41 @@ RED_500 = (239, 68, 68)
 
 
 def _merge_prognosis_only(base_payload: dict, prognosis_payload: dict | None) -> dict:
-    """Add prognosis outputs without overwriting MRI core detection/seg/class fields."""
+    """Add prognosis outputs without overwriting MRI core detection/seg/class fields.
+
+    Khóa có trong prognosis_payload luôn ghi đè, kể cả None: mô hình chưa hiệu chuẩn trả survival_curve_data=None
+    và đường cũ không được giữ lại.
+    """
     merged = dict(base_payload or {})
     if not prognosis_payload:
         return merged
     for key in PROGNOSIS_ONLY_KEYS:
-        if key in prognosis_payload and prognosis_payload.get(key) is not None:
+        if key in prognosis_payload:
             merged[key] = prognosis_payload.get(key)
     return merged
+
+
+def _task_time(task) -> datetime.datetime:
+    return task.updated_at or task.created_at or datetime.datetime.min
+
+
+def _payload_with_prognosis(mri_task, prognosis_task) -> dict:
+    """Payload task MRI, gộp kết quả tiên lượng nếu task tiên lượng mới hơn (chạy lại tiên lượng phải thay số cũ).
+
+    Args:
+        mri_task, prognosis_task: InferenceTask hoặc None.
+
+    Returns:
+        dict mới (không sửa result của task).
+    """
+    payload = dict(mri_task.result or {}) if mri_task and mri_task.result else {}
+    if not (prognosis_task and prognosis_task.result):
+        return payload
+    if not payload:
+        return dict(prognosis_task.result)
+    if mri_task is None or _task_time(prognosis_task) >= _task_time(mri_task):
+        return _merge_prognosis_only(payload, prognosis_task.result)
+    return payload
 
 
 def _get_presigned_url(file_path: str | None) -> str | None:
@@ -1085,14 +1113,7 @@ def get_patient_full_analysis(
         raise HTTPException(status_code=404, detail="Chua co ket qua phan tich cho benh nhan nay.")
 
     # Merge dữ liệu từ cả 2 task (prognosis có multimodal, mri có overlay images)
-    result_payload = {}
-    if mri_task and mri_task.result:
-        result_payload.update(mri_task.result)
-    if prognosis_task and prognosis_task.result:
-        if result_payload:
-            result_payload = _merge_prognosis_only(result_payload, prognosis_task.result)
-        else:
-            result_payload.update(prognosis_task.result)
+    result_payload = _payload_with_prognosis(mri_task, prognosis_task)
 
     # Xác định image_id và metadata
     image_id = mri_image.id if mri_image else (analysis.image_id if analysis else 0)
@@ -1254,9 +1275,11 @@ def get_image_analysis_detail(
         task_id = latest_task.id
         status = latest_task.status
         error_message = latest_task.error_message
-        result_payload = latest_task.result or {}
         created_at = latest_task.created_at
         updated_at = latest_task.updated_at
+    # Gộp tiên lượng chạy lại sau task MRI (trước đây endpoint này chỉ đọc task MRI nên hiện số cũ).
+    prognosis_task = _get_latest_prognosis_task(db, image.patient_id, image_id)
+    result_payload = _payload_with_prognosis(latest_task, prognosis_task)
 
     bbox = result_payload.get("bbox")
     seg_mask_path = result_payload.get("seg_mask_path")
@@ -1519,14 +1542,7 @@ def download_image_report(
         raise HTTPException(status_code=404, detail="Chua co ket qua de xuat bao cao")
 
     # Merge results from both task types
-    result_payload = {}
-    if latest_task and latest_task.result:
-        result_payload.update(latest_task.result)
-    if prognosis_task and prognosis_task.result:
-        if result_payload:
-            result_payload = _merge_prognosis_only(result_payload, prognosis_task.result)
-        else:
-            result_payload.update(prognosis_task.result)
+    result_payload = _payload_with_prognosis(latest_task, prognosis_task)
     no_tumor_detected = bool(result_payload.get("no_tumor_detected") or (analysis and getattr(analysis, "no_tumor_detected", False)))
     tumor_label = _display_tumor_label(
         result_payload.get("tumor_label") or (analysis.tumor_label if analysis else None),
