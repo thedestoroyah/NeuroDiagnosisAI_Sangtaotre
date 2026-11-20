@@ -80,7 +80,10 @@ def select_split(manifest: pd.DataFrame, splits: tuple[str, ...]) -> pd.DataFram
 
 
 def load_patients(data_dir: Path, rows: pd.DataFrame, rna_matrix: pd.DataFrame, rna_ref) -> list[Patient]:
-    """Nạp đặc trưng cache, RNA (encode_rna) và lâm sàng (encode_clinical) cho các dòng manifest."""
+    """Nạp đặc trưng cache, RNA (encode_rna) và lâm sàng (encode_clinical) cho các dòng manifest.
+
+    rna_ref=None: để rna=None cho mọi ca (cv.py tự mã hóa RNA lại theo từng fold).
+    """
     clinical_csv = pd.read_csv(data_dir / "dataset_multimodal_final.csv").set_index("patient_id")
     features = data_dir / "features"
     patients = []
@@ -90,7 +93,7 @@ def load_patients(data_dir: Path, rows: pd.DataFrame, rna_matrix: pd.DataFrame, 
             return np.load(path) if flag == 1 and path.exists() else None
 
         values, has_clinical = encode_clinical(clinical_csv.loc[row.patient_id].to_dict())
-        rna = encode_rna(rna_matrix.loc[row.patient_id], rna_ref) if row.has_rna == 1 else None
+        rna = encode_rna(rna_matrix.loc[row.patient_id], rna_ref) if row.has_rna == 1 and rna_ref is not None else None
         patients.append(Patient(row.patient_id, float(row.time), float(row.event), float(row.study_type),
                                 cached("mri", row.has_mri), cached("wsi", row.has_wsi), rna, values, has_clinical))
     return patients
@@ -145,46 +148,81 @@ def predict(model, patients: list[Patient], num_genes: int, device: str) -> np.n
     return _forward(model, make_batch(patients, num_genes, False, None, device)).cpu().numpy()
 
 
+class _Run:
+    """Trạng thái train một seed (mô hình, optimizer, bộ lấy mẫu cân bằng theo nguồn) dùng chung cho mọi cách train."""
+
+    def __init__(self, train_patients: list[Patient], num_genes: int, seed: int, cfg: TrainConfig):
+        random.seed(seed)
+        np.random.seed(seed)
+        torch.manual_seed(seed)
+        self.rng = np.random.default_rng(seed)
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.model = MultimodalBrainTumorModel(num_genes=num_genes).to(self.device)
+        # Backbone DenseNet đóng băng: đặc trưng đã cache; chỉ train phần đầu.
+        self.params = [p for name, p in self.model.named_parameters() if "feature_extractor" not in name]
+        self.optimizer = torch.optim.AdamW(self.params, lr=cfg.learning_rate, weight_decay=cfg.weight_decay)
+        self.criterion = CoxPHLoss()
+        studies = pd.Series([p.study for p in train_patients])
+        self.weights = torch.tensor(studies.map(1.0 / studies.value_counts()).to_numpy(), dtype=torch.float64)
+        self.generator = torch.Generator().manual_seed(seed)
+        self.train_patients, self.num_genes, self.cfg = train_patients, num_genes, cfg
+
+    def epoch(self) -> list[float]:
+        """Một epoch: bốc mẫu có hoàn lại theo trọng số nguồn, bỏ batch không có event. Trả list loss từng batch."""
+        self.model.train()
+        order = torch.multinomial(self.weights, len(self.train_patients), replacement=True, generator=self.generator).tolist()
+        losses = []
+        for start in range(0, len(order), self.cfg.batch_size):
+            chosen = [self.train_patients[i] for i in order[start:start + self.cfg.batch_size]]
+            batch = make_batch(chosen, self.num_genes, True, self.rng, self.device)
+            if batch["event"].sum() == 0:
+                continue
+            loss = self.criterion(_forward(self.model, batch), batch["time"], batch["event"])
+            self.optimizer.zero_grad()
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(self.params, max_norm=1.0)
+            self.optimizer.step()
+            losses.append(loss.item())
+        return losses
+
+
+def train_fixed_epochs(train_patients, num_genes: int, seed: int, cfg: TrainConfig, epochs: int,
+                       eval_patients=None, out_path: Path | None = None) -> np.ndarray:
+    """Train đúng `epochs` epoch, learning rate cố định, không early stopping (dùng cho CV và bản cuối v2).
+
+    Args:
+        eval_patients: nếu có, dự đoán risk cho các ca này sau mỗi epoch.
+        out_path: nếu có, lưu state_dict đầy đủ sau epoch cuối.
+
+    Returns:
+        np.ndarray [epochs, len(eval_patients)] (cột rỗng nếu không có eval_patients).
+    """
+    run = _Run(train_patients, num_genes, seed, cfg)
+    preds = []
+    for _ in range(epochs):
+        run.epoch()
+        preds.append(predict(run.model, eval_patients, num_genes, run.device) if eval_patients else np.zeros(0))
+    if out_path is not None:
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        torch.save(run.model.state_dict(), out_path)
+    return np.stack(preds)
+
+
 def train_seed(train_patients, val_patients, num_genes: int, seed: int, cfg: TrainConfig, out_dir: Path) -> dict:
     """Train một seed, early stop theo C-index val, lưu state_dict đầy đủ của epoch tốt nhất vào out_dir/best.pth.
 
     Returns:
         dict gồm seed, best_val_c_index, best_epoch, history (list theo epoch).
     """
-    random.seed(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
-    rng = np.random.default_rng(seed)
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    run = _Run(train_patients, num_genes, seed, cfg)
+    model, optimizer, criterion, device = run.model, run.optimizer, run.criterion, run.device
     out_dir.mkdir(parents=True, exist_ok=True)
-
-    model = MultimodalBrainTumorModel(num_genes=num_genes).to(device)
-    # Backbone DenseNet đóng băng: đặc trưng đã cache; chỉ train phần đầu.
-    params = [p for name, p in model.named_parameters() if "feature_extractor" not in name]
-    optimizer = torch.optim.AdamW(params, lr=cfg.learning_rate, weight_decay=cfg.weight_decay)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode="min", factor=cfg.lr_factor, patience=cfg.lr_patience)
-    criterion = CoxPHLoss()
-
-    studies = pd.Series([p.study for p in train_patients])
-    weights = torch.tensor(studies.map(1.0 / studies.value_counts()).to_numpy(), dtype=torch.float64)
-    generator = torch.Generator().manual_seed(seed)
     val_batch = make_batch(val_patients, num_genes, False, None, device)
 
     history, best, best_epoch, stale = [], -1.0, -1, 0
     for epoch in range(cfg.epochs):
-        model.train()
-        order = torch.multinomial(weights, len(train_patients), replacement=True, generator=generator).tolist()
-        losses = []
-        for start in range(0, len(order), cfg.batch_size):
-            batch = make_batch([train_patients[i] for i in order[start:start + cfg.batch_size]], num_genes, True, rng, device)
-            if batch["event"].sum() == 0:
-                continue
-            loss = criterion(_forward(model, batch), batch["time"], batch["event"])
-            optimizer.zero_grad()
-            loss.backward()
-            torch.nn.utils.clip_grad_norm_(params, max_norm=1.0)
-            optimizer.step()
-            losses.append(loss.item())
+        losses = run.epoch()
 
         model.eval()
         with torch.no_grad():

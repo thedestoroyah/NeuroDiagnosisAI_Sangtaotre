@@ -52,6 +52,25 @@ def _load_model(path: Path, num_genes: int, device: str) -> MultimodalBrainTumor
     return model.to(device).eval()
 
 
+def load_members(runs: Path, selection: dict, num_genes: int, device: str) -> dict[str, MultimodalBrainTumorModel]:
+    """Nạp các mô hình dùng để dự đoán: v2 (selection có "version" 2) là mọi seed của ensemble, v1 là seed đã chọn."""
+    if selection.get("version", 1) >= 2:
+        return {str(s): _load_model(runs / f"seed{s}" / selection["checkpoint"], num_genes, device) for s in selection["ensemble_seeds"]}
+    chosen = selection["chosen_seed"]
+    return {str(chosen): _load_model(runs / f"seed{chosen}" / "best.pth", num_genes, device)}
+
+
+def ensemble_predict(models, patients, num_genes: int, device: str) -> np.ndarray:
+    """Risk = trung bình log-hazard của các mô hình (một mô hình thì là chính nó)."""
+    return np.mean([predict(m, patients, num_genes, device) for m in models], axis=0)
+
+
+def previous_reports(prognosis_dir: Path) -> list[dict]:
+    """Mọi lần đánh giá test đã ghi (research/prognosis/runs*/test_report.json), cũ nhất trước; khóa chung cho v1 và v2."""
+    reports = [json.loads(path.read_text()) for path in prognosis_dir.glob("runs*/test_report.json")]
+    return sorted(reports, key=lambda r: r["evaluated_at"])
+
+
 def _c_index(risk, patients) -> float:
     return float(c_index_score(np.asarray(risk), np.array([p.time for p in patients]), np.array([p.event for p in patients])))
 
@@ -122,16 +141,16 @@ def _markdown(report: dict) -> str:
     lines = [
         "# Kết quả tiên lượng trên tập test độc lập (Yêu cầu 2)",
         "",
-        f"Đánh giá lúc {report['evaluated_at']}, **một lần** sau khi đã chốt checkpoint bằng tập val. "
-        f"Train {report['n_train']} ca, val {report['n_val']} ca, test {report['n_test']} ca (`research/prognosis/split_manifest.csv`).",
-        f"Checkpoint triển khai: seed {report['chosen_seed']}, epoch {report['chosen_epoch']} (chọn theo C-index val = {report['val_c_index_chosen']:.4f}).",
+        f"Đánh giá lúc {report['evaluated_at']}, sau khi đã chốt mô hình mà không đọc tập test. "
+        f"Train {report['n_train']} ca, test {report['n_test']} ca (`research/prognosis/split_manifest.csv`).",
+        f"Mô hình triển khai: {report['model_desc']}.",
         "",
         "## Chỉ số chính",
         "",
         "| Chỉ số | Giá trị |",
         "|---|---|",
-        f"| C-index test (seed triển khai) | **{m['c_index']:.4f}** (KTC95% bootstrap {m['c_index_ci'][0]:.4f}–{m['c_index_ci'][1]:.4f}, {report['bootstrap']} mẫu) |",
-        f"| C-index test qua {len(report['seed_test_c_index'])} seed | {np.mean(list(report['seed_test_c_index'].values())):.4f} ± {np.std(list(report['seed_test_c_index'].values())):.4f} |",
+        f"| C-index test (mô hình triển khai) | **{m['c_index']:.4f}** (KTC95% bootstrap {m['c_index_ci'][0]:.4f}–{m['c_index_ci'][1]:.4f}, {report['bootstrap']} mẫu) |",
+        f"| C-index test từng seed ({len(report['seed_test_c_index'])} seed) | {np.mean(list(report['seed_test_c_index'].values())):.4f} ± {np.std(list(report['seed_test_c_index'].values())):.4f} |",
         f"| Integrated Brier score (IPCW, {report['ibs_times'][0]:.0f}–{report['ibs_times'][1]:.0f} tháng) | {m['ibs']:.4f} (Kaplan–Meier không đặc trưng: {m['ibs_km']:.4f}) |",
         f"| Đối chứng CoxPH lâm sàng (tuổi, gender, IDH, MGMT) | C-index test {report['clinical_baseline_c_index']:.4f} |",
         f"| C-index val cũ (checkpoint 0,6936, chọn theo val, không có test) | không so trực tiếp được: khác split, khác dữ liệu WSI |",
@@ -158,7 +177,15 @@ def _markdown(report: dict) -> str:
         "Hình: `figures/calibration_12m.png`, `figures/calibration_24m.png`, `figures/km_by_risk_group_test.png`.",
     ]
     if report.get("rerun"):
-        lines += ["", f"> Lưu ý: tập test đã được đánh giá lại (lần {report['rerun']}); lý do ghi trong commit."]
+        lines += ["", f"## Các lần đánh giá test trước", "",
+                  f"Đây là lần đánh giá test thứ {report['rerun'] + 1}. Quy trình chọn mô hình lần này được chốt trước khi chạy "
+                  "(`docs/cai_tien/ke_hoach_v2.md`) và không dùng kết quả test lần trước để chọn.", "",
+                  "| Lần | Thời điểm | Mô hình | C-index test (KTC95%) |", "|---:|---|---|---|"]
+        for i, prev in enumerate(report["previous"], start=1):
+            c = prev["test_metrics"]
+            lines.append(f"| {i} | {prev['evaluated_at']} | {prev.get('model_desc') or 'v1: seed ' + str(prev['chosen_seed']) + ', epoch ' + str(prev['chosen_epoch'])} "
+                         f"| {c['c_index']:.4f} ({c['c_index_ci'][0]:.4f}–{c['c_index_ci'][1]:.4f}) |")
+        lines.append(f"| {report['rerun'] + 1} | {report['evaluated_at']} | {report['model_desc']} | {m['c_index']:.4f} ({m['c_index_ci'][0]:.4f}–{m['c_index_ci'][1]:.4f}) |")
     return "\n".join(lines) + "\n"
 
 
@@ -175,9 +202,9 @@ def main() -> None:
     out_docs = args.runs / "rehearsal" if args.rehearse else DOCS
     out_docs.mkdir(parents=True, exist_ok=True)
     marker = (out_docs if args.rehearse else args.runs) / "test_report.json"
-    previous = json.loads(marker.read_text()) if marker.exists() and not args.rehearse else None
+    previous = [] if args.rehearse else previous_reports(Path(__file__).resolve().parent)
     if previous and not args.force:
-        raise SystemExit(f"Tập test đã được đánh giá ({previous['evaluated_at']}). Dùng --force nếu thật sự cần.")
+        raise SystemExit(f"Tập test đã được đánh giá ({previous[-1]['evaluated_at']}). Dùng --force nếu thật sự cần.")
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
     selection = json.loads((args.runs / "selection.json").read_text())
@@ -185,24 +212,34 @@ def main() -> None:
     rna_matrix = pd.read_csv(args.data / "PROCESSED_RNA" / "rna_matrix.csv", index_col=0)
     rna_ref = load_rna_reference(str(args.runs / "rna_reference.npz"))
     num_genes = len(rna_ref.columns)
-    train_rows = select_split(manifest, ("train",))
+    train_rows = select_split(manifest, tuple(selection.get("train_splits", ["train"])))
     eval_split = "val" if args.rehearse else "test"
     test_rows = manifest[manifest.split == eval_split].reset_index(drop=True)  # chỗ DUY NHẤT đọc tập test
     train_patients = load_patients(args.data, train_rows, rna_matrix, rna_ref)
     test_patients = load_patients(args.data, test_rows, rna_matrix, rna_ref)
 
-    chosen = selection["chosen_seed"]
-    model = _load_model(args.runs / f"seed{chosen}" / "best.pth", num_genes, device)
-    train_risk = predict(model, train_patients, num_genes, device)
-    test_risk = predict(model, test_patients, num_genes, device)
+    members = load_members(args.runs, selection, num_genes, device)
+    risk_of = lambda ps: ensemble_predict(list(members.values()), ps, num_genes, device)  # noqa: E731
+    if selection.get("version", 1) >= 2:
+        model_desc = (f"v2: ensemble {len(members)} seed, {selection['epochs']} epoch, {selection['num_genes']} cột RNA "
+                      f"(cấu hình {selection['gene_config']}, C-index CV {selection['cv_c_index']:.4f})")
+    else:
+        model_desc = (f"v1: seed {selection['chosen_seed']}, epoch {selection['chosen_epoch']} "
+                      f"(chọn theo C-index val = {selection['val_c_index'][str(selection['chosen_seed'])]:.4f})")
+    train_risk = risk_of(train_patients)
+    test_risk = risk_of(test_patients)
     grid, s0 = breslow_baseline(train_risk, [p.time for p in train_patients], [p.event for p in train_patients])
 
     c_index = _c_index(test_risk, test_patients)
     c_ci = bootstrap_ci(lambda idx: _c_index(test_risk[idx], [test_patients[i] for i in idx]), size=len(test_patients), n=args.bootstrap)
     seed_c = {}
-    for seed_dir in sorted(args.runs.glob("seed*")):
-        seed_model = model if seed_dir.name == f"seed{chosen}" else _load_model(seed_dir / "best.pth", num_genes, device)
-        seed_c[seed_dir.name.removeprefix("seed")] = _c_index(predict(seed_model, test_patients, num_genes, device), test_patients)
+    if selection.get("version", 1) >= 2:
+        for seed, member in members.items():
+            seed_c[seed] = _c_index(predict(member, test_patients, num_genes, device), test_patients)
+    else:
+        for seed_dir in sorted(args.runs.glob("seed*")):
+            seed_c[seed_dir.name.removeprefix("seed")] = _c_index(
+                predict(_load_model(seed_dir / "best.pth", num_genes, device), test_patients, num_genes, device), test_patients)
 
     cuts = np.quantile(train_risk, [1 / 3, 2 / 3])
     test_groups = np.digitize(test_risk, cuts)
@@ -218,8 +255,8 @@ def main() -> None:
 
     ablation = {"Đầy đủ mô thức": c_index}
     for name, field in (("Tắt WSI", "wsi"), ("Tắt RNA", "rna")):
-        ablation[name] = _c_index(predict(model, [replace(p, **{field: None}) for p in test_patients], num_genes, device), test_patients)
-    ablation["Tắt cả WSI và RNA"] = _c_index(predict(model, [replace(p, wsi=None, rna=None) for p in test_patients], num_genes, device), test_patients)
+        ablation[name] = _c_index(risk_of([replace(p, **{field: None}) for p in test_patients]), test_patients)
+    ablation["Tắt cả WSI và RNA"] = _c_index(risk_of([replace(p, wsi=None, rna=None) for p in test_patients]), test_patients)
 
     calibrated = all(table.abs_diff.max() <= CALIBRATION_TOLERANCE for table in calib.values()) and ibs < ibs_km
     _plots(test_patients, test_groups, pred_by_time, calib, grid, s0, test_risk, out_docs)
@@ -235,9 +272,9 @@ def main() -> None:
         (WEIGHTS_DIR / "risk_reference.json").write_text(json.dumps(risk_reference), encoding="utf-8")
 
     report = {
-        "evaluated_at": datetime.now().isoformat(timespec="seconds"), "rerun": (previous or {}).get("rerun", 0) + 1 if previous else 0,
-        "chosen_seed": chosen, "chosen_epoch": selection["chosen_epoch"], "val_c_index_chosen": selection["val_c_index"][str(chosen)],
-        "n_train": len(train_patients), "n_val": selection["n_val"], "n_test": len(test_patients), "bootstrap": args.bootstrap,
+        "evaluated_at": datetime.now().isoformat(timespec="seconds"), "rerun": len(previous), "model_desc": model_desc,
+        "previous": [{k: prev.get(k) for k in ("evaluated_at", "model_desc", "chosen_seed", "chosen_epoch", "test_metrics")} for prev in previous],
+        "n_train": len(train_patients), "n_test": len(test_patients), "bootstrap": args.bootstrap,
         "test_metrics": test_metrics, "seed_test_c_index": seed_c, "clinical_baseline_c_index": clinical_baseline(args.data, train_rows.patient_id, test_rows.patient_id),
         "ablation": ablation, "calibration": {t: table.to_dict("records") for t, table in calib.items()},
         "ibs_times": [float(ibs_grid[0]), float(ibs_grid[-1])], "calibrated": bool(calibrated),
