@@ -63,7 +63,7 @@ An end-to-end research prototype that combines MRI tumor detection, segmentation
 NeuroDiagnosis AI is a web-based clinical decision-support system designed to connect two complementary AI workflows:
 
 1. **Automated MRI diagnosis** detects a suspected tumor, segments its pixel-level boundary, classifies the tumor type, and generates an explanation for every prediction stage.
-2. **Multimodal survival prognosis** fuses MRI, whole-slide histopathology, RNA-seq and clinical variables to estimate a continuous CoxPH risk score, risk group, survival curve and modality-specific explanations.
+2. **Multimodal survival prognosis** fuses MRI, whole-slide histopathology, RNA-seq and clinical variables to estimate a continuous CoxPH risk score, a risk group (tertiles of the training set) and modality-specific explanations. The current model (v2) did not meet the pre-registered calibration criterion, so the app shows a relative risk percentile and no survival curve.
 
 The platform separates the user interface, business API, asynchronous GPU inference and data storage layers. FastAPI handles short-lived HTTP work; Redis and Celery move compute-intensive AI tasks to GPU workers; PostgreSQL stores structured records and audit data; MinIO or Cloudflare R2 stores medical images and generated artifacts.
 
@@ -75,7 +75,7 @@ The platform separates the user interface, business API, asynchronous GPU infere
 | MRI segmentation | DynUNet pixel-level delineation | Tumor mask, Dice/IoU metadata, Seg-Eigen-CAM |
 | MRI classification | DenseNet169 ROI classification | Glioma, Meningioma or Pituitary label; confidence; Finer-CAM |
 | Series inference | Consensus majority voting | Series-level tumor decision and representative slice |
-| Multimodal prognosis | Masked Gated Attention Fusion with CoxPH | Risk score, risk group, survival curve, fusion attention |
+| Multimodal prognosis | Masked Gated Attention Fusion with CoxPH | Risk score, relative risk percentile, risk group, fusion attention (survival curve only when calibrated; not shown for v2) |
 | Visual XAI | Gradient- and activation-based explanations | ODAM, Seg-Eigen-CAM, Finer-CAM, Grad-CAM family |
 | Genomic XAI | Input x Gradient attribution | Top genes associated with higher-risk or protective contribution |
 | Human review | Expert confirmation and relabeling | Auditable final label and review status |
@@ -342,7 +342,7 @@ The merged cohort contains 899 patients from five neuro-oncology sources:
 | CPTAC-GBM | 28 |
 | **Total** | **899** |
 
-Round-1 improvement (final round): the prognosis model was retrained on a **patient-level 629 / 135 / 135 train / validation / test split** (stratified by event and data source, `research/prognosis/split_manifest.csv`, frozen before training). The validation set is used only for model selection; the test set was evaluated once. The earlier 719 / 180 split had no separate test set. A second, pre-registered revision (v2, `docs/cai_tien/ke_hoach_v2.md`) re-selected the model by 5-fold cross-validation on train + validation (764 patients) and evaluated the test set a second time; both evaluations are reported.
+Round-1 improvement (final round): the prognosis model was retrained on a **patient-level 629 / 135 / 135 train / validation / test split** (stratified by event and data source, `research/prognosis/split_manifest.csv`, frozen before training). The validation set is used only for model selection; the first model (v1) was evaluated on the test set once. The earlier 719 / 180 split had no separate test set. A second, pre-registered revision (v2, `docs/cai_tien/ke_hoach_v2.md`) re-selected the model by 5-fold cross-validation on train + validation (764 patients) and evaluated the test set a second time; both evaluations are reported.
 
 ## Experimental Results
 
@@ -509,7 +509,7 @@ Before any real-world use, replace all development credentials, enable managed T
 - The reported results are retrospective and dataset-specific; they are not evidence of prospective clinical effectiveness.
 - The MRI diagnosis dataset is public and does not represent every scanner, protocol, institution or population.
 - ROI-only segmentation and classification metrics are conditional on tumor localization and must not be interpreted as whole-pipeline metrics.
-- The survival cohort remains small relative to the 60,664-dimensional RNA input, creating overfitting and generalization risk.
+- The survival cohort remains small (178 patients with RNA in train + validation), creating overfitting and generalization risk even after reducing RNA to the 1,000 highest-variance genes (from 60,664).
 - Missing-modality robustness does not eliminate bias from systematically unavailable modalities.
 - XAI localization and perturbation metrics measure model behavior, not biological or clinical causality.
 - The Quick Tunnel deployment is appropriate for demonstration, not a production hospital network.
@@ -1034,7 +1034,7 @@ Chỉ có phần gene khi có RNA và attribution hợp lệ; có thể dưới 
 
 #### 4.6. Báo cáo MRI PDF
 
-Nút tải báo cáo ở dòng ảnh/trang kết quả xuất bằng chứng và diễn giải của lần chụp được chọn. [Kết quả chẩn đoán MRI mẫu — PDF](assets/readme/reports/MRI_diagnosis_report.pdf) được đính kèm trong repo: gồm thông tin ca và confidence, MRI/BBox/ROI/mask/contour, MRI Core XAI, risk score/risk group, CAM tiên lượng, trọng số fusion, survival curve và bảng gene. Báo cáo là bản chụp kết quả tại lúc xuất; chạy lại hoặc review sau đó có thể tạo nội dung mới khác bản PDF này.
+Nút tải báo cáo ở dòng ảnh/trang kết quả xuất bằng chứng và diễn giải của lần chụp được chọn. [Kết quả chẩn đoán MRI mẫu — PDF](assets/readme/reports/MRI_diagnosis_report.pdf) được đính kèm trong repo: gồm thông tin ca và confidence, MRI/BBox/ROI/mask/contour, MRI Core XAI, risk score/risk group, CAM tiên lượng, trọng số fusion, survival curve và bảng gene (bản PDF mẫu này xuất từ mô hình cũ; với mô hình v2 hiện tại, PDF in percentile và câu giới hạn thay cho survival curve). Báo cáo là bản chụp kết quả tại lúc xuất; chạy lại hoặc review sau đó có thể tạo nội dung mới khác bản PDF này.
 
 <a id="guide-agent"></a>
 

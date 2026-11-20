@@ -19,6 +19,6 @@ Chạy theo đúng [ke_hoach_v2.md](ke_hoach_v2.md) (đã commit trước khi ch
 
 ## Nhận xét
 
-- Phần lớn cải thiện đến từ việc giảm chiều RNA (+0,021 khi xét đơn seed). Ensemble thêm +0,002 đến +0,014; tác dụng của ensemble lớn nhất khi mô hình còn nhiều nhiễu (60.664 cột).
+- Phần lớn cải thiện đến từ việc giảm chiều RNA (đơn seed: +0,021 với 5000 gen, +0,023 với 1000 gen so với R0). Ensemble thêm +0,002 đến +0,014; tác dụng của ensemble lớn nhất khi mô hình còn nhiều nhiễu (60.664 cột).
 - v2 chỉ ngang đối chứng lâm sàng trên CV (+0,004). Chênh lệch này nhỏ hơn nhiều so với độ dao động giữa các fold (0,62–0,70), nên **không thể nói mô hình đa mô thức tốt hơn mô hình chỉ dùng lâm sàng**.
 - Với các cấu hình giảm chiều, epoch tốt nhất nằm gần mức trần 30. Có thể train lâu hơn sẽ tốt hơn, nhưng trần 30 epoch đã được chốt trước nên giữ nguyên.
