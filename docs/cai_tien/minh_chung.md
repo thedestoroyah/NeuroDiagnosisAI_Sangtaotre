@@ -30,6 +30,7 @@ Chạy toàn bộ test backend: `cd backend && ../.venv/bin/python -m pytest -q 
 | Tiêu chí hiển thị xác suất sống còn được chốt trước khi train; không đạt thì chỉ hiện điểm tương đối. v1 đạt (sát ngưỡng); **v2 không đạt**, nên giao diện chỉ hiện percentile so với tập train kèm C-index test | `backend/ai_core/risk_reference.py`, `backend/tests/test_risk_reference.py`, `backend/ai_core/weights/risk_reference.json` (`calibrated: false`) |
 | Bỏ baseline sống còn viết cứng, ngưỡng nhóm tùy ý, dữ liệu mẫu giả trên trang Báo cáo, câu diễn giải tuyệt đối | commit `feat: show calibrated survival only when validated…` |
 | Script chạy lại được: tải lại WSI từ GDC, cắt patch, chia tập, cache đặc trưng, train, đánh giá | `research/data_prep/`, `research/prognosis/` |
+| Ảnh chụp thẻ tiên lượng v2 trên app thật: percentile so với 764 bệnh nhân huấn luyện, nhóm tam phân vị, câu giới hạn có C-index test, không có đường sống còn | `figures/demo_prognosis_v2.png` |
 
 ## Yêu cầu 3: Xử lý lỗi MRI theo nguyên tắc an toàn
 
@@ -39,7 +40,7 @@ Chạy toàn bộ test backend: `cd backend && ../.venv/bin/python -m pytest -q 
 | Lỗi một phần hoặc âm tính đều phải chờ bác sĩ rà soát; quét đủ mọi lát | `test_mri_safety.py` (partial, clean negative, no silent step=2) |
 | API trả trạng thái lỗi tách biệt với âm tính | `backend/tests/test_mri_safety_api.py` |
 | Giao diện: thẻ đỏ "Không đọc được MRI – chưa có kết luận" khác hẳn thẻ vàng "Không phát hiện u – cần bác sĩ xác nhận"; danh sách và lịch sử ghi "chờ bác sĩ xác nhận" | `frontend/src/components/ai/MriResultCard.tsx` |
-| Ảnh chụp demo hai trạng thái đặt cạnh nhau | **Nhóm bổ sung khi chạy app local** (upload chuỗi MRI toàn file hỏng, và một chuỗi không có u) |
+| Ảnh chụp app chạy thật (Docker local, 20/11): chuỗi 4 lát toàn file hỏng → thẻ đỏ, không có kết luận âm tính, không có nút PDF; ảnh MRI không có u → thẻ vàng chờ bác sĩ xác nhận | `figures/demo_mri_unreadable.png`, `figures/demo_no_tumor.png` |
 
 ## Giới hạn được nêu rõ
 

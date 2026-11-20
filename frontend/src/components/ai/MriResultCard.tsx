@@ -345,21 +345,21 @@ export default function MriResultCard({
             </div>
           ) : isFailed ? (
             <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-5">
-              <div className="flex items-center gap-3 text-red-300 mb-3">
+              <div className="flex items-center gap-3 text-red-700 dark:text-red-300 mb-3">
                 <AlertTriangle className="h-5 w-5" />
                 <span className="font-semibold">
                   {mriUnreadable ? "Không đọc được MRI – chưa có kết luận" : "Pipeline MRI thất bại"}
                 </span>
               </div>
-              <p className="text-sm text-red-200 whitespace-pre-wrap">
+              <p className="text-sm text-red-800 dark:text-red-200 whitespace-pre-wrap">
                 {result?.error_message || "Không có thông điệp lỗi chi tiết."}
               </p>
-              {mriUnreadable && sliceFailureText && <p className="mt-2 text-xs text-red-300">{sliceFailureText}</p>}
+              {mriUnreadable && sliceFailureText && <p className="mt-2 text-xs text-red-700 dark:text-red-300">{sliceFailureText}</p>}
             </div>
           ) : (
             <>
               {(noTumorDetected || (result?.mri_review_required && mriReviewReasons.length > 0)) && (
-                <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-4 text-amber-200">
+                <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-amber-800 dark:text-amber-200">
                   <div className="flex items-center gap-3">
                     <Search className="h-5 w-5" />
                     <span className="text-sm font-semibold">
@@ -367,13 +367,13 @@ export default function MriResultCard({
                     </span>
                   </div>
                   {mriReviewReasons.length > 0 && (
-                    <ul className="mt-2 ml-8 list-disc text-xs text-amber-100/90 space-y-0.5">
+                    <ul className="mt-2 ml-8 list-disc text-xs text-amber-900 dark:text-amber-100/90 space-y-0.5">
                       {mriReviewReasons.map((reason) => (
                         <li key={reason}>{reason}</li>
                       ))}
                     </ul>
                   )}
-                  {sliceFailureText && <p className="mt-2 ml-8 text-xs text-amber-100/90">{sliceFailureText}</p>}
+                  {sliceFailureText && <p className="mt-2 ml-8 text-xs text-amber-900 dark:text-amber-100/90">{sliceFailureText}</p>}
                 </div>
               )}
 
