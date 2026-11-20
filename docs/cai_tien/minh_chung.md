@@ -14,18 +14,20 @@ Chạy toàn bộ test backend: `cd backend && ../.venv/bin/python -m pytest -q 
 | RNA: căn theo tên cột, giữ 4 cột `N_*` (trước đây toàn bộ gene lệch 4 vị trí) | `backend/tests/test_feature_schema_rna.py`, `test_clinical_parity.py::test_rna_series_keeps_n_star` |
 | Ảnh: 256px, 6 lát nguyên lấy đều (trước đây 224px, 1 ảnh crop) | `backend/tests/test_image_parity.py` |
 | Forward từ đặc trưng cache bằng forward đầy đủ của mô hình serving | `research/tests/test_feature_model.py` |
-| **Đầu–cuối:** cùng bệnh nhân test C3L-01327, đường train cho risk 0,481479, đường serving thật cho 0,481394 | `backend/tests/test_end_to_end_parity.py` |
+| **Đầu–cuối:** cùng bệnh nhân test C3L-01327, mô hình v2: đường train cho risk 1,534188, đường serving thật cho 1,531384 (lệch 0,17% độ lệch chuẩn risk của tập train, cùng nhóm nguy cơ; phần lệch do cache đặc trưng tính bằng float16 trên GPU). Với v1: 0,481479 và 0,481394 | `backend/tests/test_end_to_end_parity.py` |
 
 ## Yêu cầu 2: Không trình bày tiên lượng quá mức bằng chứng
 
 | Minh chứng | Vị trí |
 |---|---|
 | Manifest chia train/val/test 629/135/135 theo bệnh nhân, commit trước khi train | `research/prognosis/split_manifest.csv`, [split_summary.md](split_summary.md) |
-| Chọn mô hình chỉ bằng val (5 seed) | [ket_qua_val.md](ket_qua_val.md), `research/prognosis/runs/selection.json` |
-| Bảng chỉ số trên tập test độc lập: C-index **0,599** (KTC95% 0,534–0,657), đối chứng lâm sàng 0,652, IBS, ablation | [ket_qua_test.md](ket_qua_test.md), `research/prognosis/runs/test_report.json` |
+| v1: chọn mô hình chỉ bằng val (5 seed) | [ket_qua_val.md](ket_qua_val.md), `research/prognosis/runs/selection.json` |
+| v2: kế hoạch và luật quyết định commit **trước khi chạy**; chọn bằng cross-validation 5-fold trên train+val (764 ca), ensemble 5 seed, 1000 gen RNA | [ke_hoach_v2.md](ke_hoach_v2.md), [ket_qua_cv_v2.md](ket_qua_cv_v2.md), `research/prognosis/runs_v2/cv_results.json` |
+| Bảng chỉ số trên tập test độc lập, mô hình v2 đang triển khai (lần đánh giá test thứ 2): C-index **0,648** (KTC95% 0,585–0,702), đối chứng lâm sàng 0,651, IBS, ablation | [ket_qua_test.md](ket_qua_test.md), `research/prognosis/runs_v2/test_report.json` |
+| Lần đánh giá test thứ 1 (v1): C-index 0,599 (KTC95% 0,534–0,657) | [ket_qua_test_v1.md](ket_qua_test_v1.md), `research/prognosis/runs/test_report.json`, `figures/v1/` |
 | Baseline Breslow ước lượng từ tập train; calibration ở 12 và 24 tháng | `figures/calibration_12m.png`, `figures/calibration_24m.png`, `figures/km_by_risk_group_test.png` |
 | Bất định: bootstrap 1000 lần, trung bình ± độ lệch chuẩn qua 5 seed | [ket_qua_test.md](ket_qua_test.md) |
-| Tiêu chí hiển thị xác suất sống còn được chốt trước khi train; không đạt thì chỉ hiện điểm tương đối | `backend/ai_core/risk_reference.py`, `backend/tests/test_risk_reference.py` |
+| Tiêu chí hiển thị xác suất sống còn được chốt trước khi train; không đạt thì chỉ hiện điểm tương đối. v1 đạt (sát ngưỡng); **v2 không đạt**, nên giao diện chỉ hiện percentile so với tập train kèm C-index test | `backend/ai_core/risk_reference.py`, `backend/tests/test_risk_reference.py`, `backend/ai_core/weights/risk_reference.json` (`calibrated: false`) |
 | Bỏ baseline sống còn viết cứng, ngưỡng nhóm tùy ý, dữ liệu mẫu giả trên trang Báo cáo, câu diễn giải tuyệt đối | commit `feat: show calibrated survival only when validated…` |
 | Script chạy lại được: tải lại WSI từ GDC, cắt patch, chia tập, cache đặc trưng, train, đánh giá | `research/data_prep/`, `research/prognosis/` |
 
@@ -41,7 +43,8 @@ Chạy toàn bộ test backend: `cd backend && ../.venv/bin/python -m pytest -q 
 
 ## Giới hạn được nêu rõ
 
-- Mô hình đa mô thức sau khi train lại (C-index test 0,599) **chưa vượt** mô hình CoxPH chỉ dùng lâm sàng (0,652). Khi tắt RNA/WSI lúc suy luận, C-index không giảm, nghĩa là hai nhánh này chưa đóng góp với cỡ mẫu hiện có (149 ca train có RNA, 126 ca có WSI).
-- Calibration đạt tiêu chí nhưng sát ngưỡng (chênh lệch lớn nhất 0,099 so với ngưỡng 0,10), và khả năng phân tầng còn yếu: hai nhóm Medium và High gần như trùng nhau trên tập test.
+- Tập test đã được đánh giá **hai lần**: v1 (0,599), rồi v2 (0,648) theo kế hoạch chốt trước. Lần 2 không dùng kết quả lần 1 để chọn cấu hình, nhưng việc đánh giá lại vẫn làm con số kém "độc lập" hơn một lần duy nhất; cả hai lần đều được báo cáo.
+- Mô hình v2 (C-index test 0,648) chỉ **ngang** mô hình CoxPH chỉ dùng lâm sàng (0,651; trên CV là 0,666 so với 0,662). Ablation v2 cho thấy RNA và WSI có đóng góp (tắt cả hai còn 0,629), nhưng chưa đủ để vượt các biến lâm sàng với cỡ mẫu hiện có (178 ca có RNA, 151 ca có WSI trong train+val).
+- v2 phân biệt tốt hơn v1 nhưng **không hiệu chuẩn**: ở 24 tháng, nhóm nguy cơ cao dự đoán sống 5% trong khi quan sát 22%. Vì vậy giao diện không hiện xác suất sống còn.
 - 172/194 ca WSI cũ bị mất. Đã tải lại 177 slide TCGA từ GDC; 17 ca UPENN được coi là thiếu WSI.
 - Backbone DenseNet121 dùng trọng số ImageNet, đóng băng và không fine-tune, vì phần cứng không đủ (RTX 3050 4 GB) để Cox loss có risk set đủ lớn.

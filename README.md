@@ -342,7 +342,7 @@ The merged cohort contains 899 patients from five neuro-oncology sources:
 | CPTAC-GBM | 28 |
 | **Total** | **899** |
 
-Round-1 improvement (final round): the prognosis model was retrained on a **patient-level 629 / 135 / 135 train / validation / test split** (stratified by event and data source, `research/prognosis/split_manifest.csv`, frozen before training). The validation set is used only for model selection; the test set was evaluated once. The earlier 719 / 180 split had no separate test set.
+Round-1 improvement (final round): the prognosis model was retrained on a **patient-level 629 / 135 / 135 train / validation / test split** (stratified by event and data source, `research/prognosis/split_manifest.csv`, frozen before training). The validation set is used only for model selection; the test set was evaluated once. The earlier 719 / 180 split had no separate test set. A second, pre-registered revision (v2, `docs/cai_tien/ke_hoach_v2.md`) re-selected the model by 5-fold cross-validation on train + validation (764 patients) and evaluated the test set a second time; both evaluations are reported.
 
 ## Experimental Results
 
@@ -355,7 +355,7 @@ All values in this section are transcribed from the supplied 2026 research repor
 | YOLOv11 detection | Precision 95.25%, Recall 86.20%, F1 90.50% | mAP@50 85.39%, mean IoU on matched tumor boxes 73.34% |
 | DynUNet segmentation | Mean Dice 87.42% | Dice 92.77%, IoU 87.03% on tumor-positive ROIs |
 | DenseNet169 classification | Accuracy 93.86%, AUC > 0.92 | Accuracy 97.55%, Macro-F1 97.54% on detected tumor ROIs |
-| Multimodal CoxPH prognosis | Independent test C-index 0.599 (95% CI 0.534–0.657) | Clinical-only CoxPH baseline 0.652; calibration criterion met; earlier 0.6936 was a best-of-validation value with no test set |
+| Multimodal CoxPH prognosis | Independent test C-index 0.648 (95% CI 0.585–0.702), v2 ensemble | Clinical-only CoxPH baseline 0.651; calibration criterion not met, so only relative risk is shown; first test evaluation (v1) 0.599; earlier 0.6936 was a best-of-validation value with no test set |
 
 The distinction between broad pipeline performance and ROI-only performance is essential: ROI metrics evaluate downstream models after a tumor region is available and therefore should not be presented as end-to-end diagnostic performance.
 
@@ -422,7 +422,9 @@ These metrics test localization and faithfulness of model explanations. They do 
 
 ### Multimodal survival prognosis
 
-**Current model (retrained for the final round):** independent test C-index **0.599** (95% bootstrap CI 0.534–0.657, 135 patients), 0.626 ± 0.016 across 5 seeds. A clinical-only CoxPH baseline (age, gender, IDH, MGMT) reaches 0.652 on the same test set, so the multimodal model does not yet outperform simple clinical variables. Survival probabilities use a Breslow baseline estimated on the training set and met the pre-registered calibration criterion at 12 and 24 months (max |predicted − Kaplan–Meier| 0.099; IBS 0.196 vs 0.203 for Kaplan–Meier). Full tables and figures: [docs/cai_tien/ket_qua_test.md](docs/cai_tien/ket_qua_test.md).
+**Current model (v2, deployed):** an ensemble of 5 seeds using the 1,000 highest-variance RNA genes, chosen by 5-fold cross-validation on train + validation under a rule committed before the run ([docs/cai_tien/ke_hoach_v2.md](docs/cai_tien/ke_hoach_v2.md), [CV results](docs/cai_tien/ket_qua_cv_v2.md)). Independent test C-index **0.648** (95% bootstrap CI 0.585–0.702, 135 patients). A clinical-only CoxPH baseline (age, gender, IDH, MGMT) reaches 0.651 on the same test set, so the multimodal model only matches simple clinical variables. The model did **not** meet the pre-registered calibration criterion, so the app shows a relative risk percentile instead of survival probabilities. Full tables and figures: [docs/cai_tien/ket_qua_test.md](docs/cai_tien/ket_qua_test.md).
+
+*First test evaluation (v1):* a single seed selected on the validation set reached test C-index 0.599 (95% CI 0.534–0.657); see [docs/cai_tien/ket_qua_test_v1.md](docs/cai_tien/ket_qua_test_v1.md). The test set has therefore been evaluated twice.
 
 *Earlier result (kept for transparency):* the previous checkpoint reported a best **validation** C-index of 0.6936 at epoch 11, selected on the same validation set and without an independent test set; it is not comparable with the numbers above. The figures below belong to that earlier run.
 
@@ -584,7 +586,7 @@ HTTPS giúp clone public repo mà không cần tạo SSH key. Hai file `.pth` d�
 | `yolo_weights.pt` | Phát hiện u | 40.5 MB |
 | `unet_weights.pt` | Phân đoạn u | 46.5 MB |
 | `densenet169_weights.pth` | Phân loại u | 51 MB |
-| `best_multimodal_model.pth` | Tiên lượng đa mô thức | 313 MB |
+| `prognosis_ensemble.pth` | Tiên lượng đa mô thức (ensemble 5 seed, v2) | 116 MB |
 
 Giữ nguyên `backend/rag/xai/`: `embedding_config.json`, `child_embeddings.npy`, `child_chunks_metadata.jsonl`, `parent_chunks_lookup.json` đã có trong repo. Database local tự nạp hai bệnh nhân demo `UCSF-003` và `UCSF-001`, cùng file dữ liệu và kết quả được đóng gói trong repo.
 
@@ -1004,7 +1006,7 @@ Ví dụ báo cáo mẫu có risk score khoảng `1.3270`, thuộc `High`. Đây
 
 Trục ngang là thời gian theo **tháng** (`0, 6, 12, 18, 24, 30, 36`); trục dọc là giá trị xác suất sống còn mà ứng dụng vẽ tại các mốc. Đường giảm nhanh hơn thể hiện tiên lượng mà mô hình đánh giá bất lợi hơn. Đây là đường cong riêng cho kết quả đang xem, khác với biểu đồ risk score giữa nhiều lần chẩn đoán ở trang Lịch sử.
 
-Bản triển khai hiện xây dựng đường cong từ baseline cố định và risk score theo `S(t) = S0(t)^exp(score)`, có chặn score để ổn định số học. Vì vậy hình bậc thang trong web/PDF là minh họa đầu ra tiên lượng của prototype, **không phải ước lượng Kaplan–Meier tính từ dữ liệu theo dõi của bệnh nhân này**, và chưa phải xác suất đã được hiệu chuẩn lâm sàng.
+Bản triển khai hiện xây dựng đường cong từ baseline cố định và risk score theo `S(t) = S0(t)^exp(score)`, có chặn score để ổn định số học. Vì vậy hình bậc thang trong web/PDF là minh họa đầu ra tiên lượng của prototype, **không phải ước lượng Kaplan–Meier tính từ dữ liệu theo dõi của bệnh nhân này**, và chưa phải xác suất đã được hiệu chuẩn lâm sàng. Từ mô hình v2, tiêu chí hiệu chuẩn trên tập test không đạt nên giao diện không vẽ đường này nữa, chỉ hiện điểm nguy cơ tương đối (percentile) kèm C-index test.
 
 <p align="center">
   <a href="assets/readme/user-guide/11-survival-probability.png"><img src="assets/readme/user-guide/11-survival-probability.png" width="1200" alt="Biểu đồ Survival Probability vs Time tại các mốc tháng" /></a>
