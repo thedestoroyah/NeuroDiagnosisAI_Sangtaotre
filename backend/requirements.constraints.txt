@@ -23,3 +23,6 @@ langgraph==1.2.6
 langgraph-checkpoint==4.1.1
 langgraph-checkpoint-postgres==3.1.0
 psycopg==3.3.4
+
+# celery 5.3.6 cho phép kombu <6.0; kombu >=5.6 đòi redis-py >=6.1 (repo ghim redis 5.0.1) nên worker không khởi động.
+kombu==5.3.7
