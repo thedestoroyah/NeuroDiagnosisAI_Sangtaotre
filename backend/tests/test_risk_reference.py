@@ -42,6 +42,7 @@ class RiskReferenceTest(unittest.TestCase):
         self.assertFalse(meta["calibrated"])
         self.assertEqual(meta["limitation_text"],
                          "Điểm nguy cơ tương đối so với 100 bệnh nhân huấn luyện – không phải xác suất sống còn đã hiệu chuẩn. "
+                         "Khả năng xếp hạng trên 30 bệnh nhân độc lập: C-index 0.66 (KTC95% 0.60–0.72). "
                          "Chỉ dùng tham khảo, bác sĩ quyết định.")
 
     def test_curve_shown_when_calibrated(self):

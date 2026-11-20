@@ -8,6 +8,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import cv2
+import numpy as np
 import pandas as pd
 import torch
 
@@ -82,7 +83,12 @@ class EndToEndParityTest(unittest.TestCase):
                 mri_mask=torch.ones(1, mri.shape[1]), wsi_mask=torch.full((1, wsi.shape[1]), 1.0 if tiles else 0.0),
             )
         print(f"\n{pid}: train-path risk {train_risk.item():.6f} | serving-path risk {serve_risk.item():.6f}")
-        self.assertAlmostEqual(train_risk.item(), serve_risk.item(), delta=1e-3)
+        # Cache đặc trưng tính bằng autocast float16 trên GPU, serving chạy float32 trên CPU, nên risk lệch rất nhỏ.
+        # Ngưỡng tính theo độ phân tán risk của tập train: lệch ≤ 1% độ lệch chuẩn và không đổi nhóm nguy cơ.
+        reference = pipeline.risk_reference
+        spread = float(np.std(reference.train_risk_sorted))
+        self.assertLessEqual(abs(train_risk.item() - serve_risk.item()), 0.01 * spread)
+        self.assertEqual(reference.group(train_risk.item()), reference.group(serve_risk.item()))
 
 
 if __name__ == "__main__":

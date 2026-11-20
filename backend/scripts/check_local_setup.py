@@ -12,7 +12,9 @@ REQUIRED_WEIGHTS = (
     "yolo_weights.pt",
     "unet_weights.pt",
     "densenet169_weights.pth",
-    "best_multimodal_model.pth",
+    "prognosis_ensemble.pth",
+    "rna_reference.npz",
+    "risk_reference.json",
 )
 REQUIRED_RAG_FILES = (
     "embedding_config.json",
