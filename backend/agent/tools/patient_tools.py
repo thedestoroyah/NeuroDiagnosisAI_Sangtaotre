@@ -31,6 +31,19 @@ def _latest_task(db: Session, task_type: str, target_id: int) -> Optional[models
     )
 
 
+PROGNOSIS_RESULT_KEYS = ("risk_score", "risk_group", "survival_curve_data", "prognosis_meta")
+
+
+def _task_time(task: Optional[models.InferenceTask]):
+    return (task.updated_at or task.created_at) if task else None
+
+
+def _is_newer_or_equal(task: models.InferenceTask, other: Optional[models.InferenceTask]) -> bool:
+    """True nếu `task` được ghi sau hoặc cùng lúc `other` (hoặc `other` không có / thiếu mốc thời gian)."""
+    other_time, task_time = _task_time(other), _task_time(task)
+    return other_time is None or task_time is None or task_time >= other_time
+
+
 def _task_id_from_analysis_paths(analysis: models.AnalysisResult) -> int | None:
     for path in (
         analysis.mask_path,
@@ -210,14 +223,20 @@ def serialize_analysis_with_visuals(
             "seg_mask_path",
             "mask_overlay_path",
             "contour_overlay_path",
-            "risk_score",
-            "risk_group",
-            "survival_curve_data",
             "multimodal_risk_xai_path",
             "gradcam_heatmap_path",
         ):
             if key in prognosis_task.result and not payload.get(key):
                 payload[key] = prognosis_task.result[key]
+        # Khóa tiên lượng: lần chạy tiên lượng mới hơn task MRI thì thay hẳn số cũ (kể cả None, vd. không còn đường sống còn).
+        if _is_newer_or_equal(prognosis_task, mri_task):
+            for key in PROGNOSIS_RESULT_KEYS:
+                if key in prognosis_task.result:
+                    payload[key] = prognosis_task.result[key]
+        else:
+            for key in PROGNOSIS_RESULT_KEYS:
+                if key in prognosis_task.result and not payload.get(key):
+                    payload[key] = prognosis_task.result[key]
 
     bbox = payload.get("bbox")
     seg_mask_path = payload.get("seg_mask_path") or analysis.mask_path
@@ -244,6 +263,9 @@ def serialize_analysis_with_visuals(
     item["bbox_confidence"] = payload.get("bbox_confidence")
     item["risk_score"] = None if item.get("no_tumor_detected") else (payload.get("risk_score") if payload.get("risk_score") is not None else item.get("risk_score"))
     item["risk_group"] = None if item.get("no_tumor_detected") else (payload.get("risk_group") or item.get("risk_group"))
+    # Cho chatbox nói đúng độ tin cậy của tiên lượng (percentile, C-index test, câu giới hạn), không nhầm với độ tin cậy phân loại.
+    item["prognosis_meta"] = None if item.get("no_tumor_detected") else payload.get("prognosis_meta")
+    item["survival_curve_data"] = None if item.get("no_tumor_detected") else payload.get("survival_curve_data")
     item["visuals"] = [visual for visual in visuals if visual.get("url")]
     item["has_visuals"] = bool(item["visuals"])
     return item

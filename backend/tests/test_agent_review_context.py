@@ -106,3 +106,51 @@ def test_agent_review_statistics_include_95_percent_boundary():
     assert stats["low_confidence_diagnoses"] == 1
     assert stats["pending_doctor_review"] == 1
     db.close()
+
+
+def test_agent_shows_rerun_prognosis_not_stale_mri_task_score():
+    """Chatbox phải đọc điểm của lần tiên lượng chạy lại (mới hơn), không phải điểm cũ nằm trong task MRI."""
+    import datetime as dt
+
+    db = _session()
+    analysis = _analysis_fixture(db)
+    db.add(models.InferenceTask(
+        celery_task_id="m", task_type="mri_pipeline", target_id=analysis.image_id, status="done",
+        result={"risk_score": -1.71, "risk_group": "Low", "survival_curve_data": [{"time": 12, "survival_probability": 0.4}]},
+        created_at=dt.datetime(2026, 6, 27), updated_at=dt.datetime(2026, 6, 27),
+    ))
+    db.add(models.InferenceTask(
+        celery_task_id="p", task_type="prognosis", target_id=analysis.patient_id, status="done",
+        result={"image_id": analysis.image_id, "risk_score": -1.05, "risk_group": "Low", "survival_curve_data": None,
+                "prognosis_meta": {"calibrated": False, "percentile": 14.0, "limitation_text": "Điểm nguy cơ tương đối"}},
+        created_at=dt.datetime(2026, 11, 20), updated_at=dt.datetime(2026, 11, 20),
+    ))
+    db.commit()
+
+    payload = serialize_analysis_with_visuals(db, analysis)
+
+    assert payload["risk_score"] == -1.05
+    assert payload["prognosis_meta"]["percentile"] == 14.0
+    assert payload["prognosis_meta"]["calibrated"] is False
+    assert not payload.get("survival_curve_data")
+    db.close()
+
+
+def test_agent_keeps_mri_task_score_when_mri_rerun_is_newer():
+    import datetime as dt
+
+    db = _session()
+    analysis = _analysis_fixture(db)
+    db.add(models.InferenceTask(
+        celery_task_id="m", task_type="mri_pipeline", target_id=analysis.image_id, status="done",
+        result={"risk_score": 2.0, "risk_group": "High"}, created_at=dt.datetime(2026, 11, 21), updated_at=dt.datetime(2026, 11, 21),
+    ))
+    db.add(models.InferenceTask(
+        celery_task_id="p", task_type="prognosis", target_id=analysis.patient_id, status="done",
+        result={"image_id": analysis.image_id, "risk_score": -1.05, "risk_group": "Low"},
+        created_at=dt.datetime(2026, 11, 20), updated_at=dt.datetime(2026, 11, 20),
+    ))
+    db.commit()
+
+    assert serialize_analysis_with_visuals(db, analysis)["risk_score"] == 2.0
+    db.close()
